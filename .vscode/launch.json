@@ -1,0 +1,15 @@
+{
+    "configurations": [
+        {
+            "name": "Python: Auto Run Module",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "run_module",
+            "args": ["${file}"],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "python": "${config:python.pythonPath}",
+
+        }
+    ]
+}

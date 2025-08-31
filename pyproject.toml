@@ -1,0 +1,26 @@
+[project]
+name = "torch-imagetools"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "johnny95731",email = "johnny95731@yahoo.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "torch (>=2.7.1,<3.0)",
+    "numpy (>=2.3.2,<3.0.0)",
+    "torchvision (>=0.22.0,<0.23.0)"
+]
+
+[tool.poetry]
+packages = [{include = "torch_imagetools", from = "src"}]
+
+
+[tool.poetry.group.dev.dependencies]
+kornia = "^0.8.1"
+matplotlib = "^3.10.6"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
