@@ -28,7 +28,7 @@ exclude = [
 ]
 target-version = "py313"
 
-line-length = 82
+line-length = 80
 src = ["src"]
 
 [lint]

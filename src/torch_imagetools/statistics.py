@@ -1,6 +1,7 @@
+import numpy as np
 import torch
 
-from .utils.helpers import tensorlize
+from torch_imagetools.utils.helpers import tensorlize
 
 
 def combine_mean_std(
@@ -41,3 +42,38 @@ def combine_mean_std(
     std_z = (part_1 + part_2) ** 0.5
 
     return mean_z, std_z, num_z
+
+
+def estimate_noise_from_wavelet(
+    hh: torch.Tensor | np.ndarray,
+) -> torch.Tensor:
+    hh = tensorlize(hh)
+    if hh.ndim == 3:
+        sigma_est = torch.median(torch.abs(hh, out=hh))
+    else:
+        hh = hh.view(hh.size(0), -1)
+        sigma_est = torch.median(torch.abs(hh, out=hh), dim=1).values
+
+    sigma_est *= 255 / 0.6745
+    return sigma_est
+
+
+def estimate_noise_from_wavelet_2(
+    hh: torch.Tensor | np.ndarray,
+) -> torch.Tensor:
+    sigma_est = estimate_noise_from_wavelet(hh)
+    poly_coeffs = [
+        -1.707,
+        1.383,
+        -2.784e-2,
+        8.695e-4,
+        -1.092e-5,
+        5.404e-8,
+    ]
+
+    sigma = 0
+    pow = 1.0
+    for coeff in poly_coeffs:
+        sigma += coeff * pow
+        pow *= sigma_est
+    return sigma
