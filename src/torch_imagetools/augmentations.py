@@ -1,18 +1,30 @@
+from math import ceil
 import random
+
 import numpy as np
-from PIL import Image, ImageEnhance
+import torch
 import torchvision.transforms.functional as F
 
+from .utils.helpers import pairing
 
 class RandomCrop:
-    def __init__(self, size):
-        self.size = size
+    """Randomly crop images to a given size."""
+    
+    def __init__(self, size: int | tuple[int, int]):
+        """Randomly crop image to a given size.
 
-    def __call__(self, image, target):
+        Parameters
+        ----------
+        size : int | tuple[int, int]
+            The output size. The tuple type represents the height and width.
+        """
+        self.size = pairing(size)
+
+    def __call__(self, image: torch.Tensor, target: torch.Tensor):
         assert image.size == target.size, 'Image and target size mismatch'
 
-        crop_width, crop_height = self.size
-        width, height = image.size
+        crop_height, crop_width = self.size
+        height, width = image.shape[-2:]
 
         if image.size == self.size:
             return image, target
@@ -20,10 +32,10 @@ class RandomCrop:
         # Handle cases where the image is smaller than the desired crop size
         if width < crop_width or height < crop_height:
             scale = max(crop_width / width, crop_height / height)
-            new_width, new_height = int(scale * width), int(scale * height)
+            new_width, new_height = ceil(scale * width), ceil(scale * height)
 
-            image = image.resize((new_width, new_height), Image.BILINEAR)
-            target = target.resize((new_width, new_height), Image.NEAREST)
+            image = F.resize(image, (new_width, new_height), F.InterpolarMode.BILINEAR)
+            target = F.resize(image, (new_width, new_height), F.InterpolarMode.NEAREST)
 
             width, height = new_width, new_height
 
@@ -32,8 +44,8 @@ class RandomCrop:
         top = random.randint(0, height - crop_height)
 
         # Crop both image and target
-        image = image.crop((left, top, left + crop_width, top + crop_height))
-        target = target.crop((left, top, left + crop_width, top + crop_height))
+        image = image[..., top : top + crop_height, left : left + crop_width]
+        target = target[..., top : top + crop_height, left : left + crop_width]
 
         return image, target
 

@@ -3,18 +3,21 @@ import torch
 
 from torch_imagetools.utils.helpers import tensorlize
 
+TensorLike = torch.Tensor | np.ndarray
+
 
 def combine_mean_std(
-    stats1: tuple[torch.tensor, torch.tensor, int],
-    stats2: tuple[torch.tensor, torch.tensor, int],
-) -> tuple[torch.tensor, torch.tensor, int]:
-    """The combination
+    stats1: tuple[TensorLike, TensorLike, int],
+    stats2: tuple[TensorLike, TensorLike, int],
+) -> tuple[torch.Tensor, torch.Tensor, int]:
+    """Calculate the mean, standard deviation (std), and dataset size of the
+    combination of two datasets.
 
     Parameters
     ----------
-    stats1 : tuple[torch.tensor, torch.tensor, int]
+    stats1 : tuple[TensorLike, TensorLike, int]
         The [mean value, standard deviation, number of samples] of dataset 1.
-    stats2 : tuple[torch.tensor, torch.tensor, int]
+    stats2 : tuple[TensorLike, TensorLike, int]
         The [mean value, standard deviation, number of samples] of dataset 2.
 
     Returns
@@ -39,7 +42,7 @@ def combine_mean_std(
 
     part_1 = ((num_x - 1) * var_x + (num_y - 1) * var_y) / (num_z - 1)
     part_2 = (mean_x - mean_y) ** 2 * (num_x * num_y / (num_z * (num_z - 1)))
-    std_z = (part_1 + part_2) ** 0.5
+    std_z = torch.sqrt(part_1 + part_2)
 
     return mean_z, std_z, num_z
 
@@ -47,12 +50,29 @@ def combine_mean_std(
 def estimate_noise_from_wavelet(
     hh: torch.Tensor | np.ndarray,
 ) -> torch.Tensor:
+    """Estimates the standard deviation of Gaussian noise from the 
+
+     For details, see:
+     D. L. Donoho and I. M. Johnstone, “Ideal spatial adaptation by wavelet
+     shrinkage,” Biometrika, vol. 81, no. 3, pp. 425-455, Sep. 1994
+
+    Parameters
+    ----------
+    hh : torch.Tensor | np.ndarray
+        The highpass-highpass filtered image.
+
+    Returns
+    -------
+    torch.Tensor
+        _description_
+    """
     hh = tensorlize(hh)
+    hh = torch.abs(hh)
     if hh.ndim == 3:
-        sigma_est = torch.median(torch.abs(hh, out=hh))
+        sigma_est = torch.median(hh)
     else:
         hh = hh.view(hh.size(0), -1)
-        sigma_est = torch.median(torch.abs(hh, out=hh), dim=1).values
+        sigma_est = torch.median(hh, dim=1).values
 
     sigma_est *= 255 / 0.6745
     return sigma_est

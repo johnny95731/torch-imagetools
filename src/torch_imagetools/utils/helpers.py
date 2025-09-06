@@ -2,10 +2,26 @@ import numpy as np
 import torch
 
 
-def arraylize(item: float | list[float] | np.ndarray | torch.Tensor):
-    if isinstance(item, np.ndarray) or torch.is_tensor(item):
-        return item
-    return np.array(item)
+# fmt: off
+@overload
+def pairing(item: list[T] | tuple[T, ...]) -> tuple[T, T]: ...
+@overload
+def pairing(item: T) -> tuple[T, T]: ...
+# fmt: on
+def pairing(item: Any):
+    """Convert item to a tuple with two items.
+    If the item is indexble, returns first two items;
+    otherwise, returns (item, item)
+    """
+    if is_indexable(item):
+        return (item[0], item[1])
+    return (item, item)
+
+
+def is_indexable(item: Any) -> bool:
+    """Check whether an item contains `__getitem__` method."""
+    return hasattr(item, '__getitem__')
+
 
 
 def tensorlize(
@@ -50,7 +66,23 @@ def tensorlize(
 
 def matrix_transform(
     img: torch.Tensor, matrix: torch.Tensor, *, out: torch.Tensor | None = None
-):
+) -> torch.Tensor:
+    """Linear transform an image along its channels.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        Image, a tensor with shape (..., C, H, W).
+    matrix : torch.Tensor
+        The transformation matrix that be used in the linear transform.
+    out : torch.Tensor | None, optional
+        The output tensor, by default None.
+
+    Returns
+    -------
+    torch.Tensor
+        The image after transformation.
+    """
     img = img.movedim(-3, -1)  # To (H, W, C) or (N, H, W, C)
     output = (
         torch.empty(
@@ -70,7 +102,21 @@ def matrix_transform(
     return output
 
 
-def matrix_transform_(img: torch.Tensor, matrix: torch.Tensor):
+def matrix_transform_(img: torch.Tensor, matrix: torch.Tensor) -> torch.Tensor:
+    """In-place version of matrix_transform.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        Image, a tensor with shape (..., C, H, W).
+    matrix : torch.Tensor
+        The transformation matrix that be used in the linear transform.
+
+    Returns
+    -------
+    torch.Tensor
+        The image after transformation.
+    """
     img = img.movedim(-3, -1)  # To (H, W, C) or (N, H, W, C)
     if img.ndim == 4:
         for b in img:
