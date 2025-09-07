@@ -48,7 +48,6 @@ def hed_to_rgb(hed: np.ndarray | torch.Tensor) -> torch.Tensor:
 if __name__ == '__main__':
     from timeit import timeit
 
-    img = np.random.randint(0, 256, (1024, 1024, 3)).astype(np.float32) / 255
     img = torch.randint(0, 256, (24, 3, 512, 512)).type(torch.float32) / 255
     num = 50
 

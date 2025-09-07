@@ -1,5 +1,10 @@
+from typing import Any, overload, TypeVar
+
 import numpy as np
 import torch
+
+
+T = TypeVar('T')
 
 
 # fmt: off
@@ -21,7 +26,6 @@ def pairing(item: Any):
 def is_indexable(item: Any) -> bool:
     """Check whether an item contains `__getitem__` method."""
     return hasattr(item, '__getitem__')
-
 
 
 def tensorlize(

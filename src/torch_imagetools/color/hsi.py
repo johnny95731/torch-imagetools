@@ -53,7 +53,6 @@ if __name__ == '__main__':
 
     d = torch.abs(ret - img)
     print(torch.max(d))
-    print(torch.count_nonzero(d < 1e-5) / d.numel())
 
     # print(timeit('rgb_to_hsi(img)', number=num, globals=locals()))
     # print(timeit('hsi_to_rgb(hsl)', number=num, globals=locals()))

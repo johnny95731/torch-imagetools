@@ -6,9 +6,26 @@ from .hsv import hsv_helper, hsv_to_rgb
 
 
 def rgb_to_hwb(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
+    """Conver an RGB image to a HWB image.
+
+    The input is assumed to be in the range of [0, 1].
+
+    Parameters
+    ----------
+    rgb : np.ndarray | torch.Tensor
+        An RGB image in the range of [0, 1]. For a ndarray, the
+        shape should be (H, W, 3) or (N, H, W, 3). For a Tensor, the shape
+        should be (3, H, W) or (N, 3, H, W).
+
+    Returns
+    -------
+    torch.Tensor
+        YUV image with shape (3, H, W) or (N, 3, H, W). The range of Y
+        is [0, 1] and the range of U and V are [-0.5, 0.5].
+    """
     hue, amax, amin, _ = hsv_helper(rgb)
     whiteness = amin
-    blackness = 1 - amax
+    blackness = torch.sub(1, amax, out=amax)
 
     hwb = torch.stack((hue, whiteness, blackness), dim=-3)
     return hwb
@@ -47,7 +64,6 @@ if __name__ == '__main__':
 
     d = torch.abs(ret - img)
     print(torch.max(d))
-    print(torch.count_nonzero(d < 1e-5) / d.numel())
 
-    # print(timeit('rgb_to_hwb(img)', number=num, globals=locals()))
-    # print(timeit('hwb_to_rgb(hsl)', number=num, globals=locals()))
+    print(timeit('rgb_to_hwb(img)', number=num, globals=locals()))
+    print(timeit('hwb_to_rgb(hsl)', number=num, globals=locals()))

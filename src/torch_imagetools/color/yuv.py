@@ -13,7 +13,7 @@ def rgb_to_yuv(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     rgb : np.ndarray | torch.Tensor
-        A floating dtype RGB image in the range of [0, 1]. For a ndarray, the
+        An RGB image in the range of [0, 1]. For a ndarray, the
         shape should be (H, W, 3) or (N, H, W, 3). For a Tensor, the shape
         should be (3, H, W) or (N, 3, H, W).
 
