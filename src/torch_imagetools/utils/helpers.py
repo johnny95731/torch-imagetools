@@ -76,7 +76,7 @@ def matrix_transform(
     Parameters
     ----------
     img : torch.Tensor
-        Image, a tensor with shape (..., C, H, W).
+        Image, a tensor with shape (*, C, H, W).
     matrix : torch.Tensor
         The transformation matrix that be used in the linear transform.
     out : torch.Tensor | None, optional
@@ -112,7 +112,7 @@ def matrix_transform_(img: torch.Tensor, matrix: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     img : torch.Tensor
-        Image, a tensor with shape (..., C, H, W).
+        Image, a tensor with shape (*, C, H, W).
     matrix : torch.Tensor
         The transformation matrix that be used in the linear transform.
 

@@ -13,15 +13,14 @@ def rgb_to_hwb(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     rgb : np.ndarray | torch.Tensor
-        An RGB image in the range of [0, 1]. For a ndarray, the
-        shape should be (H, W, 3) or (N, H, W, 3). For a Tensor, the shape
-        should be (3, H, W) or (N, 3, H, W).
+        An RGB image in the range of [0, 1]. For a ndarray, the shape should be
+        (*, H, W, 3). For a Tensor, the shape should be (*, 3, H, W).
 
     Returns
     -------
     torch.Tensor
-        YUV image with shape (3, H, W) or (N, 3, H, W). The range of Y
-        is [0, 1] and the range of U and V are [-0.5, 0.5].
+        HWB image with shape (*, 3, H, W). The H channel values are in the
+        range [0, 360), W and B are in the range [0, 1]
     """
     hue, amax, amin, _ = hsv_helper(rgb)
     whiteness = amin
@@ -32,6 +31,20 @@ def rgb_to_hwb(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
 
 
 def hwb_to_rgb(hwb: np.ndarray | torch.Tensor) -> torch.Tensor:
+    """Conver a HWB image to an RGB image.
+
+    Parameters
+    ----------
+    rgb : np.ndarray | torch.Tensor
+        An RGB image in the range of [0, 1]. For a ndarray, the shape should be
+        (*, H, W, 3). For a Tensor, the shape should be (*, 3, H, W).
+
+    Returns
+    -------
+    torch.Tensor
+        HWB image with shape (*, 3, H, W). The channels are hue, whiteness,
+        blackness.
+    """
     hwb = tensorlize(hwb)
 
     h: torch.Tensor = hwb[..., 0, :, :]
@@ -40,12 +53,12 @@ def hwb_to_rgb(hwb: np.ndarray | torch.Tensor) -> torch.Tensor:
 
     total = w + b
     exceed = total > 1.0
-    w[exceed] /= total[exceed]
-    b[exceed] /= total[exceed]
 
     bri = 1.0 - b
+    bri[exceed] = w[exceed] / total[exceed]
     sat = 1.0 - w / bri
-    torch.nan_to_num(sat, 1.0, 1.0, 1.0, out=sat)
+    sat[exceed] = 0
+    torch.nan_to_num(sat, 0.0, 0.0, 0.0, out=sat)
 
     hsv = torch.stack((h, sat, bri), dim=-3)
     rgb = hsv_to_rgb(hsv)
@@ -57,7 +70,7 @@ if __name__ == '__main__':
 
     img = np.random.randint(0, 256, (1024, 1024, 3)).astype(np.float32) / 255
     img = torch.randint(0, 256, (16, 3, 512, 512)).type(torch.float32) / 255
-    num = 10
+    num = 20
 
     hsl = rgb_to_hwb(img)
     ret = hwb_to_rgb(hsl)
