@@ -13,9 +13,8 @@ def rgb_to_yuv(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     rgb : np.ndarray | torch.Tensor
-        An RGB image in the range of [0, 1]. For a ndarray, the
-        shape should be (H, W, 3) or (N, H, W, 3). For a Tensor, the shape
-        should be (3, H, W) or (N, 3, H, W).
+        An RGB image in the range of [0, 1]. For a ndarray, the shape should
+        be (*, H, W, 3). For a Tensor, the shape should be (*, 3, H, W).
 
     Returns
     -------
@@ -48,29 +47,22 @@ def rgb_to_yuv2(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     rgb : np.ndarray | torch.Tensor
-        A floating dtype RGB image in the range of [0, 1]. For a ndarray, the
-        shape should be (H, W, 3) or (N, H, W, 3). For a Tensor, the shape
-        should be (3, H, W) or (N, 3, H, W).
+        An RGB image in the range of [0, 1]. For a ndarray, the shape should
+        be (*, H, W, 3). For a Tensor, the shape should be (*, 3, H, W).
 
     Returns
     -------
     torch.Tensor
-        YUV image with shape (3, H, W) or (N, 3, H, W). The range of Y
+        A YUV image with shape (3, H, W) or (N, 3, H, W). The range of Y
         is [0, 1] and the range of U and V are [-0.5, 0.5].
     """
     rgb = tensorlize(rgb)
 
-    r: torch.Tensor = rgb[..., 0, :, :]
-    g: torch.Tensor = rgb[..., 1, :, :]
-    b: torch.Tensor = rgb[..., 2, :, :]
+    r, g, b = torch.unbind(rgb, dim=-3)
 
-    y = 0.299 * r
-    torch.add(y, 0.587 * g, out=y)
-    torch.add(y, 0.114 * b, out=y)
-    cb = torch.sub(b, y)
-    torch.mul(0.564, cb, out=cb)
-    cr = torch.sub(r, y)
-    torch.mul(0.713, cr, out=cr)
+    y = (0.299 * r).add_(g, alpha=0.587).add_(g, alpha=0.114)
+    cb = torch.sub(b, y).mul_(0.564)
+    cr = torch.sub(r, y).mul_(0.713)
     # y: torch.Tensor = 0.299 * r + 0.587 * g + 0.114 * b
     # cb: torch.Tensor = -0.169 * r + -0.331 * g + 0.500 * b + 0.5
     # cr: torch.Tensor = 0.500 * r + -0.419 * g + -0.081 * b + 0.5
@@ -87,15 +79,14 @@ def yuv_to_rgb(yuv: np.ndarray | torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     yuv : np.ndarray | torch.Tensor
-        A floating dtype YUV image. For a ndarray, the shape should be
-        (H, W, 3) or (N, H, W, 3). For a Tensor, the shape should be
-        (3, H, W) or (N, 3, H, W).
+        A YUV image. For a ndarray, the shape should be (*, H, W, 3). For a
+        Tensor, the shape should be (*, 3, H, W).
 
     Returns
     -------
     torch.Tensor
-        RGB image with shape (3, H, W) or (N, 3, H, W). The range of channels
-        will be normalized to [0, 1].
+        An RGB image with shape (*, 3, H, W). The range of channels will be
+        normalized to [0, 1].
     """
     yuv = tensorlize(yuv)
 
@@ -109,6 +100,5 @@ def yuv_to_rgb(yuv: np.ndarray | torch.Tensor) -> torch.Tensor:
         device=yuv.device
     )
     # fmt: on
-    rgb = matrix_transform(yuv, matrix.T)
-    torch.clip(rgb, 0.0, 1.0, out=rgb)
+    rgb = matrix_transform(yuv, matrix.T).clip_(0.0, 1.0)
     return rgb

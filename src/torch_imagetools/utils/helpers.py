@@ -33,13 +33,13 @@ def tensorlize(
     dtype: torch.dtype | None = None,
     device: torch.device | str | None = None,
 ):
-    """Convert an item to torch.Tensor. If it is a np.ndarray, then the shape
-    will be assume to be (H, W, C) or (N, H, W, C) and permute to (C, H, W).
+    """Convert an item to a tensor.
 
     Parameters
     ----------
     item : float | list[float] | np.ndarray | torch.Tensor
-        _description_
+        If it is a np.ndarray, then the shape will be assume to
+        be (*, H, W, C) or (H, W) and permute to (C, H, W).
 
     Returns
     -------
@@ -50,10 +50,8 @@ def tensorlize(
         img = torch.from_numpy(img)
 
         img = (
-            img.permute(2, 0, 1)  # (H, W, C) -> (C, H, W)
-            if img.ndim == 3
-            else img.permute(0, 3, 1, 2)  # (N, H, W, C) -> (N, C, H, W)
-            if img.ndim == 4
+            img.movedim(-1, -3)  # (*, H, W, C) -> (*, C, H, W)
+            if img.ndim >= 3
             else img.unsqueeze(0)  # (H, W) -> (1, H, W)
             if img.ndim == 2
             else img

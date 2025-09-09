@@ -1,42 +1,11 @@
 import torch
 import numpy as np
 
+from .rgb import srgb_linear_to_srgb, srgb_to_srgb_linear
 from ..utils.helpers import matrix_transform, matrix_transform_, tensorlize
 
 
-def srgb_to_srgb_linear(
-    srgb: torch.Tensor,
-    *,
-    out: torch.Tensor | None = None,
-) -> torch.Tensor:
-    srgb_linear = torch.empty_like(srgb) if out is None else out
-    mask_leq = srgb <= 0.04045
-    lower = srgb[mask_leq] * (1 / 12.92)
-
-    mask_gt = torch.bitwise_not(mask_leq)
-    # ((rgb + 0.055) / 1.055) ** 2.4
-    higher = torch.add(srgb[mask_gt], 0.055).mul_(1 / 1.055).pow_(2.4)
-
-    srgb_linear[mask_leq] = lower
-    srgb_linear[mask_gt] = higher
-    return srgb_linear
-
-
-def srgb_linear_to_srgb(
-    srgb_linear: torch.Tensor,
-    *,
-    out: torch.Tensor | None = None,
-) -> torch.Tensor:
-    srgb = torch.empty_like(srgb_linear) if out is None else out
-    mask_leq = srgb_linear <= 0.0031308
-    lower = srgb_linear[mask_leq] * 12.92
-
-    mask_gt = torch.bitwise_not(mask_leq)
-    higher = torch.pow(srgb_linear[mask_gt], 1 / 2.4).mul_(1.055).sub_(0.055)
-
-    srgb[mask_leq] = lower
-    srgb[mask_gt] = higher
-    return srgb
+# def get_xyz_matrix(): ...
 
 
 def rgb_to_xyz(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
@@ -58,6 +27,7 @@ def rgb_to_xyz(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
     torch.Tensor
         _description_
     """
+    rgb = tensorlize(rgb)
     rgb = srgb_to_srgb_linear(rgb)
 
     dtype = rgb.dtype if torch.is_floating_point(rgb) else torch.float32
@@ -100,6 +70,8 @@ def xyz_to_rgb(
     torch.Tensor
         _description_
     """
+    xyz = tensorlize(xyz)
+
     dtype = xyz.dtype if torch.is_floating_point(xyz) else torch.float32
     # fmt: off
     matrix = torch.tensor(

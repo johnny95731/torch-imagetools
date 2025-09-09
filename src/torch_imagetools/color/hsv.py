@@ -1,6 +1,5 @@
 import torch
 import numpy as np
-from kornia import color
 
 from ..utils.helpers import tensorlize
 
@@ -8,13 +7,14 @@ from ..utils.helpers import tensorlize
 def hsv_helper(
     rgb: np.ndarray | torch.Tensor,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-    """Calculate hue (H channel of HSL/HSV) from rgb. Also, returns minimum
-    and maximum of rgb.
+    """Returns hue (H channel of HSL/HSV) from rgb, maximum, minimum,
+    and (maximum - minimum).
 
     Parameters
     ----------
     rgb : np.ndarray | torch.Tensor
-        _description_
+        An RGB image in the range of [0, 1]. For a ndarray, the shape should
+        be (*, H, W, 3). For a Tensor, the shape should be (*, 3, H, W).
 
     Returns
     -------
@@ -28,57 +28,21 @@ def hsv_helper(
     amin = torch.min(rgb, dim=-3).values
     delta = amax - amin
 
-    deltac = torch.where(delta == 0.0, torch.ones_like(delta), delta)
-    rc, gc, bc = torch.unbind((amax.unsqueeze(-3) - rgb), dim=-3)
-
-    h1 = bc - gc
-    h2 = (2.0 * deltac).add_(rc).subtract_(bc)
-    h3 = (4.0 * deltac).add_(gc).subtract_(rc)
-
-    hue = torch.stack((h1, h2, h3), dim=-3) / deltac.unsqueeze(-3)
-    hue = torch.gather(hue, dim=-3, index=argmax_rgb.unsqueeze(-3)).squeeze(-3)
-    hue = hue.mul_(1 / 6).remainder_(1.0).mul_(360.0)
-    return (hue, amax, amin, delta)
-
-
-def hsv_helper2(
-    rgb: np.ndarray | torch.Tensor,
-) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
-    """Calculate hue (H channel of HSL/HSV) from rgb. Also, returns minimum
-    and maximum of rgb.
-
-    Parameters
-    ----------
-    rgb : np.ndarray | torch.Tensor
-        _description_
-
-    Returns
-    -------
-    torch.Tensor
-        [Hue, min, max, delta = max - min] of an RGB image. The range of hue
-        is [0, 360), and the range of other tensors are as same as input.
-    """
-    rgb = tensorlize(rgb)
-
     r, g, b = torch.unbind(rgb, dim=-3)
 
-    amax = torch.max(rgb, dim=-3).values
-    amin = torch.min(rgb, dim=-3).values
-    delta = amax - amin
+    h1 = (g - b).divide_(delta)
+    h2 = (b - r).divide_(delta).add_(2.0)
+    h3 = (r - g).divide_(delta).add_(4.0)
 
-    numerator = g - b
-    numerator.mul_(3.0**0.5)
-    denominator = 2 * r
-    denominator.sub_(g).sub_(b)
-    hue = torch.atan2(numerator, denominator).mul_(180 / torch.pi)
-    hue = torch.remainder(hue, 360.0, out=hue)
+    hue = torch.stack((h1, h2, h3), dim=-3)
+    hue = torch.gather(hue, dim=-3, index=argmax_rgb.unsqueeze(-3)).squeeze(-3)
+    hue = hue.remainder_(6.0).mul_(60.0).nan_to_num_(0.0, 0.0, 0.0)
     return (hue, amax, amin, delta)
 
 
 def rgb_to_hsv(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
     hue, amax, _, delta = hsv_helper(rgb)
-    sat = delta / amax
-    torch.nan_to_num(sat, 0.0, 0.0, 0.0, out=sat)
+    sat = delta.divide_(amax).nan_to_num_(0.0, 0.0, 0.0)
     bri = amax
 
     hsv = torch.stack((hue, sat, bri), dim=-3)
@@ -115,13 +79,12 @@ if __name__ == '__main__':
     num = 15
 
     print(timeit('hsv_helper(img)', number=num, globals=locals()))
-    print(timeit('hsv_helper2(img)', number=num, globals=locals()))
 
     hsv = rgb_to_hsv(img)
     ret = hsv_to_rgb(hsv)
 
     d = torch.abs(ret - img)
-    print(torch.max(d).item())
+    print(torch.max(d).item(), torch.median(d).item())
 
-    # print(timeit('rgb_to_hsv(img)', number=num, globals=locals()))
-    # print(timeit('hsv_to_rgb(hsv)', number=num, globals=locals()))
+    print(timeit('rgb_to_hsv(img)', number=num, globals=locals()))
+    print(timeit('hsv_to_rgb(hsv)', number=num, globals=locals()))
