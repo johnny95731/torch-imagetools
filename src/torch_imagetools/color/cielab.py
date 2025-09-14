@@ -1,8 +1,14 @@
-import torch
-import numpy as np
+from typing import Literal
 
-from ..utils.helpers import tensorlize
-from .ciexyz import rgb_to_xyz, xyz_to_rgb
+import torch
+from torch_imagetools.color.rgb import RGBSpec, gammaize_rgb
+
+from .ciexyz import (
+    StandardIlluminants,
+    get_rgb_to_xyz_matrix,
+    rgb_to_xyz,
+    xyz_to_rgb,
+)
 
 _6_29 = 6 / 29  # threshold for _lab_helper_inv
 _6_29_pow3 = _6_29**3  # threshold for _lab_helper
@@ -11,101 +17,225 @@ _bias = 4 / 29  # = 16 / 116
 
 
 def _lab_helper(value: torch.Tensor):
-    """Function that be used in the transformation from CIE XYZ to CIE LAB and
-    to CIE LUV.
+    """Function that be used in the transformation from CIE XYZ to CIE LAB.
     The function maps [0, 1] into [4/29, 1] and is continuous.
-
-    Parameters
-    ----------
-    value : torch.Tensor
-        _description_
     """
     output = torch.empty_like(value)
-    mask_gt = value > _6_29_pow3
-    output[mask_gt] = torch.pow(value[mask_gt], 1 / 3)
-
-    mask_leq = torch.bitwise_not(mask_gt)
-    lower = value[mask_leq] * _scaling
-    torch.add(lower, _bias, out=lower)
-    output[mask_leq] = lower
-
+    torch.where(
+        value > _6_29_pow3,
+        value.pow(1 / 3),
+        value.mul_(_scaling).add_(_bias),
+        out=output,
+    )
     return output
 
 
 def _lab_helper_inv(value: torch.Tensor):
-    """Function that be used in the transformation from CIE LAB to CIE XYZ and
-    from CIE LUV to CIE XYZ.
+    """Function that be used in the transformation from CIE LAB to CIE XYZ.
     The function maps [4/29, 1] into [0, 1].
-
-    Parameters
-    ----------
-    value : torch.Tensor
-        _description_
     """
-    output = torch.empty_like(value)
-    mask_gt = value > _6_29
-    output[mask_gt] = torch.pow(value[mask_gt], 3)
-
-    mask_leq = torch.bitwise_not(mask_gt)
-    lower = value[mask_leq] - _bias
-    torch.mul(lower, 1 / _scaling, out=lower)
-    output[mask_leq] = lower
+    output = torch.where(
+        value > _6_29,
+        value.pow(3.0),
+        value.sub(_bias).mul(1 / _scaling),
+    )
     return output
 
 
-def xyz_to_lab(xyz: np.ndarray | torch.Tensor) -> torch.Tensor:
-    xyz = tensorlize(xyz)
+def xyz_to_lab(
+    xyz: torch.Tensor,
+    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
+    white: StandardIlluminants = 'D65',
+    obs: Literal[2, '2', 10, '10'] = 10,
+    *,
+    ret_matrix: bool = False,
+) -> torch.Tensor:
+    """Converts an image from CIE XYZ space to CIE LAB space.
 
-    max = rgb_to_xyz.max
-    x: torch.Tensor = xyz[..., 0, :, :] * (1 / max[0])
-    y: torch.Tensor = xyz[..., 1, :, :] * (1 / max[1])
-    z: torch.Tensor = xyz[..., 2, :, :] * (1 / max[2])
-    fx = _lab_helper(x)
-    fy = _lab_helper(y)
-    fz = _lab_helper(z)
+    Parameters
+    ----------
+    xyz : torch.Tensor
+        An image in CIE XYZ space with shape (*, 3, H, W).
+    rgb_spec : RGBSpec | torch.Tensor, optional
+        The RGB specification or a conversion matrix, by default 'srgb'.
+        The input is case-insensitive if it is str type.
+    white : STANDARD_ILLUMINANTS, optional
+        White point, by default 'D65'. The input is case-insensitive.
+    obs : Literal[2, '2', 10, '10'], optional
+        The degree of oberver, by default 10.
+    ret_matrix : bool, optional
+        If True, returns image and conversion matrix (rgb -> xyz).
+        By default False.
+
+    Returns
+    -------
+    torch.Tensor | tuple[torch.Tensor, torch.Tensor]
+        An image in CIE LAB space with the shape (*, 3, H, W). If ret_matrix
+        is True, returns image and the transformation matrix.
+    """
+    x, y, z = xyz.unbind(-3)
+
+    matrix = (
+        get_rgb_to_xyz_matrix(rgb_spec, white, obs)
+        if not torch.is_tensor(rgb_spec)
+        else rgb_spec
+    )
+    max_ = matrix.sum(dim=1)
+
+    fx = _lab_helper(x.mul(1 / max_[0]))
+    fy = _lab_helper(y.mul(1 / max_[1]))
+    fz = _lab_helper(z.mul(1 / max_[2]))
     l = 1.16 * fy - 0.16
-    a = 5.0 * (fx - fy)
-    b = 2.0 * (fy - fz)
+    a = fx.sub_(fy).mul_(5.0)
+    b = fz.sub_(fy).mul_(-2.0)
+
     lab = torch.stack((l, a, b), dim=-3)
+    if ret_matrix:
+        return lab, matrix
     return lab
 
 
-def lab_to_xyz(lab: np.ndarray | torch.Tensor) -> torch.Tensor:
-    lab = tensorlize(lab)
+def lab_to_xyz(
+    lab: torch.Tensor,
+    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
+    white: StandardIlluminants = 'D65',
+    obs: Literal[2, '2', 10, '10'] = 10,
+    *,
+    ret_matrix: bool = False,
+) -> torch.Tensor:
+    """Converts an image from CIE LAB space to CIE XYZ space.
 
-    max = rgb_to_xyz.max
-    l: torch.Tensor = lab[..., 0, :, :]
-    a: torch.Tensor = lab[..., 1, :, :]
-    b: torch.Tensor = lab[..., 2, :, :]
+    Parameters
+    ----------
+    lab : torch.Tensor
+        An image in CIE LAB space with shape (*, 3, H, W).
+    rgb_spec : RGBSpec | torch.Tensor, optional
+        The RGB specification or a conversion matrix, by default 'srgb'.
+        The input is case-insensitive if it is str type.
+    white : STANDARD_ILLUMINANTS, optional
+        White point, by default 'D65'. The input is case-insensitive.
+    obs : Literal[2, '2', 10, '10'], optional
+        The degree of oberver, by default 10.
+    ret_matrix : bool, optional
+        If True, returns image and conversion matrix (rgb -> xyz).
+        By default False.
 
-    torch.add(l, 0.16, out=l)
-    torch.mul(l, 1 / 1.16, out=l)
-    x = max[0] * _lab_helper_inv(l + a * 0.2)
-    y = max[1] * _lab_helper_inv(l)  # inplace operation
-    z = max[2] * _lab_helper_inv(l - b * 0.5)
+    Returns
+    -------
+    torch.Tensor | tuple[torch.Tensor, torch.Tensor]
+        An image in CIE XYZ space with the shape (*, 3, H, W). If ret_matrix
+        is True, returns image and the transformation matrix.
+    """
+    l, a, b = lab.unbind(-3)
+
+    matrix = (
+        get_rgb_to_xyz_matrix(rgb_spec, white, obs)
+        if not torch.is_tensor(rgb_spec)
+        else rgb_spec
+    )
+    max_ = matrix.sum(dim=1)
+
+    l = l.add(0.16).mul_(1 / 1.16)
+    x = _lab_helper_inv(l.add(a, alpha=0.2)).mul_(max_[0])
+    y = _lab_helper_inv(l).mul(max_[1])
+    z = _lab_helper_inv(l.sub(b, alpha=0.5)).mul_(max_[2])
 
     xyz = torch.stack((x, y, z), dim=-3)
+    if ret_matrix:
+        return xyz, matrix
     return xyz
 
 
-def rgb_to_lab(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
-    xyz = rgb_to_xyz(rgb)
-    lab = xyz_to_lab(xyz)
+def rgb_to_lab(
+    rgb: torch.Tensor,
+    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
+    white: StandardIlluminants = 'D65',
+    obs: Literal[2, '2', 10, '10'] = 10,
+    *,
+    ret_matrix: bool = False,
+) -> torch.Tensor:
+    """Converts an image from RGB space to CIE LAB space.
+
+    The input is assumed to be in the range of [0, 1]. If rgb_spec is a
+    tensor, then the input rgb is assumed to be linear RGB.
+
+    Parameters
+    ----------
+    rgb : torch.Tensor
+        An RGB image in the range of [0, 1] with shape (*, 3, H, W).
+    rgb_spec : RGBSpec | torch.Tensor, optional
+        The RGB specification or a conversion matrix, by default 'srgb'.
+        The input is case-insensitive if it is str type. If rgb_spec is a
+        tensor, then the input rgb is assumed to be in linear RGB space.
+    white : STANDARD_ILLUMINANTS, optional
+        White point, by default 'D65'. The input is case-insensitive.
+    obs : Literal[2, '2', 10, '10'], optional
+        The degree of oberver, by default 10.
+    ret_matrix : bool, optional
+        If True, returns image and conversion matrix (rgb -> xyz).
+        By default False.
+
+    Returns
+    -------
+    torch.Tensor | tuple[torch.Tensor, torch.Tensor]
+        An image in CIE LAB space with the shape (*, 3, H, W). If ret_matrix
+        is True, returns image and the transformation matrix.
+    """
+    xyz, matrix = rgb_to_xyz(rgb, rgb_spec, white, obs, ret_matrix=True)
+    lab = xyz_to_lab(xyz, matrix)
+    if ret_matrix:
+        return lab, matrix
     return lab
 
 
-def lab_to_rgb(lab: np.ndarray | torch.Tensor) -> torch.Tensor:
-    xyz = lab_to_xyz(lab)
-    rgb = xyz_to_rgb(xyz)
+def lab_to_rgb(
+    lab: torch.Tensor,
+    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
+    white: StandardIlluminants = 'D65',
+    obs: Literal[2, '2', 10, '10'] = 10,
+    *,
+    ret_matrix: bool = False,
+) -> torch.Tensor:
+    """Converts an image from CIE LAB space to RGB space.
+
+    Parameters
+    ----------
+    lab : torch.Tensor
+        An image in CIE LAB space with shape (*, 3, H, W).
+    rgb_spec : RGBSpec | torch.Tensor, optional
+        The RGB specification or a conversion matrix, by default 'srgb'.
+        The input is case-insensitive if it is str type.
+    white : STANDARD_ILLUMINANTS, optional
+        White point, by default 'D65'. The input is case-insensitive.
+    obs : Literal[2, '2', 10, '10'], optional
+        The degree of oberver, by default 10.
+    ret_matrix : bool, optional
+        If True, returns image and conversion matrix (rgb -> xyz).
+        By default False.
+
+    Returns
+    -------
+    torch.Tensor | tuple[torch.Tensor, torch.Tensor]
+        An RGB image in the range of [0, 1] with the shape (*, 3, H, W). If
+        rgb_spec is a tensor, then the image is in linear RGB space. If
+        ret_matrix is True, returns image and the transformation matrix.
+    """
+    xyz, matrix = lab_to_xyz(lab, rgb_spec, white, obs, ret_matrix=True)
+    matrix = matrix.inverse()
+    rgb = xyz_to_rgb(xyz, matrix)
+
+    if not torch.is_tensor(rgb_spec):
+        gammaize_rgb(rgb, rgb_spec, out=rgb)
+    if ret_matrix:
+        return rgb, matrix
     return rgb
 
 
 if __name__ == '__main__':
     from timeit import timeit
 
-    img = np.random.randint(0, 256, (1024, 1024, 3)).astype(np.float32) / 255
     img = torch.randint(0, 256, (16, 3, 512, 512)).type(torch.float32) / 255
-    num = 10
+    num = 30
 
     xyz = rgb_to_xyz(img)
     lab = xyz_to_lab(xyz)

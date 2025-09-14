@@ -2,28 +2,25 @@
 
 __all__ = ['rgb_to_hwb', 'hwb_to_rgb']
 import torch
-import numpy as np
 
-from ..utils.helpers import tensorlize
 from .hsv import hsv_helper, hsv_to_rgb
 
 
-def rgb_to_hwb(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
-    """Conver an RGB image to a HWB image.
+def rgb_to_hwb(rgb: torch.Tensor) -> torch.Tensor:
+    """Converts an image from RGB space to HWB space.
 
     The input is assumed to be in the range of [0, 1].
 
     Parameters
     ----------
-    rgb : np.ndarray | torch.Tensor
-        An RGB image in the range of [0, 1]. For a ndarray, the shape should be
-        (*, H, W, 3). For a Tensor, the shape should be (*, 3, H, W).
+    rgb : torch.Tensor
+        An RGB image in the range of [0, 1] with shape (*, 3, H, W).
 
     Returns
     -------
     torch.Tensor
-        HWB image with shape (*, 3, H, W). The H channel values are in the
-        range [0, 360), W and B are in the range [0, 1]
+        An image in HWB space with shape (*, 3, H, W). The H channel values
+        are in the range [0, 360), W and B are in the range of [0, 1].
     """
     hue, amax, amin, _ = hsv_helper(rgb)
     whiteness = amin
@@ -33,26 +30,20 @@ def rgb_to_hwb(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
     return hwb
 
 
-def hwb_to_rgb(hwb: np.ndarray | torch.Tensor) -> torch.Tensor:
-    """Conver a HWB image to an RGB image.
+def hwb_to_rgb(hwb: torch.Tensor) -> torch.Tensor:
+    """Converts an image from HWB space to RGB space.
 
     Parameters
     ----------
-    rgb : np.ndarray | torch.Tensor
-        An RGB image in the range of [0, 1]. For a ndarray, the shape should be
-        (*, H, W, 3). For a Tensor, the shape should be (*, 3, H, W).
+    hwb : torch.Tensor
+        An image in HWB space with shape (*, 3, H, W).
 
     Returns
     -------
     torch.Tensor
-        HWB image with shape (*, 3, H, W). The channels are hue, whiteness,
-        blackness.
+        An RGB image in the range of [0, 1] with the shape (*, 3, H, W).
     """
-    hwb = tensorlize(hwb)
-
-    h: torch.Tensor = hwb[..., 0, :, :]
-    w: torch.Tensor = hwb[..., 1, :, :]
-    b: torch.Tensor = hwb[..., 2, :, :]
+    h, w, b = hwb.unbind(-3)
 
     total = w + b
     exceed = total > 1.0
@@ -71,7 +62,6 @@ def hwb_to_rgb(hwb: np.ndarray | torch.Tensor) -> torch.Tensor:
 if __name__ == '__main__':
     from timeit import timeit
 
-    img = np.random.randint(0, 256, (1024, 1024, 3)).astype(np.float32) / 255
     img = torch.randint(0, 256, (16, 3, 512, 512)).type(torch.float32) / 255
     num = 20
 

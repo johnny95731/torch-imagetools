@@ -1,11 +1,24 @@
 import torch
-import numpy as np
 
-from ..utils.helpers import tensorlize
 from .hsv import hsv_helper
 
 
-def rgb_to_hsl(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
+def rgb_to_hsl(rgb: torch.Tensor) -> torch.Tensor:
+    """Converts an image from RGB space to HSL space.
+
+    The input is assumed to be in the range of [0, 1].
+
+    Parameters
+    ----------
+    rgb : np.ndarray | torch.Tensor
+        An RGB image in the range of [0, 1] with shape (*, 3, H, W).
+
+    Returns
+    -------
+    torch.Tensor
+        An image in HSL space with shape (*, 3, H, W). The H channel values
+        are in the range [0, 360), S and L are in the range of [0, 1].
+    """
     hue, amax, amin, delta = hsv_helper(rgb)
     lum = (amax + amin) * 0.5
 
@@ -16,8 +29,19 @@ def rgb_to_hsl(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
     return hsl
 
 
-def hsl_to_rgb(hsl: np.ndarray | torch.Tensor) -> torch.Tensor:
-    hsl = tensorlize(hsl)
+def hsl_to_rgb(hsl: torch.Tensor) -> torch.Tensor:
+    """Converts an image from HSL space to RGB space.
+
+    Parameters
+    ----------
+    sv : np.ndarray | torch.Tensor
+        An image in HSL space with shape (*, 3, H, W).
+
+    Returns
+    -------
+    torch.Tensor
+        An RGB image in the range of [0, 1] with the shape (*, 3, H, W).
+    """
 
     def fn(n):
         val = n + hue_30
@@ -27,9 +51,7 @@ def hsl_to_rgb(hsl: np.ndarray | torch.Tensor) -> torch.Tensor:
         val = torch.clip(val, -1.0, 1.0, out=val)
         return lum - a * val
 
-    hue: torch.Tensor = hsl[..., 0, :, :]
-    sat: torch.Tensor = hsl[..., 1, :, :]
-    lum: torch.Tensor = hsl[..., 2, :, :]
+    hue, sat, lum = hsl.unbind(-3)
 
     hue_30 = hue * (1 / 30.0)
     a = sat * torch.where(lum < 0.5, lum, 1 - lum)
@@ -41,7 +63,6 @@ def hsl_to_rgb(hsl: np.ndarray | torch.Tensor) -> torch.Tensor:
 if __name__ == '__main__':
     from timeit import timeit
 
-    img = np.random.randint(0, 256, (1024, 1024, 3)).astype(np.float32) / 255
     img = torch.randint(0, 256, (16, 3, 512, 512)).type(torch.float32) / 255
     num = 10
 

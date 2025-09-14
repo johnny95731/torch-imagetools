@@ -28,10 +28,10 @@ class ColorTest(unittest.TestCase):
         res3 = trans(res2)
 
         diff1 = torch.abs(res2 - img)
-        self.assertAlmostEqual(torch.max(diff1).item(), 0.0, 5, '123')
-        print('Max error after 2 map:', torch.max(diff1).item())
+        self.assertAlmostEqual(torch.max(diff1).item(), 0.0, place)
+        print('Max error  BAx -  x:', torch.max(diff1).item())
         diff2 = torch.abs(res3 - res1)
-        print('Max error after 3 map:', torch.max(diff2).item())
+        print('Max error ABAx - Ax:', torch.max(diff2).item())
 
     def benchmark(self, num: int):
         img = self.img

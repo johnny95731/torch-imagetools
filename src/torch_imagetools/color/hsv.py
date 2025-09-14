@@ -1,20 +1,16 @@
 import torch
-import numpy as np
-
-from ..utils.helpers import tensorlize
 
 
 def hsv_helper(
-    rgb: np.ndarray | torch.Tensor,
+    rgb: torch.Tensor,
 ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
     """Returns hue (H channel of HSL/HSV) from rgb, maximum, minimum,
     and (maximum - minimum).
 
     Parameters
     ----------
-    rgb : np.ndarray | torch.Tensor
-        An RGB image in the range of [0, 1]. For a ndarray, the shape should
-        be (*, H, W, 3). For a Tensor, the shape should be (*, 3, H, W).
+    rgb : torch.Tensor
+        An RGB image in the range of [0, 1] with shape (*, 3, H, W).
 
     Returns
     -------
@@ -22,8 +18,6 @@ def hsv_helper(
         [Hue, min, max, delta = max - min] of an RGB image. The range of hue
         is [0, 360), and the range of other tensors are as same as input.
     """
-    rgb = tensorlize(rgb)
-
     amax, argmax_rgb = torch.max(rgb, dim=-3)
     amin = torch.min(rgb, dim=-3).values
     delta = amax - amin
@@ -40,7 +34,22 @@ def hsv_helper(
     return (hue, amax, amin, delta)
 
 
-def rgb_to_hsv(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
+def rgb_to_hsv(rgb: torch.Tensor) -> torch.Tensor:
+    """Converts an image from RGB space to HSV space.
+
+    The input is assumed to be in the range of [0, 1].
+
+    Parameters
+    ----------
+    rgb : torch.Tensor
+        An RGB image in the range of [0, 1] with shape (*, 3, H, W).
+
+    Returns
+    -------
+    torch.Tensor
+        An image in HSV space with shape (*, 3, H, W). The H channel values
+        are in the range [0, 360), S and V are in the range of [0, 1].
+    """
     hue, amax, _, delta = hsv_helper(rgb)
     sat = delta.divide_(amax).nan_to_num_(0.0, 0.0, 0.0)
     bri = amax
@@ -49,8 +58,19 @@ def rgb_to_hsv(rgb: np.ndarray | torch.Tensor) -> torch.Tensor:
     return hsv
 
 
-def hsv_to_rgb(hsv: np.ndarray | torch.Tensor) -> torch.Tensor:
-    hsv = tensorlize(hsv)
+def hsv_to_rgb(hsv: torch.Tensor) -> torch.Tensor:
+    """Converts an image from HSV space to RGB space.
+
+    Parameters
+    ----------
+    hsv : torch.Tensor
+        An image in HSV space with shape (*, 3, H, W).
+
+    Returns
+    -------
+    torch.Tensor
+        An RGB image in the range of [0, 1] with the shape (*, 3, H, W).
+    """
 
     def fn(n):
         val = n + hue_60
@@ -74,7 +94,6 @@ def hsv_to_rgb(hsv: np.ndarray | torch.Tensor) -> torch.Tensor:
 if __name__ == '__main__':
     from timeit import timeit
 
-    img = np.random.randint(0, 256, (1024, 1024, 3)).astype(np.float32) / 255
     img = torch.randint(0, 256, (8, 3, 512, 512)).type(torch.float32) / 255
     num = 15
 
@@ -84,7 +103,6 @@ if __name__ == '__main__':
     ret = hsv_to_rgb(hsv)
 
     d = torch.abs(ret - img)
-    print(torch.max(d).item(), torch.median(d).item())
-
+    print(torch.max(d).item())
     print(timeit('rgb_to_hsv(img)', number=num, globals=locals()))
     print(timeit('hsv_to_rgb(hsv)', number=num, globals=locals()))

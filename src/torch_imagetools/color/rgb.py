@@ -1,53 +1,200 @@
+from typing import Literal
+
 import torch
-from torch_imagetools.utils.helpers import tensorlize
+
+RGBSpec = Literal[
+    'srgb',
+    'adobergb',
+    'prophotorgb',
+    'rec2020',
+    'displayp3',
+    'widegamut',
+    'ciergb',
+]
+"""RGB specifications."""
 
 
-def srgb_to_srgb_linear(
+def linearize_srgb(
     srgb: torch.Tensor,
     *,
     out: torch.Tensor | None = None,
 ) -> torch.Tensor:
-    srgb = tensorlize(srgb)
     linear = torch.empty_like(srgb) if out is None else out
 
-    mask_leq = srgb <= 0.04045
-    lower = srgb[mask_leq] * (1 / 12.92)
-
-    mask_gt = torch.bitwise_not(mask_leq)
-    # ((rgb + 0.055) / 1.055) ** 2.4
-    higher = torch.add(srgb[mask_gt], 0.055).mul_(1 / 1.055).pow_(2.4)
-
-    linear[mask_leq] = lower
-    linear[mask_gt] = higher
+    torch.where(
+        srgb <= 0.04045,
+        srgb.mul(1 / 12.92),
+        srgb.add(0.055).mul_(1 / 1.055).pow_(2.4),
+        out=linear,
+    )
     return linear
 
 
-def srgb_linear_to_srgb(
+def gammaize_srgb(
     linear: torch.Tensor,
     *,
     out: torch.Tensor | None = None,
 ) -> torch.Tensor:
-    linear = tensorlize(linear)
     srgb = torch.empty_like(linear) if out is None else out
 
-    mask_leq = linear <= 0.0031308
-    lower = linear[mask_leq] * 12.92
-
-    mask_gt = torch.bitwise_not(mask_leq)
-    higher = torch.pow(linear[mask_gt], 1 / 2.4).mul_(1.055).sub_(0.055)
-
-    srgb[mask_leq] = lower
-    srgb[mask_gt] = higher
+    torch.where(
+        linear <= 0.0031308,
+        linear.mul(12.92),
+        torch.pow(linear, 1 / 2.4).mul_(1.055).sub_(0.055),
+        out=srgb,
+    )
     return srgb
 
 
-def adobe_rgb_to_linear(
+def linearize_adobe_rgb(
     adobe_rgb: torch.Tensor,
     *,
     out: torch.Tensor | None = None,
 ) -> torch.Tensor:
-    adobe_rgb = tensorlize(adobe_rgb)
     linear = torch.empty_like(adobe_rgb) if out is None else out
 
-    linear = torch.pow(adobe_rgb, 2.19921875, out=linear)
+    torch.pow(adobe_rgb, 2.19921875, out=linear)
     return linear
+
+
+def gammaize_adobe_rgb(
+    linear: torch.Tensor,
+    *,
+    out: torch.Tensor | None = None,
+) -> torch.Tensor:
+    adobe_rgb = torch.empty_like(linear) if out is None else out
+
+    torch.pow(linear, 1 / 2.19921875, out=adobe_rgb)
+    return adobe_rgb
+
+
+def linearize_prophoto_rgb(
+    prophoto_rgb: torch.Tensor,
+    *,
+    out: torch.Tensor | None = None,
+) -> torch.Tensor:
+    linear = torch.empty_like(prophoto_rgb) if out is None else out
+
+    torch.where(
+        prophoto_rgb <= 0.5,
+        prophoto_rgb.mul(1 / 16.0),
+        prophoto_rgb.pow(1.8),
+        out=linear,
+    )
+    return linear
+
+
+def gammaize_prophoto_rgb(
+    linear: torch.Tensor,
+    *,
+    out: torch.Tensor | None = None,
+) -> torch.Tensor:
+    prophoto_rgb = torch.empty_like(linear) if out is None else out
+
+    torch.where(
+        linear <= 0.03125,  # 16/512
+        linear.mul(16.0),
+        linear.pow_(1 / 1.8),
+        out=prophoto_rgb,
+    )
+    return prophoto_rgb
+
+
+def linearize_rec2020(
+    rec2020: torch.Tensor,
+    *,
+    out: torch.Tensor | None = None,
+) -> torch.Tensor:
+    linear = torch.empty_like(rec2020) if out is None else out
+
+    alpha = 1.09929682680944
+    torch.where(
+        rec2020 < 0.0812428582986315,
+        rec2020.mul(1 / 4.5),
+        rec2020.add(alpha - 1.0).mul_(1 / alpha).pow_(1 / 0.45),
+        out=linear,
+    )
+    return linear
+
+
+def gammaize_rec2020(
+    linear: torch.Tensor,
+    *,
+    out: torch.Tensor | None = None,
+) -> torch.Tensor:
+    rec2020 = torch.empty_like(linear) if out is None else out
+
+    alpha = 1.09929682680944
+    torch.where(
+        linear < 0.018053968510807,
+        linear.mul(4.5),
+        linear.pow(0.45).mul_(alpha).sub_(alpha - 1.0),
+        out=rec2020,
+    )
+    return rec2020
+
+
+def linearize_rgb(
+    rgb: torch.Tensor,
+    rgb_spec: RGBSpec = 'srgb',
+    *,
+    out: torch.Tensor | None = None,
+) -> torch.Tensor:
+    rgb_spec = rgb_spec.lower()
+    table = {
+        'srgb': linearize_srgb,
+        'displayp3': linearize_srgb,
+        'adobergb': linearize_adobe_rgb,
+        'widegamut': linearize_adobe_rgb,
+        'prophotorgb': linearize_prophoto_rgb,
+        'rec2020': linearize_rec2020,
+        'ciergb': lambda x, out=None: x,
+    }
+    linear = table[rgb_spec](rgb, out=out)  # type: torch.Tensor
+    return linear
+
+
+def gammaize_rgb(
+    rgb: torch.Tensor,
+    rgb_spec: RGBSpec = 'srgb',
+    *,
+    out: torch.Tensor | None = None,
+) -> torch.Tensor:
+    rgb_spec = rgb_spec.lower()
+    table = {
+        'srgb': gammaize_srgb,
+        'displayp3': gammaize_srgb,
+        'adobergb': gammaize_adobe_rgb,
+        'widegamut': gammaize_adobe_rgb,
+        'prophotorgb': gammaize_prophoto_rgb,
+        'rec2020': gammaize_rec2020,
+        'ciergb': lambda x, out=None: x,
+    }
+    gamma = table[rgb_spec](rgb, out=out)  # type: torch.Tensor
+    return gamma
+
+
+if __name__ == '__main__':
+    from timeit import timeit
+
+    img = torch.randint(0, 256, (16, 3, 512, 512), dtype=torch.float32).mul_(
+        1 / 255
+    )
+    num = 30
+
+    rgbs = [
+        'srgb',
+        'adobergb',
+        'prophotorgb',
+        'rec2020',
+        'displayp3',
+        'widegamut',
+        'ciergb',
+    ]
+    for rgb in rgbs:
+        linear = linearize_rgb(img, rgb)
+        ret = gammaize_rgb(linear, rgb)
+
+        d = torch.abs(ret - img)
+        title = f'{rgb}'
+        print(f'{title:<11}', torch.max(d).item())

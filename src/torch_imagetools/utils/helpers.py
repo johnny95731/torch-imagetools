@@ -1,10 +1,21 @@
+__all__ = [
+    'pariing',
+    'is_indexable',
+    'tensorize',
+    'matrix_transform',
+    'matrix_transform_',
+]
+
 from typing import Any, overload, TypeVar
 
 import numpy as np
 import torch
+from torch.types import Number
 
 
 T = TypeVar('T')
+
+Tensorlike = torch.Tensor | np.ndarray | list[Number] | Number
 
 
 # fmt: off
@@ -14,7 +25,7 @@ def pairing(item: list[T] | tuple[T, ...]) -> tuple[T, T]: ...
 def pairing(item: T) -> tuple[T, T]: ...
 # fmt: on
 def pairing(item: Any):
-    """Convert item to a tuple with two items.
+    """Converts item to a tuple with two items.
     If the item is indexble, returns first two items;
     otherwise, returns (item, item)
     """
@@ -28,27 +39,22 @@ def is_indexable(item: Any) -> bool:
     return hasattr(item, '__getitem__')
 
 
-def tensorlize(
-    img: float | list[float] | np.ndarray | torch.Tensor,
-    dtype: torch.dtype | None = None,
-    device: torch.device | str | None = None,
-):
-    """Convert an item to a tensor.
+def tensorize(img: Tensorlike) -> torch.Tensor:
+    """Converts an item to a tensor.
+
+    If input is a np.ndarray:
+        1. Permute to (*, C, H, W) for ndim >= 3.
+        2. Reshape to (1, H, W) for ndim = 2.
+        3. Without any handling for the other cases.
+    For other types, convert to a tensor by torch.tensor.
 
     Parameters
     ----------
-    item : float | list[float] | np.ndarray | torch.Tensor
-        If it is a np.ndarray, then the shape will be assume to
-        be (*, H, W, C) or (H, W) and permute to (C, H, W).
-
-    Returns
-    -------
-    torch.Tensor
-        Tensor with shape (C, H, W) or (N, C, H, W).
+    img : Tensorlike
+        An item to be converted to tensor.
     """
     if isinstance(img, np.ndarray):
         img = torch.from_numpy(img)
-
         img = (
             img.movedim(-1, -3)  # (*, H, W, C) -> (*, C, H, W)
             if img.ndim >= 3
@@ -58,72 +64,28 @@ def tensorlize(
         )
     elif not torch.is_tensor(img):
         img = torch.tensor(img)
-    # Check attributes
-    if dtype is not None and img.dtype != dtype:
-        img = img.type(dtype)
-    if device is not None and img.device != device:
-        img = img.to(device)
     return img
 
 
 def matrix_transform(
-    img: torch.Tensor, matrix: torch.Tensor, *, out: torch.Tensor | None = None
+    img: torch.Tensor,
+    matrix: torch.Tensor,
 ) -> torch.Tensor:
-    """Linear transform an image along its channels.
+    """Converts the channels of an image by linear transformation.
 
     Parameters
     ----------
     img : torch.Tensor
         Image, a tensor with shape (*, C, H, W).
     matrix : torch.Tensor
-        The transformation matrix that be used in the linear transform.
-    out : torch.Tensor | None, optional
-        The output tensor, by default None.
+        The transformation matrix with shape (C_out, C).
 
     Returns
     -------
     torch.Tensor
-        The image after transformation.
+        The image with shape (*, C_out, H, W).
     """
-    img = img.movedim(-3, -1)  # To (H, W, C) or (N, H, W, C)
-    output = (
-        torch.empty(
-            (*img.shape[:-1], matrix.shape[-1]),
-            dtype=img.dtype,
-            device=img.device,
-        )
-        if out is None
-        else out
-    )
-    if img.ndim == 4:
-        for b, b_out in zip(img, output):
-            torch.matmul(b, matrix, out=b_out)
-    else:
-        torch.matmul(img, matrix, out=output)
-    output = output.movedim(-1, -3)  # To (C, H, W) or (N, C, H, W)
+    dtype = img.dtype if torch.is_floating_point(img) else torch.float32
+    matrix = matrix.to(img.device, dtype)
+    output = torch.einsum('oc,...chw->...ohw', matrix, img)
     return output
-
-
-def matrix_transform_(img: torch.Tensor, matrix: torch.Tensor) -> torch.Tensor:
-    """In-place version of matrix_transform.
-
-    Parameters
-    ----------
-    img : torch.Tensor
-        Image, a tensor with shape (*, C, H, W).
-    matrix : torch.Tensor
-        The transformation matrix that be used in the linear transform.
-
-    Returns
-    -------
-    torch.Tensor
-        The image after transformation.
-    """
-    img = img.movedim(-3, -1)  # To (H, W, C) or (N, H, W, C)
-    if img.ndim == 4:
-        for b in img:
-            torch.matmul(b, matrix, out=b)
-    else:
-        torch.matmul(img, matrix, out=img)
-    img = img.movedim(-1, -3)  # To (C, H, W) or (N, C, H, W)
-    return img
