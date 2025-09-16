@@ -39,11 +39,36 @@ def is_indexable(item: Any) -> bool:
     return hasattr(item, '__getitem__')
 
 
+def arrayize(img: Tensorlike) -> np.ndarray:
+    """Converts an item to a np.ndarray.
+
+    If input is a torch.Tensor:
+        1. Moves -3-axis to the last for ndim >= 3.
+        2. Without any handling for the other cases.
+    For other types, convert to a ndarray by np.array.
+
+    Parameters
+    ----------
+    img : Tensorlike
+        An item to be converted to tensor.
+    """
+    if torch.is_tensor(img):
+        img = (
+            img.movedim(-3, -1)  # (*, C, H, W) -> (*, H, W, C)
+            if img.ndim >= 3
+            else img
+        )
+        img = img.numpy()
+    else:
+        img = torch.tensor(img)
+    return img
+
+
 def tensorize(img: Tensorlike) -> torch.Tensor:
-    """Converts an item to a tensor.
+    """Converts an item to a torch.Tensor.
 
     If input is a np.ndarray:
-        1. Permute to (*, C, H, W) for ndim >= 3.
+        1. Moves -1-axis to -3-axis for ndim >= 3.
         2. Reshape to (1, H, W) for ndim = 2.
         3. Without any handling for the other cases.
     For other types, convert to a tensor by torch.tensor.
