@@ -172,29 +172,3 @@ def gammaize_rgb(
     }
     gamma = table[rgb_spec](rgb, out=out)  # type: torch.Tensor
     return gamma
-
-
-if __name__ == '__main__':
-    from timeit import timeit
-
-    img = torch.randint(0, 256, (16, 3, 512, 512), dtype=torch.float32).mul_(
-        1 / 255
-    )
-    num = 30
-
-    rgbs = [
-        'srgb',
-        'adobergb',
-        'prophotorgb',
-        'rec2020',
-        'displayp3',
-        'widegamut',
-        'ciergb',
-    ]
-    for rgb in rgbs:
-        linear = linearize_rgb(img, rgb)
-        ret = gammaize_rgb(linear, rgb)
-
-        d = torch.abs(ret - img)
-        title = f'{rgb}'
-        print(f'{title:<11}', torch.max(d).item())

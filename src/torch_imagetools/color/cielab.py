@@ -229,27 +229,3 @@ def lab_to_rgb(
     if ret_matrix:
         return rgb, matrix
     return rgb
-
-
-if __name__ == '__main__':
-    from timeit import timeit
-
-    img = torch.randint(0, 256, (16, 3, 512, 512)).type(torch.float32) / 255
-    num = 30
-
-    xyz = rgb_to_xyz(img)
-    lab = xyz_to_lab(xyz)
-    ret = lab_to_xyz(lab)
-
-    d = torch.abs(ret - xyz)
-    print(torch.max(d))
-    print(timeit('xyz_to_lab(xyz)', number=num, globals=locals()))
-    print(timeit('lab_to_xyz(lab)', number=num, globals=locals()))
-
-    lab = rgb_to_lab(img)
-    ret = lab_to_rgb(lab)
-
-    d = torch.abs(ret - img)
-    print(torch.max(d))
-    print(timeit('rgb_to_lab(img)', number=num, globals=locals()))
-    print(timeit('lab_to_rgb(lab)', number=num, globals=locals()))

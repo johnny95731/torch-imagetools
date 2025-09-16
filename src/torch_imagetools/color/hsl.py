@@ -58,18 +58,3 @@ def hsl_to_rgb(hsl: torch.Tensor) -> torch.Tensor:
 
     rgb = torch.stack((fn(0), fn(8), fn(4)), dim=-3)
     return rgb
-
-
-if __name__ == '__main__':
-    from timeit import timeit
-
-    img = torch.randint(0, 256, (16, 3, 512, 512)).type(torch.float32) / 255
-    num = 10
-
-    hsl = rgb_to_hsl(img)
-    ret = hsl_to_rgb(hsl)
-
-    print(torch.max(torch.abs(ret - img)))
-
-    print(timeit('rgb_to_hsl(img)', number=num, globals=locals()))
-    print(timeit('hsl_to_rgb(hsl)', number=num, globals=locals()))

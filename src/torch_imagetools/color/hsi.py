@@ -67,19 +67,3 @@ def hsi_to_rgb(hsi: torch.Tensor) -> torch.Tensor:
 
     rgb = torch.cat((r, g, b), dim=-3)
     return rgb
-
-
-if __name__ == '__main__':
-    from timeit import timeit
-
-    img = torch.randint(0, 256, (16, 3, 512, 512)).type(torch.float32) / 255
-    num = 10
-
-    hsi = rgb_to_hsi(img)
-    ret = hsi_to_rgb(hsi)
-
-    d = torch.abs(ret - img)
-    print(torch.max(d))
-
-    print(timeit('rgb_to_hsi(img)', number=num, globals=locals()))
-    print(timeit('hsi_to_rgb(hsi)', number=num, globals=locals()))

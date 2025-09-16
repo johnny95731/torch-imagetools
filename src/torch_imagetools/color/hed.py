@@ -83,18 +83,3 @@ def hed_to_rgb(hed: torch.Tensor) -> torch.Tensor:
     )
     rgb = matrix_transform(hed, matrix).clip_(0.0, 1.0)
     return rgb
-
-
-if __name__ == '__main__':
-    from timeit import timeit
-
-    img = torch.randint(0, 256, (24, 3, 512, 512)).type(torch.float32) / 255
-    num = 50
-
-    hed = rgb_to_hed(img)
-    ret = hed_to_rgb(hed)
-
-    d = torch.abs(ret - img)
-    print(torch.max(d))
-    print(timeit('rgb_to_hed(img)', number=num, globals=locals()))
-    print(timeit('hed_to_rgb(hed)', number=num, globals=locals()))

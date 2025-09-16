@@ -89,20 +89,3 @@ def hsv_to_rgb(hsv: torch.Tensor) -> torch.Tensor:
 
     rgb = torch.stack((fn(5.0), fn(3.0), fn(1.0)), dim=-3)
     return rgb
-
-
-if __name__ == '__main__':
-    from timeit import timeit
-
-    img = torch.randint(0, 256, (8, 3, 512, 512)).type(torch.float32) / 255
-    num = 15
-
-    print(timeit('hsv_helper(img)', number=num, globals=locals()))
-
-    hsv = rgb_to_hsv(img)
-    ret = hsv_to_rgb(hsv)
-
-    d = torch.abs(ret - img)
-    print(torch.max(d).item())
-    print(timeit('rgb_to_hsv(img)', number=num, globals=locals()))
-    print(timeit('hsv_to_rgb(hsv)', number=num, globals=locals()))

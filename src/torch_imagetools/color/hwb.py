@@ -57,19 +57,3 @@ def hwb_to_rgb(hwb: torch.Tensor) -> torch.Tensor:
     hsv = torch.stack((h, sat, bri), dim=-3)
     rgb = hsv_to_rgb(hsv)
     return rgb
-
-
-if __name__ == '__main__':
-    from timeit import timeit
-
-    img = torch.randint(0, 256, (16, 3, 512, 512)).type(torch.float32) / 255
-    num = 20
-
-    hsl = rgb_to_hwb(img)
-    ret = hwb_to_rgb(hsl)
-
-    d = torch.abs(ret - img)
-    print(torch.max(d))
-
-    print(timeit('rgb_to_hwb(img)', number=num, globals=locals()))
-    print(timeit('hwb_to_rgb(hsl)', number=num, globals=locals()))

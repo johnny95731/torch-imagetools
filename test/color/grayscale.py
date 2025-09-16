@@ -1,27 +1,26 @@
 import unittest
 
 from test.basic import ColorTest
-from torch_imagetools.color.hsv import rgb_to_hsv, hsv_to_rgb
+from torch_imagetools.color.grayscale import rgb_to_gray, gray_to_rgb
 
 
-class HSV(ColorTest):
-    def test_hsv_3dim(self):
+class Grayscale(ColorTest):
+    def test_hsi_3dim(self):
         self.print_name()
 
         num = 100
         self.img = self.get_img((3, 512, 512))
-        self.fns = [rgb_to_hsv, hsv_to_rgb]
+        self.fns = [rgb_to_gray, gray_to_rgb]
 
         self.benchmark(num)
 
-    def test_hsv_4dim(self):
+    def test_hsi_4dim(self):
         self.print_name()
 
         num = 30
         self.img = self.get_img((8, 3, 512, 512))
-        self.fns = [rgb_to_hsv, hsv_to_rgb]
+        self.fns = [rgb_to_gray, gray_to_rgb]
 
-        self.max_error()
         self.benchmark(num)
 
 

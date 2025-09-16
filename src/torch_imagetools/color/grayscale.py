@@ -43,16 +43,3 @@ def gray_to_rgb(gray: torch.Tensor) -> torch.Tensor:
     rgb = matrix_transform(gray, matrix)
     # rgb = torch.cat((gray, gray, gray), dim=-3)
     return rgb
-
-
-if __name__ == '__main__':
-    from timeit import timeit
-
-    img = torch.randint(0, 256, (16, 3, 512, 512)).type(torch.float32) / 255
-    num = 30
-
-    g1 = rgb_to_gray(img)
-    grgb = gray_to_rgb(g1)
-
-    print(timeit('rgb_to_gray(img)', number=num, globals=locals()))
-    print(timeit('gray_to_rgb(g1)', number=num, globals=locals()))

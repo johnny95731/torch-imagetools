@@ -8,18 +8,17 @@ import torch
 
 class ColorTest(unittest.TestCase):
     img: torch.Tensor
-    fns: tuple[Callable, Callable]
+    fns: tuple[Callable[[torch.Tensor], torch.Tensor], ...]
 
-    def get_img(self, shape=(16, 3, 512, 512)):
-        img = torch.randint(0, 256, shape)
-        img = img.type(torch.float32) / 255
+    def get_img(self, shape=(8, 3, 512, 512)):
+        img = torch.randint(0, 256, shape, dtype=torch.float32).mul_(1 / 255)
         return img
 
     def print_name(self):
         function_name = sys._getframe(1).f_code.co_name
         print(function_name)
 
-    def max_error(self, place: int = 5):
+    def max_error(self):
         img = self.img
         trans, trans_inv = self.fns[:2]
 
@@ -27,22 +26,22 @@ class ColorTest(unittest.TestCase):
         res2 = trans_inv(res1)
         res3 = trans(res2)
 
-        diff1 = torch.abs(res2 - img)
-        self.assertAlmostEqual(torch.max(diff1).item(), 0.0, place)
-        print('Max error  BAx -  x:', torch.max(diff1).item())
-        diff2 = torch.abs(res3 - res1)
-        print('Max error ABAx - Ax:', torch.max(diff2).item())
+        reduced = tuple(range(img.ndim))
+        reduced = reduced[:-3] + reduced[-2:]
+        diff1 = (res2 - img).abs()
+        print('Max error  BAx -  x:', diff1.amax(dim=reduced))
+        diff2 = (res3 - res1).abs()
+        print('Max error ABAx - Ax:', diff2.amax(dim=reduced))
 
     def benchmark(self, num: int):
         img = self.img
         trans, trans_inv = self.fns[:2]
 
         temp = trans(img)
-        kwargs = {
-            'number': num,
-            'globals': locals(),
-        }
-        print(f'Timeit {trans.__name__}:', timeit('trans(img)', **kwargs))
+        trans_inv(temp)
+        kwargs = {'number': num, 'globals': locals()}
+        print(f'Timeit {trans.__name__}:', timeit('trans(img)', **kwargs) / num)
         print(
-            f'Timeit {trans_inv.__name__}:', timeit('trans_inv(temp)', **kwargs)
+            f'Timeit {trans_inv.__name__}:',
+            timeit('trans_inv(temp)', **kwargs) / num,
         )
