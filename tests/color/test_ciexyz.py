@@ -1,6 +1,6 @@
 import unittest
 
-from test.basic import ColorTest
+from tests.basic import ColorTest
 from torch_imagetools.color.ciexyz import rgb_to_xyz, xyz_to_rgb
 
 

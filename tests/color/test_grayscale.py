@@ -1,16 +1,16 @@
 import unittest
 
-from test.basic import ColorTest
-from torch_imagetools.color.hsi import rgb_to_hsi, hsi_to_rgb
+from tests.basic import ColorTest
+from torch_imagetools.color.grayscale import rgb_to_gray, gray_to_rgb
 
 
-class HSI(ColorTest):
+class Grayscale(ColorTest):
     def test_hsi_3dim(self):
         self.print_name()
 
         num = 100
         self.img = self.get_img((3, 512, 512))
-        self.fns = [rgb_to_hsi, hsi_to_rgb]
+        self.fns = [rgb_to_gray, gray_to_rgb]
 
         self.benchmark(num)
 
@@ -19,9 +19,8 @@ class HSI(ColorTest):
 
         num = 30
         self.img = self.get_img((8, 3, 512, 512))
-        self.fns = [rgb_to_hsi, hsi_to_rgb]
+        self.fns = [rgb_to_gray, gray_to_rgb]
 
-        self.max_error()
         self.benchmark(num)
 
 

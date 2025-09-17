@@ -1,6 +1,6 @@
 import unittest
 
-from test.basic import ColorTest
+from tests.basic import ColorTest
 from torch_imagetools.color.yuv import rgb_to_yuv, yuv_to_rgb
 
 

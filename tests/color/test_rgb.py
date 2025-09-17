@@ -1,7 +1,7 @@
 from timeit import timeit
 import unittest
 
-from test.basic import ColorTest
+from tests.basic import ColorTest
 from torch_imagetools.color.rgb import (
     gammaize_rgb,
     linearize_rgb,
