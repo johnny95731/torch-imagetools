@@ -114,9 +114,10 @@ def estimate_noise_from_wavelet_2(
         5.404e-8,
     ]
 
-    sigma = 0
+    sigma = 0.0
     pow = 1.0
     for coeff in poly_coeffs:
         sigma += coeff * pow
         pow *= sigma_est
+    sigma = sigma if sigma >= 0 else 0.0
     return sigma
