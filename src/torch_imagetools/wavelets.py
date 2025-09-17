@@ -1,9 +1,5 @@
+import numpy as np
 import torch
-
-from torch_imagetools.statistics import (
-    estimate_noise_from_wavelet,
-    estimate_noise_from_wavelet_2,
-)
 
 
 def scaling_coeffs_to_wavelet_coeffs(
@@ -58,11 +54,12 @@ def wavelet_hh(
     single_image = img.ndim == 3
     if single_image:
         img = img.unsqueeze(0)
+    num_ch = img.size(-3)
 
     if wavelet.device != img.device:
         wavelet = wavelet.to(img.device)
     length = wavelet.numel()
-    wavelet = wavelet.view(1, 1, 1, length).repeat(3, 1, 1, 1)
+    wavelet = wavelet.view(1, 1, 1, length).repeat(num_ch, 1, 1, 1).contiguous()
 
     padding = (length - 1) // 2
     h = torch.nn.functional.conv2d(  # x-direction
@@ -70,55 +67,15 @@ def wavelet_hh(
         weight=wavelet,
         stride=(1, 2),
         padding=(0, padding),
-        groups=3,
+        groups=num_ch,
     )
     hh = torch.nn.functional.conv2d(  # y-direction
         h,
-        weight=wavelet.transpose(-2, -1),
+        weight=wavelet.movedim(-2, -1),
         stride=(2, 1),
         padding=(padding, 0),
-        groups=3,
+        groups=num_ch,
     )
     if single_image:
         hh = hh.squeeze(0)
     return hh
-
-
-if __name__ == '__main__':
-    from timeit import timeit
-    import numpy as np
-
-    import matplotlib.pyplot as plt
-    import matplotlib.image as mpimg
-
-    num = 5
-
-    d8 = torch.tensor(
-        [
-            0.32580343,
-            1.01094572,
-            0.89220014,
-            -0.03957503,
-            -0.26450717,
-            0.0436163,
-            0.0465036,
-            -0.01498699,
-        ],
-        dtype=torch.float32,
-    )
-    d8_wavelet = scaling_coeffs_to_wavelet_coeffs(d8)
-
-    hh = wavelet_hh(img, d8_wavelet)
-
-    std1 = estimate_noise_from_wavelet(hh)
-    std2 = estimate_noise_from_wavelet_2(hh)
-    hh = hh.abs().permute(1, 2, 0).numpy()
-    print(std1, std2)
-
-    plt.subplot(2, 1, 1)
-    plt.imshow(img, vmin=0, vmax=1)
-    plt.axis('off')
-    plt.subplot(2, 1, 2)
-    plt.imshow(hh, cmap='gray')
-    plt.axis('off')
-    plt.show()
