@@ -1,8 +1,0 @@
-{
-    "editor.defaultFormatter": "charliermarsh.ruff",
-    "editor.formatOnPaste": false,
-    "editor.formatOnSave": true,
-    "ruff.format.preview": true,
-    "python.pythonPath": ".venv/Scripts/python.exe",
-    "editor.rulers": [80]
-}
