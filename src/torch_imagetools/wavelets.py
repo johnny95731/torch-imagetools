@@ -1,3 +1,8 @@
+__all__ = [
+    'scaling_coeffs_to_wavelet_coeffs',
+    'wavelet_hh',
+]
+
 import numpy as np
 import torch
 
@@ -39,12 +44,26 @@ def wavelet_hh(
     img: torch.Tensor,
     wavelet: torch.Tensor,
 ) -> torch.Tensor:
-    """_summary_
+    """Calculates the highpass-highpass component of the wavelet decomposition
+    by a given wavelet coefficient.
 
     Parameters
     ----------
-    img : _type_
-        _description_
+    img : torch.Tensor
+        Image with shape (*, C, H, W).
+    wavelet : torch.Tensor
+        The wavelet coefficients (mother wavelet) with shape (N,).
+
+    Returns
+    -------
+    torch.Tensor
+        The highpass-highpass component of the wavelet decomposition with shape
+        (*, C, H // 2, W // 2).
+
+    Raises
+    ------
+    ValueError
+        img.ndim should be 3 or 4.
     """
     if (ndim := img.ndim) != 4 and ndim != 3:
         raise ValueError(

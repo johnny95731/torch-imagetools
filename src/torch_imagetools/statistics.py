@@ -1,3 +1,9 @@
+__all__ = [
+    'combine_mean_std',
+    'estimate_noise_from_wavelet',
+    'estimate_noise_from_wavelet_2',
+]
+
 import torch
 
 
@@ -8,11 +14,8 @@ def combine_mean_std(
     combination of two datasets. The
 
     The function is present for evaluating the mean and std of a large dataset
-    by computing its sub-datasets.
-
-    To see the inference of the formula, check the following link:
-        stack exchange - How do I combine standard deviations of two groups?
-        https://math.stackexchange.com/questions/2971315/how-do-i-combine-standard-deviations-of-two-groups
+    by computing its sub-datasets. To see the inference of the formula,
+    check [1].
 
     Parameters
     ----------
@@ -22,9 +25,17 @@ def combine_mean_std(
 
     Returns
     -------
-    tuple[torch.tensor, torch.tensor, int]
-        The [mean value, standard deviation, number of samples] of the
-        combination of datasets.
+    torch.tensor
+        The mean value of the combined dataset.
+    torch.tensor
+        The standard deviation of the combined dataset.
+    int
+        The number of samples of the combined dataset.
+
+    References
+    ----------
+    [1] stack exchange - How do I combine standard deviations of two groups?
+        https://math.stackexchange.com/questions/2971315/how-do-i-combine-standard-deviations-of-two-groups
     """
     mean_x, std_x, num_x = stats[0][:3]
     if len(stats) == 1:
@@ -53,10 +64,6 @@ def estimate_noise_from_wavelet(hh: torch.Tensor) -> float:
     """Estimates the standard deviation of Gaussian noise from the
     highpass-highpass component of the wavelet decomposition.
 
-    For details, see:
-        D. L. Donoho and I. M. Johnstone, “Ideal spatial adaptation by wavelet
-        shrinkage,” Biometrika, vol. 81, no. 3, pp. 425-455, Sep. 1994
-
     Parameters
     ----------
     hh : torch.Tensor
@@ -66,6 +73,11 @@ def estimate_noise_from_wavelet(hh: torch.Tensor) -> float:
     -------
     float
         The standard deviation of Gaussian noise in the image.
+
+    References
+    ----------
+    [1] D. L. Donoho and I. M. Johnstone, “Ideal spatial adaptation by wavelet
+        shrinkage,” Biometrika, vol. 81, no. 3, pp. 425-455, Sep. 1994
     """
     hh = torch.abs(hh)
     if hh.ndim <= 3:
@@ -87,9 +99,7 @@ def estimate_noise_from_wavelet_2(
     highpass-highpass component of the wavelet decomposition.
 
     An advanced method of `estimate_noise_from_wavelet`, for details, see:
-        V. M. Kamble and K. Bhurchandi,
-        "Noise Estimation and Quality Assessment of Gaussian Noise Corrupted
-        Images,"
+
 
     Parameters
     ----------
@@ -103,6 +113,13 @@ def estimate_noise_from_wavelet_2(
     -------
     float
         The standard deviation of Gaussian noise in the image.
+
+    References
+    ----------
+    [1] V. M. Kamble and K. Bhurchandi, “Noise Estimation and Quality
+        Assessment of Gaussian Noise Corrupted Images,” IOP Conference
+        Series Materials Science and Engineering, vol. 331, p. 012019,
+        Mar. 2018, doi: 10.1088/1757-899x/331/1/012019.
     """
     sigma_est = estimate_noise_from_wavelet(hh) * (255.0 / maximum)
     poly_coeffs = [

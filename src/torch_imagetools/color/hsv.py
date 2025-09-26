@@ -1,3 +1,9 @@
+__all__ = [
+    'hsv_helper',
+    'rgb_to_hsv',
+    'hsv_to_rgb',
+]
+
 import torch
 
 
@@ -15,8 +21,15 @@ def hsv_helper(
     Returns
     -------
     torch.Tensor
-        [Hue, min, max, delta = max - min] of an RGB image. The range of hue
-        is [0, 360), and the range of other tensors are as same as input.
+        The hue of an RGB image. The range of hue is [0, 360), and the range of other tensors are as same as input.
+    torch.Tensor
+        The minimums of channels of an RGB image, the range is the same as
+        the input.
+    torch.Tensor
+        The maximum of channels of an RGB image, the range is the same as
+        the input.
+    torch.Tensor
+        The (maximum - minimum) of each channel of an RGB image
     """
     amax, argmax_rgb = torch.max(rgb, dim=-3)
     amin = torch.min(rgb, dim=-3).values

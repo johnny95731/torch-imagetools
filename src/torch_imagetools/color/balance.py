@@ -1,11 +1,17 @@
 """Color balance functions including chromatic adaptation transform, gray world
 algorithm, etc...
 """
+__all__ = [
+    'get_von_kries_transform_matrix',
+    'von_kries_transform',
+    'balance_by_scaling',
+    'gray_world_balance',
+    'white_patch_balance',
+]
 
 from typing import overload
 
 import torch
-from torch_imagetools.color.ciexyz import get_white_point, rgb_to_xyz
 from torch_imagetools.utils.helpers import matrix_transform
 
 from .lms import CATMethod, xyz_to_lms
@@ -114,31 +120,32 @@ def von_kries_transform(
 @overload
 def balance_by_scaling(
     img: torch.Tensor,
-    maximum: int | float | torch.Tensor,
+    scaled_max: int | float | torch.Tensor,
     *,
     ret_factors: bool = False,
 ) -> torch.Tensor: ...
 @overload
 def balance_by_scaling(
     img: torch.Tensor,
-    maximum: int | float | torch.Tensor,
+    scaled_max: int | float | torch.Tensor,
     *,
     ret_factors: bool = True,
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 def balance_by_scaling(
     img: torch.Tensor,
-    maximum: int | float | torch.Tensor,
+    scaled_max: int | float | torch.Tensor,
     *,
     ret_factors: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
-    """Color balance by scaling each channel of image to the maximum.
+    """Wrong von Kries transform. Multiplies an image by
+    coeff_channel = scaled_max / maximum_of_channel.
 
     Parameters
     ----------
     img : torch.Tensor
         Image in RGB space with shape (*, C, H, W).
-    maximum : int | float | torch.Tensor
-        The target maximum(s).
+    scaled_max : int | float | torch.Tensor
+        The maximum(s) after scaling.
     ret_factors : bool, optional
         If True, returns image and scaling factors. By default False.
 
@@ -155,7 +162,7 @@ def balance_by_scaling(
     reduced = reduced[:-3] + reduced[-2:]
     ch_max = img.amax(reduced)
 
-    factors = (maximum / ch_max).reshape(num_ch, 1, 1)
+    factors = (scaled_max / ch_max).reshape(num_ch, 1, 1)
 
     balanced = img * factors
     if ret_factors:
@@ -180,7 +187,8 @@ def gray_world_balance(
     *,
     ret_factors: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
-    """White balance by the gray-world algorithm.
+    """White balance by the gray-world algorithm. Multiplies each channel by
+    coeff_channel = mean / mean_of_channel.
 
     Parameters
     ----------
@@ -231,9 +239,11 @@ def white_patch_balance(
     *,
     ret_factors: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
-    """White balance by white patch algorithm. The algorithm will evaluate
-    the scaling factors by the quantile value of each channel. When q >= 1.0,
-    this is the standard white patch algorithm.
+    """White balance by generalized white patch algorithm. Multiplies each
+    channel of an RGB image by coeff_channel = 1 / qtile_of_channel.
+
+    When q = 1.0, it is the standard white patch balance and equivalent to
+    balance by scaling for maximum = 1.
 
     Parameters
     ----------

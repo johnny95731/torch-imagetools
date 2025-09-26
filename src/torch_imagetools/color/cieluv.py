@@ -1,8 +1,15 @@
+__all__ = [
+    'xyz_to_luv',
+    'luv_to_xyz',
+    'rgb_to_luv',
+    'luv_to_rgb',
+]
+
 from typing import Literal
 
 import torch
-from torch_imagetools.color.rgb import RGBSpec, gammaize_rgb
 
+from .rgb import RGBSpec, gammaize_rgb
 from .ciexyz import (
     StandardIlluminants,
     get_rgb_to_xyz_matrix,
@@ -10,13 +17,13 @@ from .ciexyz import (
     xyz_to_rgb,
 )
 
-_6_29 = 6 / 29  # threshold for _lab_helper_inv
-_6_29_pow3 = _6_29**3  # threshold for _lab_helper
+_6_29 = 6 / 29  # threshold for _luv_helper_inv
+_6_29_pow3 = _6_29**3  # threshold for _luv_helper
 _scaling = 0.01 / ((_6_29 / 2) ** 3)  # = (29 / 3)**3 / 100
 
 
 def _luv_helper(value: torch.Tensor):
-    """Function that be used in the transformation from CIE XYZ to CIE LUV."""
+    """Function that be used in the transformation from CIE XYZ to CIE Luv."""
     output = torch.where(
         value > _6_29_pow3,
         value.pow(1 / 3).mul_(1.16).sub_(0.16),
@@ -28,7 +35,7 @@ def _luv_helper(value: torch.Tensor):
 def _luv_helper_inv(
     value: torch.Tensor,
 ):
-    """Function that be used in the transformation from CIE LUV to CIE XYZ."""
+    """Function that be used in the transformation from CIE Luv to CIE XYZ."""
     output = torch.where(
         value > 0.08,
         value.add(0.16).mul_(1 / 1.16).pow_(3.0),
@@ -55,7 +62,7 @@ def xyz_to_luv(
     *,
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
-    """Converts an image from CIE XYZ space to CIE LUV space.
+    """Converts an image from CIE XYZ space to CIE Luv space.
 
     Parameters
     ----------
@@ -75,7 +82,7 @@ def xyz_to_luv(
     Returns
     -------
     torch.Tensor | tuple[torch.Tensor, torch.Tensor]
-        An image in CIE LUV space with the shape (*, 3, H, W). If ret_matrix
+        An image in CIE Luv space with the shape (*, 3, H, W). If ret_matrix
         is True, returns image and the transformation matrix.
     """
     x, y, z = xyz.unbind(-3)
@@ -109,12 +116,12 @@ def luv_to_xyz(
     *,
     ret_matrix: bool = False,
 ) -> torch.Tensor:
-    """Converts an image from CIE LUV space to CIE XYZ space.
+    """Converts an image from CIE Luv space to CIE XYZ space.
 
     Parameters
     ----------
     luv : torch.Tensor
-        An image in CIE LUV space with shape (*, 3, H, W).
+        An image in CIE Luv space with shape (*, 3, H, W).
     rgb_spec : RGBSpec | torch.Tensor, optional
         The RGB specification or a conversion matrix, by default 'srgb'.
         The input is case-insensitive if it is str type.
@@ -174,7 +181,7 @@ def rgb_to_luv(
     *,
     ret_matrix: bool = False,
 ) -> torch.Tensor:
-    """Converts an image from RGB space to CIE LUV space.
+    """Converts an image from RGB space to CIE Luv space.
 
     The input is assumed to be in the range of [0, 1]. If rgb_spec is a
     tensor, then the input rgb is assumed to be linear RGB.
@@ -198,7 +205,7 @@ def rgb_to_luv(
     Returns
     -------
     torch.Tensor | tuple[torch.Tensor, torch.Tensor]
-        An image in CIE LUV space with the shape (*, 3, H, W). If ret_matrix
+        An image in CIE Luv space with the shape (*, 3, H, W). If ret_matrix
         is True, returns image and the transformation matrix.
     """
     xyz, matrix = rgb_to_xyz(rgb, rgb_spec, white, obs, ret_matrix=True)
@@ -216,12 +223,12 @@ def luv_to_rgb(
     *,
     ret_matrix: bool = False,
 ) -> torch.Tensor:
-    """Converts an image from CIE LUV space to RGB space.
+    """Converts an image from CIE Luv space to RGB space.
 
     Parameters
     ----------
     luv : torch.Tensor
-        An image in CIE LUV space with shape (*, 3, H, W).
+        An image in CIE Luv space with shape (*, 3, H, W).
     rgb_spec : RGBSpec | torch.Tensor, optional
         The RGB specification or a conversion matrix, by default 'srgb'.
         The input is case-insensitive if it is str type.

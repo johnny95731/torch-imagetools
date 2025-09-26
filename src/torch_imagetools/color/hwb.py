@@ -1,6 +1,10 @@
 """Color conversion functions between RGB space and HWB space"""
 
-__all__ = ['rgb_to_hwb', 'hwb_to_rgb']
+__all__ = [
+    'rgb_to_hwb',
+    'hwb_to_rgb',
+]
+
 import torch
 
 from .hsv import hsv_helper, hsv_to_rgb

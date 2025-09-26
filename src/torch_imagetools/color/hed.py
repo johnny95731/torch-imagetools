@@ -1,3 +1,8 @@
+__all__ = [
+    'rgb_to_hed',
+    'hed_to_rgb',
+]
+
 import torch
 
 from ..utils.helpers import matrix_transform
@@ -13,8 +18,8 @@ from ..utils.helpers import matrix_transform
 _MAT_HED_TO_RGB = torch.tensor(
     # (
     #     (0.65, 0.70, 0.29),
-    #     (0.07 / 1.17, 0.99, 0.11),
-    #     (0.27, 0.57, 0.78),
+    #     (0.07 / 1.17, 0.99 / 1.17, 0.11 / 1.17),
+    #     (0.27 / 1.62, 0.57 / 1.62, 0.78 / 1.62),
     # ),
     (  # Normalize to sum of rows to 1
         (0.396342, 0.426829, 0.176829),
@@ -27,14 +32,7 @@ _MAT_RGB_TO_HED = torch.linalg.inv(_MAT_HED_TO_RGB)
 
 
 def rgb_to_hed(rgb: torch.Tensor) -> torch.Tensor:
-    """Converts an image from RGB space to HED space.
-
-    For details about HED, see:
-        A. C. Ruifrok and D. A. Johnston,
-        "Quantification of histochemical staining by color deconvolution,"
-        Analytical and quantitative cytology and histology / the International
-        Academy of Cytology [and] American Society of Cytology,
-        vol. 23, no. 4, pp. 291-9, Aug. 2001.
+    """Converts an image from RGB space to HED space [1].
 
     Parameters
     ----------
@@ -46,6 +44,14 @@ def rgb_to_hed(rgb: torch.Tensor) -> torch.Tensor:
     torch.Tensor
         An image in HED space. The the coefficients of the transformation
         matrix is scaled. Hence the maximum is the same as the input.
+
+    References
+    ----------
+    [1] A. C. Ruifrok and D. A. Johnston,
+        "Quantification of histochemical staining by color deconvolution,"
+        Analytical and quantitative cytology and histology / the International
+        Academy of Cytology [and] American Society of Cytology,
+        vol. 23, no. 4, pp. 291-9, Aug. 2001.
     """
     matrix = (
         _MAT_HED_TO_RGB
@@ -57,14 +63,7 @@ def rgb_to_hed(rgb: torch.Tensor) -> torch.Tensor:
 
 
 def hed_to_rgb(hed: torch.Tensor) -> torch.Tensor:
-    """Converts an image from HED space to RGB space.
-
-    For details about HED, see:
-        A. C. Ruifrok and D. A. Johnston,
-        "Quantification of histochemical staining by color deconvolution,"
-        Analytical and quantitative cytology and histology / the International
-        Academy of Cytology [and] American Society of Cytology,
-        vol. 23, no. 4, pp. 291-9, Aug. 2001.
+    """Converts an image from HED space [1] to RGB space.
 
     Parameters
     ----------
@@ -74,7 +73,15 @@ def hed_to_rgb(hed: torch.Tensor) -> torch.Tensor:
     Returns
     -------
     torch.Tensor
-        An image in RGB space.
+        An image in RGB space in the range of [0, 1] with shape (*, 3, H, W).
+
+    References
+    ----------
+    [1] A. C. Ruifrok and D. A. Johnston,
+        "Quantification of histochemical staining by color deconvolution,"
+        Analytical and quantitative cytology and histology / the International
+        Academy of Cytology [and] American Society of Cytology,
+        vol. 23, no. 4, pp. 291-9, Aug. 2001.
     """
     matrix = (
         _MAT_RGB_TO_HED
