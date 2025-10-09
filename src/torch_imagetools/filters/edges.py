@@ -1,0 +1,236 @@
+from typing import Literal
+
+import torch
+
+from ..utils.helpers import align_device_type
+from ..utils.math import atan2, filter2d
+
+
+def gradient_magnitude(
+    *derivatives: torch.Tensor,
+    magnitude: Literal['cat', 'inf'] | int | float = 2,
+) -> torch.Tensor:
+    """Computes the magnitude of the gradients: norm(gradient)
+
+    Parameters
+    ----------
+    *derivatives
+        The derivatives of an image.
+    magnitude : Literal['cat', 'inf'] | int | float, optional
+        The stradgy of magnitude computation. By default 2.
+        'cat' : Concatenate derivatives.
+        'inf' : Taking Supremum norm. Preserves the maximum alone all
+                derivatives.
+        int or float : Applying p-norm to the derivatives.
+
+    Returns
+    -------
+    torch.Tensor
+        The magnitude of gradient. If mag
+
+    Raises
+    ------
+    ValueError
+        When magnitude <= 0.
+    TypeError
+        When the type of magnitude is not one of None, 'inf', float, and int.
+    """
+    if magnitude is None:
+        mag = torch.cat(derivatives)
+    elif magnitude in ('inf', float('inf')):
+        mag = torch.cat(derivatives)
+        mag.abs_()
+        mag = torch.amax(mag, dim=0)
+    elif isinstance(magnitude, int) or isinstance(magnitude, float):
+        if magnitude < 0:
+            raise ValueError(
+                "Argument `magnitude` must be None, 'inf', or a positive number, "
+                + f'but got {magnitude}'
+            )
+        mag = torch.cat(derivatives)
+        mag.abs_()
+        if magnitude == 2.0:
+            mag = mag.square_().sum(0).sqrt_()
+        elif magnitude != 1.0:
+            mag = mag.pow_(magnitude).sum(0).pow_(1 / magnitude)
+        else:
+            mag = mag.sum(0)
+    else:
+        raise TypeError(
+            "Argument `magnitude` must be None, 'inf', or a positive number, "
+            + f'but got type {type(magnitude)}'
+        )
+    return mag
+
+
+def laplacian(
+    img: torch.Tensor,
+    *,
+    diagonal: bool = False,
+    inflection_only: bool = False,
+) -> torch.Tensor:
+    """Computes the laplacian of an image.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        Image with shape (*, C, H, W).
+    diagonal : bool, optional
+        The kernel detects 45 degree and 135 degree, by default False.
+    inflection_only : bool, optional
+        Filtering to remove non-inflection points, by default False.
+        A inflection point means that the sign of laplacian changes near
+        the point.
+
+    Returns
+    -------
+    torch.Tensor
+        The laplacian of an image.
+    """
+    if not diagonal:
+        kernel = torch.tensor((
+            (0, -1, 0),
+            (-1, 4, -1),
+            (0, -1, 0),
+        ))
+    else:
+        kernel = torch.tensor((
+            (-1, -1, -1),
+            (-1, 8, -1),
+            (-1, -1, -1),
+        ))
+    kernel = align_device_type(kernel, img)
+
+    grad = filter2d(img, kernel)
+    if inflection_only:
+        padded = torch.nn.functional.pad(grad, (1, 1, 1, 1))
+        x_check = padded[..., 1:-1, :-2] * padded[..., 1:-1, 2:] < 0.0
+        y_check = padded[..., :-2, 1:-1] * padded[..., 2:, 1:-1] < 0.0
+        mask = x_check | y_check
+        grad = torch.where(mask, grad, 0.0)
+    return grad
+
+
+def robinson(
+    img: torch.Tensor,
+    *,
+    ret_angle: bool = False,
+):
+    """Edge detection by the Robinson compass operators.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape (*, C, H, W).
+    magnitude : Literal['cat', 'inf'] | int | float, optional
+        Norm for computing gradient's magnitude, by default 2.
+    ret_angle : bool, optional
+        Returns the direction of gradient or not, by default False.
+    angle_unit : Literal['rad', 'deg']
+
+    Returns
+    -------
+    torch.Tensor
+        When ret_angle is False, returns gradient's magnitude.
+        With shape (*, C, H, W) if `magnitude` is not 'cat'; otherwise,
+        with shape (2, *, C, H, W) and index zero is the y-direction gradient.
+    tuple[torch.Tensor, torch.Tensor]
+        When ret_angle is True, returns gradient's magnitude and direction.
+        magnitude with shape (*, C, H, W) if `magnitude` is not 'cat';
+        otherwise, with shape (2, *, C, H, W) and index zero is the y-direction gradient.
+    """
+    kernel_y = torch.tensor((
+        (-1, -2, -1),
+        (0, 0, 0),
+        (1, 2, 1),
+    ))
+    kernel_45 = torch.tensor((
+        (-2, -1, 0),
+        (-1, 0, 1),
+        (0, 1, 2),
+    ))
+    kernel_y = align_device_type(kernel_y, img)
+    kernel_45 = align_device_type(kernel_45, img)
+
+    grad_y = filter2d(img, kernel_y)
+    grad_x = filter2d(img, kernel_y.T)
+    grad_45 = filter2d(img, kernel_45)
+    grad_135 = filter2d(img, kernel_45.flip(0))
+
+    mag = gradient_magnitude(grad_y, grad_x, grad_45, grad_135, magnitude='inf')
+    if ret_angle:
+        angle = atan2(grad_y, grad_x)
+        return mag, angle
+    return mag
+
+
+def kirsch(
+    img: torch.Tensor,
+    *,
+    ret_angle: bool = False,
+):
+    """Edge detection by the Kirsch operators.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape (*, C, H, W).
+    magnitude : Literal['cat', 'inf'] | int | float, optional
+        Norm for computing gradient's magnitude, by default 2.
+    ret_angle : bool, optional
+        Returns the direction of gradient or not, by default False.
+    angle_unit : Literal['rad', 'deg']
+
+    Returns
+    -------
+    torch.Tensor
+        When ret_angle is False, returns gradient's magnitude.
+        With shape (*, C, H, W) if `magnitude` is not 'cat'; otherwise,
+        with shape (2, *, C, H, W) and index zero is the y-direction gradient.
+    tuple[torch.Tensor, torch.Tensor]
+        When ret_angle is True, returns gradient's magnitude and direction.
+        magnitude with shape (*, C, H, W) if `magnitude` is not 'cat';
+        otherwise, with shape (2, *, C, H, W) and index zero is the y-direction gradient.
+    """
+    kernel_y = torch.tensor((
+        (-3, -3, -3),
+        (-3, 0, -3),
+        (5, 5, 5),
+    ))
+    kernel_45 = torch.tensor((
+        (-3, -3, -3),
+        (-3, 0, 5),
+        (-3, 5, 5),
+    ))
+    kernel_y = align_device_type(kernel_y, img)
+    kernel_45 = align_device_type(kernel_45, img)
+
+    # flipped kernel
+    kernel_y2 = kernel_y.flip(0)
+    kernel_135 = kernel_y.flip(1)
+
+    grad_south = filter2d(img, kernel_y)
+    grad_north = filter2d(img, kernel_y2)
+    grad_east = filter2d(img, kernel_y.T)
+    grad_west = filter2d(img, kernel_y2.T)
+
+    grad_se = filter2d(img, kernel_45)
+    grad_sw = filter2d(img, kernel_135)
+    grad_ne = filter2d(img, kernel_45.flip(0))
+    grad_nw = filter2d(img, kernel_135.flip(0))
+
+    mag = gradient_magnitude(
+        grad_south,
+        grad_north,
+        grad_east,
+        grad_west,
+        grad_se,
+        grad_sw,
+        grad_ne,
+        grad_nw,
+        magnitude='inf',
+    )
+    if ret_angle:
+        angle = atan2(grad_south, grad_east)
+        return mag, angle
+    return mag

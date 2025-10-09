@@ -39,6 +39,26 @@ def is_indexable(item: Any) -> bool:
     return hasattr(item, '__getitem__')
 
 
+def align_device_type(source: torch.Tensor, target: torch.Tensor):
+    """Aligns device and dtype of the source tensor to the target tensor.
+
+    Parameters
+    ----------
+    source : torch.Tensor
+        A tensor need to align.
+    target : torch.Tensor
+        A tensor provides device and dtype.
+
+    Returns
+    -------
+    _type_
+        _description_
+    """
+    dtype = target.dtype if torch.is_floating_point(target) else torch.float32
+    source = source.to(target.device, dtype)
+    return source
+
+
 def arrayize(img: Tensorlike) -> np.ndarray:
     """Converts an item to a np.ndarray.
 
@@ -110,7 +130,6 @@ def matrix_transform(
     torch.Tensor
         The image with shape (*, C_out, H, W).
     """
-    dtype = img.dtype if torch.is_floating_point(img) else torch.float32
-    matrix = matrix.to(img.device, dtype)
+    matrix = align_device_type(matrix, img)
     output = torch.einsum('oc,...chw->...ohw', matrix, img)
     return output
