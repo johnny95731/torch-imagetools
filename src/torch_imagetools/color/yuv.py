@@ -5,7 +5,7 @@ __all__ = [
 
 import torch
 
-from ..utils.helpers import matrix_transform
+from ..utils.math import matrix_transform
 
 
 def rgb_to_yuv(rgb: torch.Tensor) -> torch.Tensor:

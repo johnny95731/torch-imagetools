@@ -18,7 +18,7 @@ import numpy as np
 import torch
 
 from .rgb import RGBSpec, gammaize_rgb, linearize_rgb
-from ..utils.helpers import matrix_transform
+from ..utils.math import matrix_transform
 
 
 StandardIlluminants = Literal[

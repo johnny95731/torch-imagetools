@@ -1,9 +1,10 @@
 __all__ = [
+    'Tensorlike',
     'pariing',
     'is_indexable',
+    'align_device_type',
+    'arrayize',
     'tensorize',
-    'matrix_transform',
-    'matrix_transform_',
 ]
 
 from typing import Any, overload, TypeVar
@@ -110,26 +111,3 @@ def tensorize(img: Tensorlike) -> torch.Tensor:
     elif not torch.is_tensor(img):
         img = torch.tensor(img)
     return img
-
-
-def matrix_transform(
-    img: torch.Tensor,
-    matrix: torch.Tensor,
-) -> torch.Tensor:
-    """Converts the channels of an image by linear transformation.
-
-    Parameters
-    ----------
-    img : torch.Tensor
-        Image, a tensor with shape (*, C, H, W).
-    matrix : torch.Tensor
-        The transformation matrix with shape (C_out, C).
-
-    Returns
-    -------
-    torch.Tensor
-        The image with shape (*, C_out, H, W).
-    """
-    matrix = align_device_type(matrix, img)
-    output = torch.einsum('oc,...chw->...ohw', matrix, img)
-    return output

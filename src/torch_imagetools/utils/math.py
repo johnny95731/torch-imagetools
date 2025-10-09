@@ -1,8 +1,38 @@
+__all__ = [
+    'matrix_transform',
+    'filter2d',
+    'atan2',
+    'p_norm',
+]
+
 from typing import Literal
 
 import torch
 
-from torch_imagetools.utils.helpers import align_device_type
+from ..utils.helpers import align_device_type
+
+
+def matrix_transform(
+    img: torch.Tensor,
+    matrix: torch.Tensor,
+) -> torch.Tensor:
+    """Converts the channels of an image by linear transformation.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        Image, a tensor with shape (*, C, H, W).
+    matrix : torch.Tensor
+        The transformation matrix with shape (C_out, C).
+
+    Returns
+    -------
+    torch.Tensor
+        The image with shape (*, C_out, H, W).
+    """
+    matrix = align_device_type(matrix, img)
+    output = torch.einsum('oc,...chw->...ohw', matrix, img)
+    return output
 
 
 def filter2d(

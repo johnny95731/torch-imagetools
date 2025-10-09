@@ -1,6 +1,7 @@
 """Color balance functions including chromatic adaptation transform, gray world
 algorithm, etc...
 """
+
 __all__ = [
     'get_von_kries_transform_matrix',
     'von_kries_transform',
@@ -12,8 +13,8 @@ __all__ = [
 from typing import overload
 
 import torch
-from torch_imagetools.utils.helpers import matrix_transform
 
+from ..utils.math import matrix_transform
 from .lms import CATMethod, xyz_to_lms
 
 

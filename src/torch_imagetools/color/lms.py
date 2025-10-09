@@ -10,7 +10,7 @@ from typing import Literal, overload
 
 import torch
 
-from ..utils.helpers import matrix_transform
+from ..utils.math import matrix_transform
 
 
 CATMethod = Literal[
