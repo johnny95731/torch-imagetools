@@ -21,19 +21,20 @@ def scharr(
     ----------
     img : torch.Tensor
         An image with shape (*, C, H, W).
-    magnitude : Literal['cat', 'inf'] | int | float, default=2
+    magnitude : {'cat', 'inf'} | int | float, default=2
         Norm for computing gradient's magnitude.
-    ret_angle : Literal[False], default=False
+    ret_angle : {False}, default=False
         Returns the direction of gradient or not.
-    angle_unit : Literal['rad', 'deg'], default='deg'
+    angle_unit : {'rad', 'deg'}, default='deg'
         Represents the angle in radian or in degree.
 
     Returns
     -------
     torch.Tensor
-        When ret_angle is False, returns gradient's magnitude.
-        With shape (*, C, H, W) if `magnitude` is not 'cat'; otherwise,
-        with shape (2, *, C, H, W) and index zero is the y-direction gradient.
+        Image gradient's magnitude.
+        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
+        Otherwise, with shape (2, *, C, H, W) and index zero is the
+        y-direction gradient.
     """
 
 
@@ -51,17 +52,20 @@ def scharr(
     ----------
     img : torch.Tensor
         An image with shape (*, C, H, W).
-    magnitude : Literal['cat', 'inf'] | int | float, default=2
+    magnitude : {'cat', 'inf'} | int | float, default=2
         Norm for computing gradient's magnitude.
-    ret_angle : Literal[True]
+    ret_angle : {True}
         Returns the direction of gradient or not.
-    angle_unit : Literal['rad', 'deg'], default='deg'
+    angle_unit : {'rad', 'deg'}, default='deg'
         Represents the angle in radian or in degree.
 
     Returns
     -------
     tuple[torch.Tensor, torch.Tensor]
-        The edge's magnitude and direction.
+        Image gradient's magnitude and direction.
+        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
+        Otherwise, with shape (2, *, C, H, W) and index zero is the
+        y-direction gradient.
     """
 
 
@@ -78,23 +82,25 @@ def scharr(
     ----------
     img : torch.Tensor
         An image with shape (*, C, H, W).
-    magnitude : Literal['cat', 'inf'] | int | float, default=2
+    magnitude : {'cat', 'inf'} | int | float, default=2
         Norm for computing gradient's magnitude.
     ret_angle : bool, default=False
         Returns the direction of gradient or not.
-    angle_unit : Literal['rad', 'deg'], default='deg'
+    angle_unit : {'rad', 'deg'}, default='deg'
         Represents the angle in radian or in degree.
 
     Returns
     -------
     torch.Tensor
-        When ret_angle is False, returns gradient's magnitude.
-        With shape (*, C, H, W) if `magnitude` is not 'cat'; otherwise,
-        with shape (2, *, C, H, W) and index zero is the y-direction gradient.
+        Image gradient's magnitude when `ret_angle` is False.
+        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
+        Otherwise, with shape (2, *, C, H, W) and index zero is the
+        y-direction gradient.
     tuple[torch.Tensor, torch.Tensor]
-        When ret_angle is True, returns gradient's magnitude and direction.
-        magnitude with shape (*, C, H, W) if `magnitude` is not 'cat';
-        otherwise, with shape (2, *, C, H, W) and index zero is the y-direction gradient.
+        Image gradient's magnitude and direction when `ret_angle` is True.
+        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
+        Otherwise, with shape (2, *, C, H, W) and index zero is the
+        y-direction gradient.
     """
     kernel_y = torch.tensor((
         (-3, -10, -3),

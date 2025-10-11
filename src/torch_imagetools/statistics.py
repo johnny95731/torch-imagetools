@@ -106,8 +106,8 @@ def estimate_noise_from_wavelet_2(
     hh : torch.Tensor
         The highpass-highpass filtered image in the range of [0, 1] with shape
         (*, 1, H, W).
-    maximum : float | int, optional
-        The maximum of the image. By default 1.0,
+    maximum : float | int, default=1.0
+        The maximum of the image.
 
     Returns
     -------

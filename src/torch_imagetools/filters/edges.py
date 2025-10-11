@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, overload
 
 import torch
 
@@ -16,8 +16,8 @@ def gradient_magnitude(
     ----------
     *derivatives
         The derivatives of an image.
-    magnitude : Literal['cat', 'inf'] | int | float, optional
-        The stradgy of magnitude computation. By default 2.
+    magnitude : {'cat', 'inf'} | int | float, default=2
+        The stradgy of magnitude computation.
         'cat' : Concatenate derivatives.
         'inf' : Taking Supremum norm. Preserves the maximum alone all
                 derivatives.
@@ -75,17 +75,17 @@ def laplacian(
     ----------
     img : torch.Tensor
         Image with shape (*, C, H, W).
-    diagonal : bool, optional
-        The kernel detects 45 degree and 135 degree, by default False.
-    inflection_only : bool, optional
-        Filtering to remove non-inflection points, by default False.
+    diagonal : bool, default=False
+        The kernel detects 45 degree and 135 degree.
+    inflection_only : bool, default=False
+        Filtering to remove non-inflection points.
         A inflection point means that the sign of laplacian changes near
         the point.
 
     Returns
     -------
     torch.Tensor
-        The laplacian of an image.
+        The laplacian of an image with shape (*, C, H, W)..
     """
     if not diagonal:
         kernel = torch.tensor((
@@ -111,33 +111,79 @@ def laplacian(
     return grad
 
 
+@overload
 def robinson(
     img: torch.Tensor,
     *,
-    ret_angle: bool = False,
-):
+    ret_angle: Literal[False] = False,
+) -> torch.Tensor:
     """Edge detection by the Robinson compass operators.
 
     Parameters
     ----------
     img : torch.Tensor
         An image with shape (*, C, H, W).
-    magnitude : Literal['cat', 'inf'] | int | float, optional
-        Norm for computing gradient's magnitude, by default 2.
-    ret_angle : bool, optional
-        Returns the direction of gradient or not, by default False.
-    angle_unit : Literal['rad', 'deg']
+    ret_angle : {False}, default=False
+        Returns the direction of gradient or not.
 
     Returns
     -------
     torch.Tensor
-        When ret_angle is False, returns gradient's magnitude.
-        With shape (*, C, H, W) if `magnitude` is not 'cat'; otherwise,
-        with shape (2, *, C, H, W) and index zero is the y-direction gradient.
+        Gradient's magnitude when `ret_angle` is False.
+        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
+        Otherwise, with shape (2, *, C, H, W) and index zero is the
+    """
+
+
+@overload
+def robinson(
+    img: torch.Tensor,
+    *,
+    ret_angle: Literal[False] = False,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Edge detection by the Robinson compass operators.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape (*, C, H, W).
+    ret_angle : {False}, default=False
+        Returns the direction of gradient or not.
+
+    Returns
+    -------
+    torch.Tensor
+        Gradient's magnitude when `ret_angle` is False.
+        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
+        Otherwise, with shape (2, *, C, H, W) and index zero is the
+    """
+
+
+def robinson(
+    img: torch.Tensor,
+    *,
+    ret_angle: bool = False,
+) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+    """Edge detection by the Robinson compass operators.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape (*, C, H, W).
+    ret_angle : bool, default=False
+        Returns the direction of gradient or not.
+
+    Returns
+    -------
+    torch.Tensor
+        Gradient's magnitude when `ret_angle` is False.
+        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
+        Otherwise, with shape (2, *, C, H, W) and index zero is the
     tuple[torch.Tensor, torch.Tensor]
-        When ret_angle is True, returns gradient's magnitude and direction.
-        magnitude with shape (*, C, H, W) if `magnitude` is not 'cat';
-        otherwise, with shape (2, *, C, H, W) and index zero is the y-direction gradient.
+        Gradient's magnitude and direction when `ret_angle` is True.
+        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
+        Otherwise, with shape (2, *, C, H, W) and index zero is the
+        y-direction gradient.
     """
     kernel_y = torch.tensor((
         (-1, -2, -1),
@@ -168,29 +214,27 @@ def kirsch(
     img: torch.Tensor,
     *,
     ret_angle: bool = False,
-):
+) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Edge detection by the Kirsch operators.
 
     Parameters
     ----------
     img : torch.Tensor
         An image with shape (*, C, H, W).
-    magnitude : Literal['cat', 'inf'] | int | float, optional
-        Norm for computing gradient's magnitude, by default 2.
-    ret_angle : bool, optional
-        Returns the direction of gradient or not, by default False.
-    angle_unit : Literal['rad', 'deg']
+    ret_angle : bool, default=False
+        Returns the direction of gradient or not.
 
     Returns
     -------
     torch.Tensor
-        When ret_angle is False, returns gradient's magnitude.
-        With shape (*, C, H, W) if `magnitude` is not 'cat'; otherwise,
-        with shape (2, *, C, H, W) and index zero is the y-direction gradient.
+        Gradient's magnitude when `ret_angle` is False.
+        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
+        Otherwise, with shape (2, *, C, H, W) and index zero is the
     tuple[torch.Tensor, torch.Tensor]
-        When ret_angle is True, returns gradient's magnitude and direction.
-        magnitude with shape (*, C, H, W) if `magnitude` is not 'cat';
-        otherwise, with shape (2, *, C, H, W) and index zero is the y-direction gradient.
+        Gradient's magnitude and direction when `ret_angle` is True.
+        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
+        Otherwise, with shape (2, *, C, H, W) and index zero is the
+        y-direction gradient.
     """
     kernel_y = torch.tensor((
         (-3, -3, -3),

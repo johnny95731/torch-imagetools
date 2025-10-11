@@ -96,8 +96,8 @@ def atan2(
         The y-component.
     x : torch.Tensor
         The x-component.
-    angle_unit : Literal['rad', 'deg'], optional
-        Represents the angle in radian or in degree, by default 'deg'.
+    angle_unit : {'rad', 'deg'}, default='deg'
+        Represents the angle in radian or in degree.
 
     Returns
     -------

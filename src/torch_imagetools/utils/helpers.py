@@ -49,11 +49,6 @@ def align_device_type(source: torch.Tensor, target: torch.Tensor):
         A tensor need to align.
     target : torch.Tensor
         A tensor provides device and dtype.
-
-    Returns
-    -------
-    _type_
-        _description_
     """
     dtype = target.dtype if torch.is_floating_point(target) else torch.float32
     source = source.to(target.device, dtype)
@@ -86,7 +81,8 @@ def arrayize(img: Tensorlike) -> np.ndarray:
 
 
 def tensorize(img: Tensorlike) -> torch.Tensor:
-    """Converts an item to a torch.Tensor.
+    """
+    Converts an item to a torch.Tensor.
 
     If input is a np.ndarray:
         1. Moves -1-axis to -3-axis for ndim >= 3.

@@ -10,7 +10,7 @@ __all__ = [
     'white_patch_balance',
 ]
 
-from typing import overload
+from typing import Literal, overload
 
 import torch
 
@@ -32,8 +32,8 @@ def get_von_kries_transform_matrix(
         The source white point in CIE XYZ space.
     xyz_target_white : torch.Tensor
         The target white point in CIE XYZ space.
-    method : CATMethod, optional
-        Chromatic adaptation method, by default 'bradford'.
+    method : CATMethod, default='bradford'
+        Chromatic adaptation method.
 
     Returns
     -------
@@ -58,7 +58,7 @@ def von_kries_transform(
     xyz_target_white: torch.Tensor,
     method: CATMethod | torch.Tensor = 'bradford',
     *,
-    ret_matrix: bool = False,
+    ret_matrix: Literal[False] = False,
 ) -> torch.Tensor: ...
 @overload
 def von_kries_transform(
@@ -67,7 +67,7 @@ def von_kries_transform(
     xyz_target_white: torch.Tensor,
     method: CATMethod | torch.Tensor = 'bradford',
     *,
-    ret_matrix: bool = True,
+    ret_matrix: Literal[True],
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 def von_kries_transform(
     xyz: torch.Tensor,
@@ -92,19 +92,23 @@ def von_kries_transform(
         The source white point in CIE XYZ space.
     xyz_target_white : torch.Tensor
         The target white point in CIE XYZ space.
-    method : CATMethod, optional
-        Chromatic adaptation method, by default 'bradford'. If method is a
+    method : CATMethod, default='bradford'
+        Chromatic adaptation method. If method is a
         Tensor, then it will be regarded as the transformation matrix (
         XYZ -> LMS -> scaling LMS -> XYZ).
-    ret_matrix : bool, optional
-        If True, returns image and chromatic adaptation transformation matrix.
-        By default False.
+    ret_matrix : bool, default=False
+        If True, also return a chromatic adaptation transformation matrix.
+        If False, only the image is returned.
 
     Returns
     -------
     torch.Tensor
-        An image in CIE XYZ space with the shape (*, 3, H, W). If ret_matrix
-        is True, returns image and the transformation matrix.
+        An image in CIE XYZ space with the shape (*, 3, H, W) when
+        `ret_matrix` is False.
+    tuple[torch.Tensor, torch.Tensor]
+        An image and a transformation matrix when `ret_matrix` is True.\\
+        The image is in CIE XYZ space with the shape (*, 3, H, W).\\
+        The matrix is 3x3 for chromatic adaptation transformation
     """
     if torch.is_tensor(method):
         matrix = method
@@ -123,14 +127,14 @@ def balance_by_scaling(
     img: torch.Tensor,
     scaled_max: int | float | torch.Tensor,
     *,
-    ret_factors: bool = False,
+    ret_factors: Literal[False] = False,
 ) -> torch.Tensor: ...
 @overload
 def balance_by_scaling(
     img: torch.Tensor,
     scaled_max: int | float | torch.Tensor,
     *,
-    ret_factors: bool = True,
+    ret_factors: Literal[True],
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 def balance_by_scaling(
     img: torch.Tensor,
@@ -147,14 +151,16 @@ def balance_by_scaling(
         Image in RGB space with shape (*, C, H, W).
     scaled_max : int | float | torch.Tensor
         The maximum(s) after scaling.
-    ret_factors : bool, optional
-        If True, returns image and scaling factors. By default False.
+    ret_factors : bool, default=False
+        If True, returns image and scaling factors.
 
     Returns
     -------
-    torch.Tensor | tuple[torch.Tensor, torch.Tensor]
-        An image with the shape (*, C, H, W). If ret_factors is True, returns
-        image and the scaling factors with shape (C,).
+    torch.Tensor
+        An image with the shape (*, C, H, W) when `ret_matrix` is False.
+    tuple[torch.Tensor, torch.Tensor]
+        An image and a scaling factors when `ret_factors` is True. The image
+        is with shape (*, C, H, W) and the factor is with shape (C,).
     """
     num_ch = img.shape[-3]
     # Get max of each channel
@@ -175,13 +181,13 @@ def balance_by_scaling(
 def gray_world_balance(
     rgb: torch.Tensor,
     *,
-    ret_factors: bool = False,
+    ret_factors: Literal[False] = False,
 ) -> torch.Tensor: ...
 @overload
 def gray_world_balance(
     rgb: torch.Tensor,
     *,
-    ret_factors: bool = True,
+    ret_factors: Literal[True],
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 def gray_world_balance(
     rgb: torch.Tensor,
@@ -194,15 +200,17 @@ def gray_world_balance(
     Parameters
     ----------
     rgb : torch.Tensor
-        Image in RGB space with shape (*, 3, H, W).
-    ret_factors : bool, optional
-        If True, returns image and scaling factors. By default False.
+        An Image in RGB space with shape (*, 3, H, W).
+    ret_factors : bool, default=False
+        If True, returns image and scaling factors.
 
     Returns
     -------
-    torch.Tensor | tuple[torch.Tensor, torch.Tensor]
-        An image with the shape (*, 3, H, W). If ret_factors is True, returns
-        image and the scaling factors with shape (3,).
+    torch.Tensor
+        An RGB image with the shape (*, 3, H, W) when `ret_matrix` is False.
+    tuple[torch.Tensor, torch.Tensor]
+        An RGB image and a scaling factors when `ret_factors` is True.
+        The image is with shape (*, 3, H, W) and the factor is with shape (3,).
     """
     num_ch = rgb.shape[-3]
     # Get mean values
@@ -225,14 +233,14 @@ def white_patch_balance(
     rgb: torch.Tensor,
     q: float | torch.Tensor = 1.0,
     *,
-    ret_factors: bool = False,
+    ret_factors: Literal[False] = False,
 ) -> torch.Tensor: ...
 @overload
 def white_patch_balance(
     rgb: torch.Tensor,
     q: float | torch.Tensor = 1.0,
     *,
-    ret_factors: bool = True,
+    ret_factors: Literal[True],
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 def white_patch_balance(
     rgb: torch.Tensor,
@@ -252,19 +260,22 @@ def white_patch_balance(
         An RGB Image in range of [0, 1] with shape (*, 3, H, W).
         If ndim > 3, the quantile value is calculated across multiple images,
         and images will be scaled by same factors.
-    q : float | None, optional
+    q : float | None, default=1.0
         Quantile. Scaling the quantile value to 1. If q is a Tensor with
         shape (3,), the values will be regarded as the quantile of each
         channel.
-    ret_factors : bool, optional
-        If True, returns image and scaling factors. By default False.
+    ret_factors : bool, default=False
+        If False, only the image is returned.
+        If True, also return the scaling factors.
 
     Returns
     -------
-    torch.Tensor | tuple[torch.Tensor, torch.Tensor]
-        An RGB Image in range of [0, 1] with shape (*, 3, H, W). If
-        ret_factors is True, returns image and the scaling factors with
-        shape (3,).
+    torch.Tensor
+        An RGB image in range of [0, 1] with shape (*, 3, H, W) when
+        `ret_factors` is False.
+    tuple[torch.Tensor, torch.Tensor]
+        An RGB image and a scaling factors when `ret_factors` is True.
+        The image is with shape (*, 3, H, W) and the factor is with shape (3,).
     """
     num_ch = rgb.shape[-3]
     if not torch.is_tensor(q) and q >= 1.0:

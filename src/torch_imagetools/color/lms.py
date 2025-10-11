@@ -40,9 +40,8 @@ def get_xyz_to_lms_matrix(method: CATMethod = 'bradford'):
 
     Parameters
     ----------
-    method : CATMethod, optional
-        The method of conversion, by default 'bradford'.
-        The argument is case-insensitive.
+    method : CATMethod, default='bradford'
+        The method of conversion. The argument is case-insensitive.
 
     Returns
     -------
@@ -98,9 +97,8 @@ def get_lms_to_xyz_matrix(method: CATMethod = 'bradford'):
 
     Parameters
     ----------
-    method : CATMethod, optional
-        The method of conversion, by default 'bradford'.
-        The argument is case-insensitive.
+    method : CATMethod, default='bradford'
+        The method of conversion. The argument is case-insensitive.
 
     Returns
     -------
@@ -138,12 +136,10 @@ def xyz_to_lms(
     ----------
     xyz : torch.Tensor
         An image in CIE XYZ space with shape (*, 3, H, W).
-    method : CATMethod, optional
-        The method of conversion, by default 'bradford'.
-        The argument is case-insensitive.
-    ret_matrix : bool, optional
+    method : CATMethod, default='bradford'
+        The method of conversion. The argument is case-insensitive.
+    ret_matrix : bool, default=False
         If True, returns image and conversion matrix (XYZ -> LMS).
-        By default False.
 
     Returns
     -------
@@ -184,12 +180,10 @@ def lms_to_xyz(
     ----------
     xyz : torch.Tensor
         An image in LMS space with shape (*, 3, H, W).
-    method : CATMethod, optional
-        The method of conversion, by default 'bradford'.
-        The argument is case-insensitive.
-    ret_matrix : bool, optional
+    method : CATMethod, default='bradford'
+        The method of conversion. The argument is case-insensitive.
+    ret_matrix : bool, default=False
         If True, returns image and conversion matrix (LMS -> XYZ).
-        By default False.
 
     Returns
     -------

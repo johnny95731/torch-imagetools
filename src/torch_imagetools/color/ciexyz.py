@@ -82,12 +82,12 @@ def get_white_point(
 
     Parameters
     ----------
-    white : Literal[W]
+    white : StandardIlluminants
         Name of the standard illuminant, such as D65, D50, and F1-F12. The
         input is case-insensitive.
-    obs : Literal[2, '2', 10, '10'], optional
-        Degree of observer, by default None. None and invalid value will be
-        regarded as 10 degree. The input is case-insensitive.
+    obs : {2, '2', 10, '10'}, default=10
+        Degree of observer. None and invalid value will be regarded as
+        10 degree. The input is case-insensitive.
     """
     obs_deg_2 = str(obs) == '2'
     obs = 2 if obs_deg_2 else 10  # degree of oberver.
@@ -226,13 +226,13 @@ def get_rgb_to_xyz_matrix(
 
     Parameters
     ----------
-    rgb_spec : RGBSpec, optional
-        The RGB specification or a conversion matrix, by default 'srgb'.
-        The input is case-insensitive if it is str type.
-    white : STANDARD_ILLUMINANTS, optional
-        White point, by default 'D65'. The input is case-insensitive.
-    obs : Literal[2, '2', 10, '10'], optional
-        The degree of oberver, by default 10.
+    rgb_spec : RGBSpec, default='srgb'
+        The RGB specification or a conversion matrix. The input
+        is case-insensitive.
+    white : StandardIlluminants, default='D65'
+        White point. The input is case-insensitive.
+    obs : {2, '2', 10, '10'}, default=10
+        The degree of oberver
     """
     white_ = get_white_point(white, obs)
     rgb_ = get_rgb_model(rgb_spec)
@@ -277,7 +277,7 @@ def get_xyz_to_rgb_matrix(
 @overload
 def rgb_to_xyz(
     rgb: torch.Tensor,
-    rgb_spec: RGBSpec = 'srgb',
+    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
     white: StandardIlluminants = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
     *,
@@ -286,23 +286,9 @@ def rgb_to_xyz(
 @overload
 def rgb_to_xyz(
     rgb: torch.Tensor,
-    rgb_spec: RGBSpec = 'srgb',
+    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
     white: StandardIlluminants = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: bool = True,
-) -> tuple[torch.Tensor, torch.Tensor]: ...
-@overload
-def rgb_to_xyz(
-    rgb: torch.Tensor,
-    matrix: torch.Tensor,
-    *,
-    ret_matrix: bool = False,
-) -> torch.Tensor: ...
-@overload
-def rgb_to_xyz(
-    rgb: torch.Tensor,
-    matrix: torch.Tensor,
     *,
     ret_matrix: bool = True,
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
@@ -326,23 +312,35 @@ def rgb_to_xyz(
     ----------
     rgb : torch.Tensor
         An RGB image in the range of [0, 1] with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, optional
-        The RGB specification or a conversion matrix, by default 'srgb'.
-        The input is case-insensitive if it is str type. If rgb_spec is a
-        tensor, then the input rgb is assumed to be linear RGB.
-    white : STANDARD_ILLUMINANTS, optional
-        White point, by default 'D65'. The input is case-insensitive.
-    obs : Literal[2, '2', 10, '10'], optional
-        The degree of oberver, by default 10.
-    ret_matrix : bool, optional
-        If True, returns image and conversion matrix (rgb -> xyz).
-        By default False.
+    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
+        The RGB specification or a conversion matrix for transforming image
+        from rgb to xyz. The string type is case-insensitive.\\
+        If `rgb_spec` is a tensor, then the input rgb is assumed to be linear.
+    white : StandardIlluminants, default='D65'
+        Reference white point for the rgb to xyz conversion.
+        The input is case-insensitive.
+    obs : {2, '2', 10, '10'}, default=10
+        Degree of the standard observer (2° or 10°).
+    ret_matrix : bool, default=False
+        If False, only the image is returned.
+        If True, also return the matrix that maps image from xyz to rgb.
 
     Returns
     -------
     torch.Tensor
-        An image in CIE XYZ space with the shape (*, 3, H, W). If ret_matrix
-        is True, returns image and the transformation matrix.
+        An image in CIE XYZ space with the shape (*, 3, H, W) when
+        `ret_matrix` is False.
+    tuple[torch.Tensor, torch.Tensor]
+        An image and a transformation matrix when `ret_matrix` is True.
+        The image is in CIE XYZ space with the shape (*, 3, H, W) and the
+        matrix is with shape (3, 3) for transforming image from rgb to xyz.
+    torch.Tensor
+        An image in CIE XYZ space with the shape (*, 3, H, W) when
+        `ret_matrix` is False.
+    tuple[torch.Tensor, torch.Tensor]
+        An RGB image and a transformation matrix when `ret_matrix` is True.\\
+        The image is in CIE XYZ space with the shape (*, 3, H, W).
+        The matrix is 3x3 for mapping image from rgb to xyz.
     """
     if torch.is_tensor(rgb_spec):
         matrix = rgb_spec
@@ -359,34 +357,20 @@ def rgb_to_xyz(
 @overload
 def xyz_to_rgb(
     xyz: torch.Tensor,
-    rgb_spec: RGBSpec = 'srgb',
+    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
     white: StandardIlluminants = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
     *,
-    ret_matrix: bool = False,
+    ret_matrix: Literal[False] = False,
 ) -> torch.Tensor: ...
 @overload
 def xyz_to_rgb(
     xyz: torch.Tensor,
-    rgb_spec: RGBSpec = 'srgb',
+    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
     white: StandardIlluminants = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
     *,
-    ret_matrix: bool = True,
-) -> tuple[torch.Tensor, torch.Tensor]: ...
-@overload
-def xyz_to_rgb(
-    xyz: torch.Tensor,
-    matrix: torch.Tensor,
-    *,
-    ret_matrix: bool = False,
-) -> torch.Tensor: ...
-@overload
-def xyz_to_rgb(
-    xyz: torch.Tensor,
-    matrix: torch.Tensor,
-    *,
-    ret_matrix: bool = True,
+    ret_matrix: Literal[True],
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 def xyz_to_rgb(
     xyz: torch.Tensor,
@@ -402,24 +386,27 @@ def xyz_to_rgb(
     ----------
     xyz : torch.Tensor
         An image in CIE XYZ space with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, optional
-        The RGB specification or a conversion matrix, by default 'srgb'.
-        The input is case-insensitive if it is str type. If rgb_spec is a
-        tensor, then the output is a linear RGB.
-    white : STANDARD_ILLUMINANTS, optional
-        White point, by default 'D65'. The input is case-insensitive.
-    obs : Literal[2, '2', 10, '10'], optional
-        The degree of oberver, by default 10.
-    ret_matrix : bool, optional
-        If True, returns image and transformation matrix (xyz -> rgb).
-        By default False.
+    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
+        The RGB specification or a conversion matrix for transforming image
+        from xyz to rgb. The string type is case-insensitive.
+    white : StandardIlluminants, default='D65'
+        Reference white point for the rgb to xyz conversion.
+        The input is case-insensitive.
+    obs : {2, '2', 10, '10'}, default=10
+        Degree of the standard observer (2° or 10°).
+    ret_matrix : bool, default=False
+        If False, only the image is returned.
+        If True, also return the matrix that maps image from xyz to rgb.
 
     Returns
     -------
-    torch.Tensor | tuple[torch.Tensor, torch.Tensor]
-        An RGB image in the range of [0, 1] with the shape (*, 3, H, W). If
-        rgb_spec is a tensor, then the image is in linear RGB space. If
-        ret_matrix is True, returns image and the transformation matrix.
+    torch.Tensor
+        An RGB image in the range of [0, 1] with the shape (*, 3, H, W) when
+        `ret_matrix` is False.
+    tuple[torch.Tensor, torch.Tensor]
+        An RGB image and a transformation matrix when `ret_matrix` is True.\\
+        The image is in [0, 1] with the shape (*, 3, H, W).\\
+        The matrix is 3x3 for mapping image from xyz to rgb.
     """
     matrix = (
         get_xyz_to_rgb_matrix(rgb_spec, white, obs)
@@ -441,6 +428,7 @@ def normalize_xyz(
     rgb_spec: RGBSpec | torch.Tensor = 'srgb',
     white: StandardIlluminants = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
+    *,
     inplace: bool = False,
 ) -> torch.Tensor:
     """Normalize the image in CIE XYZ to [0, 1] by evaluting
@@ -450,15 +438,15 @@ def normalize_xyz(
     ----------
     xyz : torch.Tensor
         An image in CIE XYZ space with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, optional
-        The RGB specification or a conversion matrix, by default 'srgb'.
-        The input is case-insensitive if it is str type.
-    white : STANDARD_ILLUMINANTS, optional
-        White point, by default 'D65'. The input is case-insensitive.
-    obs : Literal[2, '2', 10, '10'], optional
-        The degree of oberver, by default 10.
-    inplace : bool, optional
-        In-place operation or not, by default False.
+    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
+        The RGB specification or a conversion matrix for transforming image
+        from rgb to xyz. The string type is case-insensitive.
+    white : StandardIlluminants, default='D65'
+        White point. The input is case-insensitive.
+    obs : {2, '2', 10, '10'}, default=10
+        The degree of oberver.
+    inplace : bool, default=False
+        If True, modifies the orginal tensor directly without copying.
     """
     matrix = (
         get_rgb_to_xyz_matrix(rgb_spec, white, obs)
@@ -480,6 +468,7 @@ def unnormalize_xyz(
     rgb_spec: RGBSpec | torch.Tensor = 'srgb',
     white: StandardIlluminants = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
+    *,
     inplace: bool = False,
 ) -> torch.Tensor:
     """The inverse function of normalize_xyz.
@@ -488,15 +477,15 @@ def unnormalize_xyz(
     ----------
     xyz : torch.Tensor
         An image in CIE XYZ space with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, optional
-        The RGB specification or a conversion matrix, by default 'srgb'.
-        The input is case-insensitive if it is str type.
-    white : STANDARD_ILLUMINANTS, optional
-        White point, by default 'D65'. The input is case-insensitive.
-    obs : Literal[2, '2', 10, '10'], optional
-        The degree of oberver, by default 10.
-    inplace : bool, optional
-        In-place operation or not, by default False.
+    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
+        The RGB specification or a conversion matrix for transforming image
+        from rgb to xyz. The string type is case-insensitive.
+    white : StandardIlluminants, default='D65'
+        White point. The input is case-insensitive.
+    obs : {2, '2', 10, '10'}, default=10
+        The degree of oberver.
+    inplace : bool, default=False
+        In-place operation or not.
     """
     matrix = (
         get_rgb_to_xyz_matrix(rgb_spec, white, obs)
