@@ -279,7 +279,7 @@ def white_patch_balance(
     """
     num_ch = rgb.shape[-3]
     if not torch.is_tensor(q) and q >= 1.0:
-        ch_quantile = 1.0
+        ch_quantile = torch.tensor(1.0).repeat(num_ch)
     else:
         flatten = torch.flatten(rgb.movedim(-3, 0), 1)
         if torch.is_tensor(q) and q.shape[0] == 3:
