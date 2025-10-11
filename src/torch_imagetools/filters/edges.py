@@ -35,10 +35,10 @@ def gradient_magnitude(
     TypeError
         When the type of magnitude is not one of None, 'inf', float, and int.
     """
-    if magnitude is None:
-        mag = torch.cat(derivatives)
+    if magnitude == 'cat':
+        mag = torch.stack(derivatives)
     elif magnitude in ('inf', float('inf')):
-        mag = torch.cat(derivatives)
+        mag = torch.stack(derivatives)
         mag.abs_()
         mag = torch.amax(mag, dim=0)
     elif isinstance(magnitude, int) or isinstance(magnitude, float):
@@ -47,7 +47,7 @@ def gradient_magnitude(
                 "Argument `magnitude` must be None, 'inf', or a positive number, "
                 + f'but got {magnitude}'
             )
-        mag = torch.cat(derivatives)
+        mag = torch.stack(derivatives)
         mag.abs_()
         if magnitude == 2.0:
             mag = mag.square_().sum(0).sqrt_()
