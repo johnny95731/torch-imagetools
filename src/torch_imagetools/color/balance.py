@@ -229,6 +229,65 @@ def gray_world_balance(
 
 
 @overload
+def gray_edge_balance(
+    rgb: torch.Tensor,
+    edge: torch.Tensor,
+    *,
+    ret_factors: Literal[False] = False,
+) -> torch.Tensor: ...
+@overload
+def gray_edge_balance(
+    rgb: torch.Tensor,
+    edge: torch.Tensor,
+    *,
+    ret_factors: Literal[True],
+) -> tuple[torch.Tensor, torch.Tensor]: ...
+def gray_edge_balance(
+    rgb: torch.Tensor,
+    edge: torch.Tensor,
+    *,
+    ret_factors: bool = False,
+) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+    """White balance by the gray-edge algorithm. Multiplies each channel by
+    coeff_channel = mean_of_gradient / mean_of_gradient_of_channel.
+
+    Parameters
+    ----------
+    rgb : torch.Tensor
+        Image in RGB space with shape (*, 3, H, W).
+    edge : torch.Tensor
+        The edge of the image with shape (*, 3, H, W).
+    ret_factors : bool, default=False
+        If True, returns image and scaling factors.
+
+    Returns
+    -------
+    torch.Tensor | tuple[torch.Tensor, torch.Tensor]
+        An image with the shape (*, 3, H, W). If ret_factors is True, returns
+        image and the scaling factors with shape (3,).
+    """
+    num_ch = rgb.shape[-3]
+    # Get mean values of gradients
+    ndim = edge.ndim
+    reduced = list(range(ndim))
+    reduced = reduced[:-3] + reduced[-2:]
+    ch_grad_mean = torch.abs(edge[..., :, 1:, :] - edge[..., :, :-1, :]).mean(
+        reduced
+    )
+    ch_grad_mean += torch.abs(edge[..., :, :, 1:] - edge[..., :, :, :-1]).mean(
+        reduced
+    )
+    img_grad_mean = ch_grad_mean.mean()
+
+    factors = (img_grad_mean / ch_grad_mean).reshape(num_ch, 1, 1)
+
+    balanced = (rgb * factors).clip_(0.0, 1.0)
+    if ret_factors:
+        return balanced, factors
+    return balanced
+
+
+@overload
 def white_patch_balance(
     rgb: torch.Tensor,
     q: float | torch.Tensor = 1.0,
@@ -279,10 +338,10 @@ def white_patch_balance(
     """
     num_ch = rgb.shape[-3]
     if not torch.is_tensor(q) and q >= 1.0:
-        ch_quantile = torch.tensor(1.0).repeat(num_ch)
+        ch_quantile = torch.ones(num_ch)
     else:
         flatten = torch.flatten(rgb.movedim(-3, 0), 1)
-        if torch.is_tensor(q) and q.shape[0] == 3:
+        if torch.is_tensor(q) and q.shape[0] == num_ch:
             ch_quantile = [
                 torch.quantile(flatten[i], q[i]) for i in range(num_ch)
             ]
@@ -295,4 +354,34 @@ def white_patch_balance(
     balanced = (rgb * factors).clip_(0.0, 1.0)
     if ret_factors:
         return balanced, factors
+    return balanced
+
+
+def linear_regression_balance(
+    rgb: torch.Tensor,
+) -> torch.Tensor:
+    """White balance by the linear regression. Estimation the coefficient by the
+    red and green channel and predict the blue channel.
+
+    Parameters
+    ----------
+    rgb : torch.Tensor
+        An RGB image with shape (*, C, H, W). The model will evaluate the
+        coefficients over all images in the batch.
+
+    Returns
+    -------
+    torch.Tensor
+        A balanced image with shape (*, C, H, W).
+    """
+    flattened = rgb.movedim(-3, 0).flatten(1)
+    r, g, b = flattened.unbind()
+
+    ones = torch.ones_like(r)
+    x = torch.stack([ones, r, g], dim=0)  # n x 3
+    beta = (x @ x.T).inverse() @ x @ b
+
+    balanced_b = (beta[2] * g).add_(r, alpha=beta[1]).add_(beta[0])
+    balanced_b.clip_(0.0, 1.0)
+    balanced = torch.stack([r, g, balanced_b], dim=0).reshape_as(rgb)
     return balanced
