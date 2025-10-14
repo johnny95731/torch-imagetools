@@ -7,13 +7,16 @@ __all__ = [
     'von_kries_transform',
     'balance_by_scaling',
     'gray_world_balance',
+    'gray_edge_balance',
     'white_patch_balance',
+    'linear_regression_balance',
 ]
 
 from typing import Literal, overload
 
 import torch
 
+from ..utils.helpers import align_device_type
 from ..utils.math import matrix_transform
 from .lms import CATMethod, xyz_to_lms
 
@@ -290,25 +293,26 @@ def gray_edge_balance(
 @overload
 def white_patch_balance(
     rgb: torch.Tensor,
-    q: float | torch.Tensor = 1.0,
+    q: int | float | torch.Tensor = 1.0,
     *,
     ret_factors: Literal[False] = False,
 ) -> torch.Tensor: ...
 @overload
 def white_patch_balance(
     rgb: torch.Tensor,
-    q: float | torch.Tensor = 1.0,
+    q: int | float | torch.Tensor = 1.0,
     *,
     ret_factors: Literal[True],
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 def white_patch_balance(
     rgb: torch.Tensor,
-    q: float | torch.Tensor = 1.0,
+    q: int | float | torch.Tensor = 1.0,
     *,
     ret_factors: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """White balance by generalized white patch algorithm. Multiplies each
-    channel of an RGB image by coeff_channel = 1 / qtile_of_channel.
+    channel of an RGB image by
+        coeff_channel = q_quantile_of_image / q_quantile_of_channel.
 
     When q = 1.0, it is the standard white patch balance and equivalent to
     balance by scaling for maximum = 1.
@@ -319,10 +323,10 @@ def white_patch_balance(
         An RGB Image in range of [0, 1] with shape (*, 3, H, W).
         If ndim > 3, the quantile value is calculated across multiple images,
         and images will be scaled by same factors.
-    q : float | None, default=1.0
-        Quantile. Scaling the quantile value to 1. If q is a Tensor with
-        shape (3,), the values will be regarded as the quantile of each
-        channel.
+    q : int | float | torch.Tensor, default=1.0
+        q-quantile. If q is a Tensor with shape (3,), the values will be
+        regarded as the quantile of each channel. The values will be cliped to
+        [0, 1].
     ret_factors : bool, default=False
         If False, only the image is returned.
         If True, also return the scaling factors.
@@ -336,20 +340,31 @@ def white_patch_balance(
         An RGB image and a scaling factors when `ret_factors` is True.
         The image is with shape (*, 3, H, W) and the factor is with shape (3,).
     """
-    num_ch = rgb.shape[-3]
-    if not torch.is_tensor(q) and q >= 1.0:
-        ch_quantile = torch.ones(num_ch)
-    else:
-        flatten = torch.flatten(rgb.movedim(-3, 0), 1)
-        if torch.is_tensor(q) and q.shape[0] == num_ch:
-            ch_quantile = [
-                torch.quantile(flatten[i], q[i]) for i in range(num_ch)
-            ]
-            ch_quantile = torch.tensor(ch_quantile)
-        else:  # scalar
-            ch_quantile = torch.quantile(flatten, q, dim=1)
+    if not torch.is_floating_point(rgb):
+        raise ValueError
+    flatten = torch.flatten(rgb.movedim(-3, 0), 1)
+    flatten = flatten.sort()[0].contiguous()
 
-    factors = (1.0 / ch_quantile).reshape(num_ch, 1, 1)
+    num_ch = rgb.size(-3)
+    length = flatten.size(1) - 1
+
+    if isinstance(q, float):
+        q = torch.full((num_ch,), q)
+    elif isinstance(q, int):
+        q = torch.full((num_ch,), q)
+    if q.numel() == 1:
+        q = q.repeat(num_ch)
+    q.clip_(0.0, 1.0)
+
+    q = align_device_type(q, flatten)
+    ch_quantile_ = []  # type: list[torch.Tensor]
+    for i, _q in enumerate(q):
+        _q = int(round(_q.item() * length))
+        ch_quantile_.append(flatten[i, _q])
+    ch_quantile = torch.stack(ch_quantile_)
+    img_quantile = ch_quantile.quantile(q)  # approximation
+
+    factors = (img_quantile / ch_quantile).reshape(num_ch, 1, 1)
 
     balanced = (rgb * factors).clip_(0.0, 1.0)
     if ret_factors:
