@@ -274,12 +274,7 @@ def gray_edge_balance(
     ndim = edge.ndim
     reduced = list(range(ndim))
     reduced = reduced[:-3] + reduced[-2:]
-    ch_grad_mean = torch.abs(edge[..., :, 1:, :] - edge[..., :, :-1, :]).mean(
-        reduced
-    )
-    ch_grad_mean += torch.abs(edge[..., :, :, 1:] - edge[..., :, :, :-1]).mean(
-        reduced
-    )
+    ch_grad_mean = edge.mean(reduced)
     img_grad_mean = ch_grad_mean.mean()
 
     factors = (img_grad_mean / ch_grad_mean).reshape(num_ch, 1, 1)
