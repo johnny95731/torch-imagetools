@@ -8,8 +8,8 @@ __all__ = [
 from typing import Literal, overload
 
 import torch
-from torch_imagetools.color.rgb import RGBSpec, gammaize_rgb
 
+from .rgb import RGBSpec, gammaize_rgb
 from .ciexyz import (
     StandardIlluminants,
     get_rgb_to_xyz_matrix,

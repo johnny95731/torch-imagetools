@@ -1,5 +1,10 @@
 """Corelated color temperature (CCT) module."""
 
+__all__ = [
+    'mccamy_approximation',
+    'hernandez_andre_approximation',
+]
+
 import torch
 
 
