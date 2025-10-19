@@ -1,8 +1,8 @@
 import unittest
 
 from tests.basic import ColorTest
-from torch_imagetools.color.ciexyz import rgb_to_xyz
-from torch_imagetools.color.cielab import (
+from torch_imagetools.color import (
+    rgb_to_xyz,
     lab_to_rgb,
     lab_to_xyz,
     rgb_to_lab,

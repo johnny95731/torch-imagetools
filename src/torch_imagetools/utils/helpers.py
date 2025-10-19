@@ -1,13 +1,4 @@
-__all__ = [
-    'Tensorlike',
-    'pariing',
-    'is_indexable',
-    'align_device_type',
-    'arrayize',
-    'tensorize',
-]
-
-from typing import Any, overload, TypeVar
+from typing import Any, TypeVar
 
 import numpy as np
 import torch
@@ -19,12 +10,6 @@ T = TypeVar('T')
 Tensorlike = torch.Tensor | np.ndarray | list[Number] | Number
 
 
-# fmt: off
-@overload
-def pairing(item: list[T] | tuple[T, ...]) -> tuple[T, T]: ...
-@overload
-def pairing(item: T) -> tuple[T, T]: ...
-# fmt: on
 def pairing(item: Any):
     """Converts item to a tuple with two items.
     If the item is indexble, returns first two items;

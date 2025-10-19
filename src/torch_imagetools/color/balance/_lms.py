@@ -1,40 +1,9 @@
-__all__ = [
-    'CATMethod',
-    'get_xyz_to_lms_matrix',
-    'get_lms_to_xyz_matrix',
-    'xyz_to_lms',
-    'lms_to_xyz',
-]
-
-from typing import Literal, overload
-
 import torch
 
-from ..utils.math import matrix_transform
+from ...utils.math import matrix_transform
 
 
-CATMethod = Literal[
-    'bradford',
-    'hpe',
-    'vonkries',
-    'cat97s',
-    'cat02',
-    'cam16',
-    'xyz',
-]
-"""The methods about chromatic adaptation transform (CAT).
-
-- bradford (Bradford) : The recommended method.
-- hpe (Hunt–Pointer–Estevez) : The traditional transformation method.
-- vonkries (von Kries) : Same as hpe.
-- cat97s : CIECAM97s.
-- cat02 : CIECAM02.
-- cam16 : CAM16. Not a CIE standard
-- xyz : Regards XYZ as the cone response of the human eyes.
-"""
-
-
-def get_xyz_to_lms_matrix(method: CATMethod = 'bradford'):
+def get_xyz_to_lms_matrix(method: str = 'bradford'):
     """Returns a transformation matrix for the conversion from CIE XYZ space
     to LMS space.
 
@@ -49,7 +18,7 @@ def get_xyz_to_lms_matrix(method: CATMethod = 'bradford'):
         The transformation matrix with shape (3, 3).
     """
     method = method.lower()
-    data: dict[CATMethod] = {
+    data = {
         'bradford': (
             (0.8951, 0.2664, -0.1614),
             (-0.7502, 1.7135, 0.0367),
@@ -91,7 +60,7 @@ def get_xyz_to_lms_matrix(method: CATMethod = 'bradford'):
     return matrix
 
 
-def get_lms_to_xyz_matrix(method: CATMethod = 'bradford'):
+def get_lms_to_xyz_matrix(method: str = 'bradford'):
     """Returns a transformation matrix for the conversion from LMS space to
     CIE XYZ space.
 
@@ -110,24 +79,9 @@ def get_lms_to_xyz_matrix(method: CATMethod = 'bradford'):
     return matrix
 
 
-@overload
 def xyz_to_lms(
     xyz: torch.Tensor,
-    method: CATMethod = 'bradford',
-    *,
-    ret_matrix: bool = False,
-) -> torch.Tensor: ...
-@overload
-def xyz_to_lms(
-    xyz: torch.Tensor,
-    method: CATMethod = 'bradford',
-    *,
-    ret_matrix: bool = True,
-) -> tuple[torch.Tensor, torch.Tensor]: ...
-def xyz_to_lms(
-    xyz: torch.Tensor,
-    method: CATMethod = 'bradford',
-    *,
+    method: str = 'bradford',
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Converts an image from CIE XYZ space to LMS space.
@@ -154,24 +108,9 @@ def xyz_to_lms(
     return lms
 
 
-@overload
 def lms_to_xyz(
     lms: torch.Tensor,
-    method: CATMethod = 'bradford',
-    *,
-    ret_matrix: bool = False,
-) -> torch.Tensor: ...
-@overload
-def lms_to_xyz(
-    lms: torch.Tensor,
-    method: CATMethod = 'bradford',
-    *,
-    ret_matrix: bool = True,
-) -> tuple[torch.Tensor, torch.Tensor]: ...
-def lms_to_xyz(
-    lms: torch.Tensor,
-    method: CATMethod = 'bradford',
-    *,
+    method: str = 'bradford',
     ret_matrix: bool = False,
 ):
     """Converts an image from LMS space to CIE XYZ space.

@@ -1,11 +1,6 @@
-__all__ = [
-    'rgb_to_hsl',
-    'hsl_to_rgb',
-]
-
 import torch
 
-from .hsv import hsv_helper
+from ._hsv import hsv_helper
 
 
 def rgb_to_hsl(rgb: torch.Tensor) -> torch.Tensor:

@@ -2,29 +2,19 @@
 algorithm, etc...
 """
 
-__all__ = [
-    'get_von_kries_transform_matrix',
-    'von_kries_transform',
-    'balance_by_scaling',
-    'gray_world_balance',
-    'gray_edge_balance',
-    'white_patch_balance',
-    'linear_regression_balance',
-]
-
 from typing import Literal, overload
 
 import torch
 
-from ..utils.helpers import align_device_type
-from ..utils.math import matrix_transform
-from .lms import CATMethod, xyz_to_lms
+from ...utils.helpers import align_device_type
+from ...utils.math import matrix_transform
+from ._lms import xyz_to_lms
 
 
 def get_von_kries_transform_matrix(
     xyz_white: torch.Tensor,
     xyz_target_white: torch.Tensor,
-    method: CATMethod = 'bradford',
+    method: str = 'bradford',
 ) -> torch.Tensor:
     """Returns a transformation matrix for von Kries adaptation, which
     converts colors from a illuminant to another illuminant.
@@ -59,8 +49,7 @@ def von_kries_transform(
     xyz: torch.Tensor,
     xyz_white: torch.Tensor,
     xyz_target_white: torch.Tensor,
-    method: CATMethod | torch.Tensor = 'bradford',
-    *,
+    method: str | torch.Tensor = 'bradford',
     ret_matrix: Literal[False] = False,
 ) -> torch.Tensor: ...
 @overload
@@ -68,16 +57,14 @@ def von_kries_transform(
     xyz: torch.Tensor,
     xyz_white: torch.Tensor,
     xyz_target_white: torch.Tensor,
-    method: CATMethod | torch.Tensor = 'bradford',
-    *,
-    ret_matrix: Literal[True],
+    method: str | torch.Tensor = 'bradford',
+    ret_matrix: Literal[True] = True,
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 def von_kries_transform(
     xyz: torch.Tensor,
     xyz_white: torch.Tensor,
     xyz_target_white: torch.Tensor,
-    method: CATMethod | torch.Tensor = 'bradford',
-    *,
+    method: str | torch.Tensor = 'bradford',
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Applies chromatic adaptation transformation to an image in CIE XYZ
@@ -125,24 +112,9 @@ def von_kries_transform(
     return new_xyz
 
 
-@overload
 def balance_by_scaling(
     img: torch.Tensor,
     scaled_max: int | float | torch.Tensor,
-    *,
-    ret_factors: Literal[False] = False,
-) -> torch.Tensor: ...
-@overload
-def balance_by_scaling(
-    img: torch.Tensor,
-    scaled_max: int | float | torch.Tensor,
-    *,
-    ret_factors: Literal[True],
-) -> tuple[torch.Tensor, torch.Tensor]: ...
-def balance_by_scaling(
-    img: torch.Tensor,
-    scaled_max: int | float | torch.Tensor,
-    *,
     ret_factors: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Wrong von Kries transform. Multiplies an image by
@@ -180,21 +152,8 @@ def balance_by_scaling(
     return balanced
 
 
-@overload
 def gray_world_balance(
     rgb: torch.Tensor,
-    *,
-    ret_factors: Literal[False] = False,
-) -> torch.Tensor: ...
-@overload
-def gray_world_balance(
-    rgb: torch.Tensor,
-    *,
-    ret_factors: Literal[True],
-) -> tuple[torch.Tensor, torch.Tensor]: ...
-def gray_world_balance(
-    rgb: torch.Tensor,
-    *,
     ret_factors: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """White balance by the gray-world algorithm. Multiplies each channel by
@@ -231,24 +190,9 @@ def gray_world_balance(
     return balanced
 
 
-@overload
 def gray_edge_balance(
     rgb: torch.Tensor,
     edge: torch.Tensor,
-    *,
-    ret_factors: Literal[False] = False,
-) -> torch.Tensor: ...
-@overload
-def gray_edge_balance(
-    rgb: torch.Tensor,
-    edge: torch.Tensor,
-    *,
-    ret_factors: Literal[True],
-) -> tuple[torch.Tensor, torch.Tensor]: ...
-def gray_edge_balance(
-    rgb: torch.Tensor,
-    edge: torch.Tensor,
-    *,
     ret_factors: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """White balance by the gray-edge algorithm. Multiplies each channel by
@@ -285,24 +229,9 @@ def gray_edge_balance(
     return balanced
 
 
-@overload
 def white_patch_balance(
     rgb: torch.Tensor,
     q: int | float | torch.Tensor = 1.0,
-    *,
-    ret_factors: Literal[False] = False,
-) -> torch.Tensor: ...
-@overload
-def white_patch_balance(
-    rgb: torch.Tensor,
-    q: int | float | torch.Tensor = 1.0,
-    *,
-    ret_factors: Literal[True],
-) -> tuple[torch.Tensor, torch.Tensor]: ...
-def white_patch_balance(
-    rgb: torch.Tensor,
-    q: int | float | torch.Tensor = 1.0,
-    *,
     ret_factors: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """White balance by generalized white patch algorithm. Multiplies each

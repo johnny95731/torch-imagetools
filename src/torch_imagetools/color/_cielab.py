@@ -1,17 +1,9 @@
-__all__ = [
-    'xyz_to_lab',
-    'lab_to_xyz',
-    'rgb_to_lab',
-    'lab_to_rgb',
-]
-
-from typing import Literal, overload
+from typing import Literal
 
 import torch
 
-from .rgb import RGBSpec, gammaize_rgb
-from .ciexyz import (
-    StandardIlluminants,
+from ._rgb import gammaize_rgb
+from ._ciexyz import (
     get_rgb_to_xyz_matrix,
     rgb_to_xyz,
     xyz_to_rgb,
@@ -49,30 +41,11 @@ def _lab_helper_inv(value: torch.Tensor):
     return output
 
 
-@overload
 def xyz_to_lab(
     xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
+    rgb_spec: str | torch.Tensor = 'srgb',
+    white: str = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: Literal[False] = False,
-) -> torch.Tensor: ...
-@overload
-def xyz_to_lab(
-    xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: Literal[True],
-) -> tuple[torch.Tensor, torch.Tensor]: ...
-def xyz_to_lab(
-    xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Converts an image from CIE XYZ space to CIE LAB space.
@@ -125,30 +98,11 @@ def xyz_to_lab(
     return lab
 
 
-@overload
-def lab_to_xyz(
-    xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: Literal[False] = False,
-) -> torch.Tensor: ...
-@overload
-def lab_to_xyz(
-    xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: Literal[True],
-) -> tuple[torch.Tensor, torch.Tensor]: ...
 def lab_to_xyz(
     lab: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
+    rgb_spec: str | torch.Tensor = 'srgb',
+    white: str = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
-    *,
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Converts an image from CIE LAB space to CIE XYZ space.
@@ -199,30 +153,11 @@ def lab_to_xyz(
     return xyz
 
 
-@overload
-def rgb_to_lab(
-    xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: Literal[False] = False,
-) -> torch.Tensor: ...
-@overload
-def rgb_to_lab(
-    xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: Literal[True],
-) -> tuple[torch.Tensor, torch.Tensor]: ...
 def rgb_to_lab(
     rgb: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
+    rgb_spec: str | torch.Tensor = 'srgb',
+    white: str = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
-    *,
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Converts an image from RGB space to CIE LAB space.
@@ -266,10 +201,9 @@ def rgb_to_lab(
 
 def lab_to_rgb(
     lab: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
+    rgb_spec: str | torch.Tensor = 'srgb',
+    white: str = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
-    *,
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Converts an image from CIE LAB space to RGB space.

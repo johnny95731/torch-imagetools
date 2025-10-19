@@ -1,82 +1,16 @@
-__all__ = [
-    'StandardIlluminants',
-    'RGBModel',
-    'WhitePoint',
-    'get_white_point',
-    'get_rgb_model',
-    'get_rgb_to_xyz_matrix',
-    'get_xyz_to_rgb_matrix',
-    'rgb_to_xyz',
-    'xyz_to_rgb',
-    'normalize_xyz',
-    'unnormalize_xyz',
-]
-
-from typing import Literal, TypedDict, overload
+from typing import Literal
 
 import numpy as np
 import torch
 
-from .rgb import RGBSpec, gammaize_rgb, linearize_rgb
+from ._rgb import gammaize_rgb, linearize_rgb
 from ..utils.math import matrix_transform
 
 
-StandardIlluminants = Literal[
-    'A',
-    'B',
-    'C',
-    'D50',
-    'D55',
-    'D65',
-    'D75',
-    'E',
-    'F1',
-    'F2',
-    'F3',
-    'F4',
-    'F5',
-    'F6',
-    'F7',
-    'F8',
-    'F9',
-    'F10',
-    'F11',
-    'F12',
-]
-
-
-class RGBModel(TypedDict):
-    """Informations about the RGB specification."""
-
-    name: str
-    """The name of the color space."""
-    r: tuple[float, float]
-    """(x, y) value of red in xyY space."""
-    g: tuple[float, float]
-    """(x, y) value of green in xyY space."""
-    b: tuple[float, float]
-    """(x, y) value of blue in xyY space."""
-    w: StandardIlluminants
-    """The name of the white point."""
-
-
-class WhitePoint(TypedDict):
-    """Informations about the white point / standard illuminant."""
-
-    name: StandardIlluminants
-    """The name of the standard illuminant."""
-    xy: float
-    """The (x, y) values in xyY space."""
-    cct: int
-    """The correlated color temperature."""
-    obs: Literal[2, 10]
-    """The degree of observer."""
-
-
 def get_white_point(
-    white: StandardIlluminants,
-    obs: Literal[2, '2', 10, '10'] = 10,
-) -> WhitePoint:
+    white: str,
+    obs: str | int = 10,
+):
     """Returns the name, x, y, CCT, and degree of observer of the standard
     illuminant.
 
@@ -145,7 +79,7 @@ def get_white_point(
         key = 'D65'
 
     x, y, cct = data[key]
-    white_point: WhitePoint = {
+    white_point = {
         'name': white,
         'xy': (x, y),
         'cct': cct,
@@ -154,7 +88,7 @@ def get_white_point(
     return white_point
 
 
-def get_rgb_model(rgb_spec: RGBSpec) -> RGBModel:
+def get_rgb_model(rgb_spec: str):
     """Returns a dict containing informations about a RGB specification.
 
     Parameters
@@ -163,7 +97,7 @@ def get_rgb_model(rgb_spec: RGBSpec) -> RGBModel:
         Name of the specification, such as sRGB, displayP3, and adobeRGB....
         The input is case-insensitive.
     """
-    spaces: dict[str, RGBModel] = {
+    spaces = {
         'adobergb': {
             'r': (0.6400, 0.3300),
             'g': (0.2100, 0.7100),
@@ -217,9 +151,9 @@ def get_rgb_model(rgb_spec: RGBSpec) -> RGBModel:
 
 
 def get_rgb_to_xyz_matrix(
-    rgb_spec: RGBSpec,
-    white: StandardIlluminants,
-    obs: Literal[2, '2', 10, '10'] = 10,
+    rgb_spec: str,
+    white: str,
+    obs: int | str = 10,
 ) -> torch.Tensor:
     """Evaluate the matrix for converting RGB to CIE XYZ by the given RGB
     model, white point, and degree of observer.
@@ -265,8 +199,8 @@ def get_rgb_to_xyz_matrix(
 
 
 def get_xyz_to_rgb_matrix(
-    rgb_spec: RGBSpec,
-    white: StandardIlluminants,
+    rgb_spec: str,
+    white: str,
     obs: Literal[2, 10] = 10,
 ) -> torch.Tensor:
     matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
@@ -274,30 +208,11 @@ def get_xyz_to_rgb_matrix(
     return matrix
 
 
-@overload
 def rgb_to_xyz(
     rgb: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
+    rgb_spec: str | torch.Tensor = 'srgb',
+    white: str = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: bool = False,
-) -> torch.Tensor: ...
-@overload
-def rgb_to_xyz(
-    rgb: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: bool = True,
-) -> tuple[torch.Tensor, torch.Tensor]: ...
-def rgb_to_xyz(
-    rgb: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Converts an image from RGB space to CIE XYZ space.
@@ -354,30 +269,11 @@ def rgb_to_xyz(
     return xyz
 
 
-@overload
 def xyz_to_rgb(
     xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
+    rgb_spec: str | torch.Tensor = 'srgb',
+    white: str = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: Literal[False] = False,
-) -> torch.Tensor: ...
-@overload
-def xyz_to_rgb(
-    xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: Literal[True],
-) -> tuple[torch.Tensor, torch.Tensor]: ...
-def xyz_to_rgb(
-    xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Converts an image from CIE XYZ space to RGB space.
@@ -425,10 +321,9 @@ def xyz_to_rgb(
 
 def normalize_xyz(
     xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
+    rgb_spec: str | torch.Tensor = 'srgb',
+    white: str = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
-    *,
     inplace: bool = False,
 ) -> torch.Tensor:
     """Normalize the image in CIE XYZ to [0, 1] by evaluting
@@ -465,10 +360,9 @@ def normalize_xyz(
 
 def unnormalize_xyz(
     xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
+    rgb_spec: str | torch.Tensor = 'srgb',
+    white: str = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
-    *,
     inplace: bool = False,
 ) -> torch.Tensor:
     """The inverse function of normalize_xyz.

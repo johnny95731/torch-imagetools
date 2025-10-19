@@ -76,16 +76,14 @@ Reference
     vol. 23, no. 4, pp. 291-9, Aug. 2001.
 """
 
-from .balance import *
-from .cielab import *
-from .cieluv import *
-from .ciexyz import *
-from .grayscale import *
-from .hed import *
-from .hsi import *
-from .hsl import *
-from .hsv import *
-from .hwb import *
-from .lms import *
-from .rgb import *
-from .yuv import *
+from ._cielab import *
+from ._cieluv import *
+from ._ciexyz import *
+from ._grayscale import *
+from ._hed import *
+from ._hsi import *
+from ._hsl import *
+from ._hsv import *
+from ._hwb import *
+from ._rgb import *
+from ._yuv import *

@@ -1,7 +1,7 @@
 import unittest
 
 from tests.basic import ColorTest
-from torch_imagetools.color.hsl import rgb_to_hsl, hsl_to_rgb
+from torch_imagetools.color import rgb_to_hsl, hsl_to_rgb
 
 
 class HSL(ColorTest):

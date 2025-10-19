@@ -1,13 +1,8 @@
 """Color conversion functions between RGB space and HWB space"""
 
-__all__ = [
-    'rgb_to_hwb',
-    'hwb_to_rgb',
-]
-
 import torch
 
-from .hsv import hsv_helper, hsv_to_rgb
+from ._hsv import hsv_helper, hsv_to_rgb
 
 
 def rgb_to_hwb(rgb: torch.Tensor) -> torch.Tensor:

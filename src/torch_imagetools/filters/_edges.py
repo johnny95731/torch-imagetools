@@ -1,11 +1,4 @@
-__all__ = [
-    'gradient_magnitude',
-    'laplacian',
-    'robinson',
-    'kirsch',
-]
-
-from typing import Literal, overload
+from typing import Literal
 
 import torch
 
@@ -15,25 +8,29 @@ from ..utils.math import atan2, filter2d
 
 def gradient_magnitude(
     *derivatives: torch.Tensor,
-    magnitude: Literal['cat', 'inf'] | int | float = 2,
+    magnitude: Literal['stack', 'inf', '-inf'] | int | float = 2,
 ) -> torch.Tensor:
-    """Computes the magnitude of the gradients: norm(gradient)
+    """Computes the magnitude of the gradients: norm(gradients)
 
     Parameters
     ----------
     *derivatives
         The derivatives of an image.
-    magnitude : {'cat', 'inf'} | int | float, default=2
+    magnitude : {'stack', 'inf', '-inf'} | int | float, default=2
         The stradgy of magnitude computation.
-        'cat' : Concatenate derivatives.
+        'stack' : Stack derivatives with fusion.
         'inf' : Taking Supremum norm. Preserves the maximum alone all
                 derivatives.
-        int or float : Applying p-norm to the derivatives.
+        '-inf' : Taking the minimum alone all derivatives.
+        int or float : Applying p-norm to the derivatives if p > 0.
 
     Returns
     -------
     torch.Tensor
-        The magnitude of gradient. If mag
+        The magnitude of gradient.\\
+        The tensor has shape (*, C, H, W) if `magnitude` is not 'stack'.
+        Otherwise, with shape (N, *, C, H, W) where N is the number of the
+        derivatives.
 
     Raises
     ------
@@ -42,7 +39,7 @@ def gradient_magnitude(
     TypeError
         When the type of magnitude is not one of None, 'inf', float, and int.
     """
-    if magnitude == 'cat':
+    if magnitude == 'stack':
         mag = torch.stack(derivatives)
     elif magnitude in ('inf', float('inf')):
         mag = torch.stack(derivatives)
@@ -72,7 +69,6 @@ def gradient_magnitude(
 
 def laplacian(
     img: torch.Tensor,
-    *,
     diagonal: bool = False,
     inflection_only: bool = False,
 ) -> torch.Tensor:
@@ -118,58 +114,10 @@ def laplacian(
     return grad
 
 
-@overload
 def robinson(
     img: torch.Tensor,
-    *,
-    ret_angle: Literal[False] = False,
-) -> torch.Tensor:
-    """Edge detection by the Robinson compass operators.
-
-    Parameters
-    ----------
-    img : torch.Tensor
-        An image with shape (*, C, H, W).
-    ret_angle : {False}, default=False
-        Returns the direction of gradient or not.
-
-    Returns
-    -------
-    torch.Tensor
-        Gradient's magnitude when `ret_angle` is False.
-        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
-        Otherwise, with shape (2, *, C, H, W) and index zero is the
-    """
-
-
-@overload
-def robinson(
-    img: torch.Tensor,
-    *,
-    ret_angle: Literal[False] = False,
-) -> tuple[torch.Tensor, torch.Tensor]:
-    """Edge detection by the Robinson compass operators.
-
-    Parameters
-    ----------
-    img : torch.Tensor
-        An image with shape (*, C, H, W).
-    ret_angle : {False}, default=False
-        Returns the direction of gradient or not.
-
-    Returns
-    -------
-    torch.Tensor
-        Gradient's magnitude when `ret_angle` is False.
-        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
-        Otherwise, with shape (2, *, C, H, W) and index zero is the
-    """
-
-
-def robinson(
-    img: torch.Tensor,
-    *,
     ret_angle: bool = False,
+    angle_unit: Literal['rad', 'deg'] = 'deg',
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Edge detection by the Robinson compass operators.
 
@@ -179,18 +127,17 @@ def robinson(
         An image with shape (*, C, H, W).
     ret_angle : bool, default=False
         Returns the direction of gradient or not.
+    angle_unit : {'rad', 'deg'}, default='deg'
+        The representation of angle is in radian or in degree.
 
     Returns
     -------
     torch.Tensor
-        Gradient's magnitude when `ret_angle` is False.
-        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
-        Otherwise, with shape (2, *, C, H, W) and index zero is the
-    tuple[torch.Tensor, torch.Tensor]
-        Gradient's magnitude and direction when `ret_angle` is True.
-        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
-        Otherwise, with shape (2, *, C, H, W) and index zero is the
-        y-direction gradient.
+        Image gradient's magnitude. The value is the maximum along all compass
+        kernel.
+    torch.Tensor
+        Image gradient's direction with shape (*, C, H, W) if `ret_angle` is
+        True. Otherwise, returns magnitude only.
     """
     kernel_y = torch.tensor((
         (-1, -2, -1),
@@ -212,17 +159,17 @@ def robinson(
 
     mag = gradient_magnitude(grad_y, grad_x, grad_45, grad_135, magnitude='inf')
     if ret_angle:
-        angle = atan2(grad_y, grad_x)
+        angle = atan2(grad_y, grad_x, angle_unit=angle_unit)
         return mag, angle
     return mag
 
 
 def kirsch(
     img: torch.Tensor,
-    *,
     ret_angle: bool = False,
+    angle_unit: Literal['rad', 'deg'] = 'deg',
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
-    """Edge detection by the Kirsch operators.
+    """Edge detection by the Kirsch compass operators.
 
     Parameters
     ----------
@@ -230,18 +177,17 @@ def kirsch(
         An image with shape (*, C, H, W).
     ret_angle : bool, default=False
         Returns the direction of gradient or not.
+    angle_unit : {'rad', 'deg'}, default='deg'
+        The representation of angle is in radian or in degree.
 
     Returns
     -------
     torch.Tensor
-        Gradient's magnitude when `ret_angle` is False.
-        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
-        Otherwise, with shape (2, *, C, H, W) and index zero is the
-    tuple[torch.Tensor, torch.Tensor]
-        Gradient's magnitude and direction when `ret_angle` is True.
-        The magnitude is shape (*, C, H, W) if `magnitude` is not 'cat'.
-        Otherwise, with shape (2, *, C, H, W) and index zero is the
-        y-direction gradient.
+        Image gradient's magnitude. The value is the maximum along all compass
+        kernel.
+    torch.Tensor
+        Image gradient's direction with shape (*, C, H, W) if `ret_angle` is
+        True. Otherwise, returns magnitude only.
     """
     kernel_y = torch.tensor((
         (-3, -3, -3),
@@ -282,6 +228,6 @@ def kirsch(
         magnitude='inf',
     )
     if ret_angle:
-        angle = atan2(grad_south, grad_east)
+        angle = atan2(grad_south, grad_east, angle_unit=angle_unit)
         return mag, angle
     return mag

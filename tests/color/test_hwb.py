@@ -1,7 +1,7 @@
 import unittest
 
 from tests.basic import ColorTest
-from torch_imagetools.color.hwb import rgb_to_hwb, hwb_to_rgb
+from torch_imagetools.color import rgb_to_hwb, hwb_to_rgb
 
 
 class HWB(ColorTest):

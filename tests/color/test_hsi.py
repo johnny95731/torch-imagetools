@@ -1,7 +1,7 @@
 import unittest
 
 from tests.basic import ColorTest
-from torch_imagetools.color.hsi import rgb_to_hsi, hsi_to_rgb
+from torch_imagetools.color import rgb_to_hsi, hsi_to_rgb
 
 
 class HSI(ColorTest):

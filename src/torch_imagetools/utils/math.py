@@ -1,10 +1,3 @@
-__all__ = [
-    'matrix_transform',
-    'filter2d',
-    'atan2',
-    'p_norm',
-]
-
 from typing import Literal
 
 import torch
@@ -85,7 +78,6 @@ def filter2d(
 def atan2(
     y: torch.Tensor,
     x: torch.Tensor,
-    *,
     angle_unit: Literal['rad', 'deg'] = 'deg',
 ) -> torch.Tensor:
     """Computes the direction of an image gradient.
@@ -97,7 +89,7 @@ def atan2(
     x : torch.Tensor
         The x-component.
     angle_unit : {'rad', 'deg'}, default='deg'
-        Represents the angle in radian or in degree.
+        The representation of angle is in radian or in degree.
 
     Returns
     -------

@@ -1,17 +1,9 @@
-__all__ = [
-    'xyz_to_luv',
-    'luv_to_xyz',
-    'rgb_to_luv',
-    'luv_to_rgb',
-]
-
-from typing import Literal, overload
+from typing import Literal
 
 import torch
 
-from .rgb import RGBSpec, gammaize_rgb
-from .ciexyz import (
-    StandardIlluminants,
+from ._rgb import gammaize_rgb
+from ._ciexyz import (
     get_rgb_to_xyz_matrix,
     rgb_to_xyz,
     xyz_to_rgb,
@@ -54,30 +46,11 @@ def _calc_uv_prime(x: torch.Tensor, y: torch.Tensor, z: torch.Tensor):
     return u_prime, v_prime
 
 
-@overload
 def xyz_to_luv(
     xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
+    rgb_spec: str | torch.Tensor = 'srgb',
+    white: str = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: Literal[False] = False,
-) -> torch.Tensor: ...
-@overload
-def xyz_to_luv(
-    xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: Literal[True],
-) -> tuple[torch.Tensor, torch.Tensor]: ...
-def xyz_to_luv(
-    xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Converts an image from CIE XYZ space to CIE LUV space.
@@ -131,30 +104,11 @@ def xyz_to_luv(
     return luv
 
 
-@overload
 def luv_to_xyz(
     luv: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
+    rgb_spec: str | torch.Tensor = 'srgb',
+    white: str = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: Literal[False] = False,
-) -> torch.Tensor: ...
-@overload
-def luv_to_xyz(
-    luv: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: Literal[True],
-) -> tuple[torch.Tensor, torch.Tensor]: ...
-def luv_to_xyz(
-    luv: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
     ret_matrix: bool = False,
 ) -> torch.Tensor:
     """Converts an image from CIE LUV space to CIE XYZ space.
@@ -218,30 +172,11 @@ def luv_to_xyz(
     return xyz
 
 
-@overload
-def rgb_to_luv(
-    xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: Literal[False] = False,
-) -> torch.Tensor: ...
-@overload
-def rgb_to_luv(
-    xyz: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
-    *,
-    ret_matrix: Literal[True],
-) -> tuple[torch.Tensor, torch.Tensor]: ...
 def rgb_to_luv(
     rgb: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
+    rgb_spec: str | torch.Tensor = 'srgb',
+    white: str = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
-    *,
     ret_matrix: bool = False,
 ) -> torch.Tensor:
     """Converts an image from RGB space to CIE LUV space.
@@ -285,10 +220,9 @@ def rgb_to_luv(
 
 def luv_to_rgb(
     luv: torch.Tensor,
-    rgb_spec: RGBSpec | torch.Tensor = 'srgb',
-    white: StandardIlluminants = 'D65',
+    rgb_spec: str | torch.Tensor = 'srgb',
+    white: str = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
-    *,
     ret_matrix: bool = False,
 ) -> torch.Tensor:
     """Converts an image from CIE LUV space to RGB space.

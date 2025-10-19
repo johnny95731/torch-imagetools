@@ -10,7 +10,7 @@ import torch
 
 def mccamy_approximation(
     xy: torch.Tensor,
-) -> float | torch.Tensor:
+) -> torch.Tensor:
     """Calculates CCT from xy chromaticity coordinates by McCamy's
     approximation.
 
