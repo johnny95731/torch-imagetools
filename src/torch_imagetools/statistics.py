@@ -11,6 +11,8 @@ def combine_mean_std(
     by computing its sub-datasets. To see the inference of the formula,
     check [1].
 
+    This function is not jit-able.
+
     Parameters
     ----------
     stats : tuple[torch.Tensor, torch.Tensor, int]
@@ -77,7 +79,7 @@ def estimate_noise_from_wavelet(hh: torch.Tensor) -> float:
     if hh.ndim <= 3:
         sigma_est = torch.median(hh)
     else:
-        num = torch.prod(hh.shape[-3:])
+        num = int(hh.shape[-3] * hh.shape[-2] * hh.shape[-1])
         hh = hh.view(-1, num)
         sigma_est = torch.median(hh, dim=1).values
 
@@ -116,14 +118,14 @@ def estimate_noise_from_wavelet_2(
         Mar. 2018, doi: 10.1088/1757-899x/331/1/012019.
     """
     sigma_est = estimate_noise_from_wavelet(hh) * (255.0 / maximum)
-    poly_coeffs = [
+    poly_coeffs = (
         -1.707,
         1.383,
         -2.784e-2,
         8.695e-4,
         -1.092e-5,
         5.404e-8,
-    ]
+    )
 
     sigma = 0.0
     pow = 1.0

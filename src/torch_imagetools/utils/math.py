@@ -1,5 +1,3 @@
-from typing import Literal
-
 import torch
 
 from ..utils.helpers import align_device_type
@@ -55,10 +53,10 @@ def filter2d(
 
     kernel = align_device_type(kernel, img)
     if kernel.ndim == 1:
-        kernel = kernel.view(1, 1, 1, *kernel.shape)
+        kernel = kernel.view(1, 1, 1, kernel.shape[0])
         kernel = kernel.repeat(num_ch, 1, 1, 1)
     elif kernel.ndim == 2:
-        kernel = kernel.view(1, 1, *kernel.shape)
+        kernel = kernel.view(1, 1, kernel.shape[0], kernel.shape[1])
         kernel = kernel.repeat(num_ch, 1, 1, 1)
     elif kernel.ndim == 3:
         kernel = kernel.repeat(num_ch, 1, 1).unsqueeze_(1)
@@ -78,7 +76,7 @@ def filter2d(
 def atan2(
     y: torch.Tensor,
     x: torch.Tensor,
-    angle_unit: Literal['rad', 'deg'] = 'deg',
+    angle_unit: str = 'deg',
 ) -> torch.Tensor:
     """Computes the direction of an image gradient.
 
@@ -113,7 +111,7 @@ def atan2(
 
 def p_norm(
     img: torch.Tensor,
-    p: float | Literal['inf', '-inf'],
+    p: float | str,
 ) -> torch.Tensor:
     """Computes the p-norm of an image.
 
@@ -121,7 +119,7 @@ def p_norm(
     ----------
     img : torch.Tensor
         Image, a tensor with shape (*, C, H, W).
-    p : float
+    p : float | string of float
         The exponent value.
 
     Returns
@@ -129,12 +127,15 @@ def p_norm(
     torch.Tensor
         The p-norm value with shape (*,).
     """
-    if p == float('inf') or p == 'inf':
-        res = img.abs().amax(dim=(-3, -2, -1))
-    elif p == -float('inf') or p == '-inf':
-        res = img.abs().amin(dim=(-3, -2, -1))
+    if isinstance(p, str):
+        p = float(p)
+
+    img = img.abs()
+    if p == float('inf'):
+        res = img.amax(dim=(-3, -2, -1))
+    elif p == float('-inf'):
+        res = img.amin(dim=(-3, -2, -1))
     else:
-        num_elements = img.size(-3) * img.size(-2) * img.size(-1)
-        res = (img.abs() ** p).sum(dim=(-3, -2, -1)) / num_elements
+        res = (img**p).sum(dim=(-3, -2, -1))
         res = res ** (1 / p)
     return res

@@ -1,5 +1,3 @@
-from typing import Literal
-
 import torch
 
 from ..utils.helpers import align_device_type
@@ -7,17 +5,20 @@ from ..utils.math import atan2, filter2d
 
 
 def gradient_magnitude(
-    *derivatives: torch.Tensor,
-    magnitude: Literal['stack', 'inf', '-inf'] | int | float = 2,
+    grad_y: torch.Tensor,
+    grad_x: torch.Tensor,
+    magnitude: str | int | float = 2,
 ) -> torch.Tensor:
     """Computes the magnitude of the gradients: norm(gradients)
 
     Parameters
     ----------
-    *derivatives
-        The derivatives of an image.
+    grad_y
+        The derivatives with respect to y of an image.
+    grad_x
+        The derivatives with respect to x of an image.
     magnitude : {'stack', 'inf', '-inf'} | int | float, default=2
-        The stradgy of magnitude computation.
+        The strategy of magnitude computation.
         'stack' : Stack derivatives with fusion.
         'inf' : Taking Supremum norm. Preserves the maximum alone all
                 derivatives.
@@ -39,30 +40,36 @@ def gradient_magnitude(
     TypeError
         When the type of magnitude is not one of None, 'inf', float, and int.
     """
-    if magnitude == 'stack':
-        mag = torch.stack(derivatives)
-    elif magnitude in ('inf', float('inf')):
-        mag = torch.stack(derivatives)
-        mag.abs_()
+    if isinstance(magnitude, str) and magnitude == 'stack':
+        mag = torch.stack((grad_y, grad_x))
+        return mag
+    elif isinstance(magnitude, str):
+        magnitude = float(magnitude)
+    elif isinstance(magnitude, int):
+        magnitude = float(magnitude)
+
+    mag = torch.stack((grad_y, grad_x))
+    mag = mag.abs_()
+    if magnitude == float('inf'):
         mag = torch.amax(mag, dim=0)
-    elif isinstance(magnitude, int) or isinstance(magnitude, float):
+    elif magnitude == float('-inf'):
+        mag = torch.amin(mag, dim=0)
+    elif isinstance(magnitude, float):
         if magnitude < 0:
             raise ValueError(
-                "Argument `magnitude` must be None, 'inf', or a positive number, "
-                + f'but got {magnitude}'
+                "Argument `magnitude` must be 'stack', 'inf', '-inf', or a "
+                + f'positive number, but got {magnitude}'
             )
-        mag = torch.stack(derivatives)
-        mag.abs_()
-        if magnitude == 2.0:
-            mag = mag.square_().sum(0).sqrt_()
-        elif magnitude != 1.0:
-            mag = mag.pow_(magnitude).sum(0).pow_(1 / magnitude)
-        else:
+        if magnitude == 1.0:
             mag = mag.sum(0)
+        elif magnitude == 2.0:
+            mag = mag.square_().sum(0).sqrt_()
+        else:
+            mag = mag.pow_(magnitude).sum(0).pow_(1 / magnitude)
     else:
         raise TypeError(
-            "Argument `magnitude` must be None, 'inf', or a positive number, "
-            + f'but got type {type(magnitude)}'
+            "Argument `magnitude` must be 'stack', 'inf', '-inf', or a "
+            + f'positive number, but got {magnitude}'
         )
     return mag
 
@@ -117,7 +124,7 @@ def laplacian(
 def robinson(
     img: torch.Tensor,
     ret_angle: bool = False,
-    angle_unit: Literal['rad', 'deg'] = 'deg',
+    angle_unit: str = 'deg',
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Edge detection by the Robinson compass operators.
 
@@ -157,7 +164,8 @@ def robinson(
     grad_45 = filter2d(img, kernel_45)
     grad_135 = filter2d(img, kernel_45.flip(0))
 
-    mag = gradient_magnitude(grad_y, grad_x, grad_45, grad_135, magnitude='inf')
+    mag = torch.stack((grad_y, grad_x, grad_45, grad_135))
+    mag = mag.abs_().amax(dim=0)
     if ret_angle:
         angle = atan2(grad_y, grad_x, angle_unit=angle_unit)
         return mag, angle
@@ -167,7 +175,7 @@ def robinson(
 def kirsch(
     img: torch.Tensor,
     ret_angle: bool = False,
-    angle_unit: Literal['rad', 'deg'] = 'deg',
+    angle_unit: str = 'deg',
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Edge detection by the Kirsch compass operators.
 
@@ -216,7 +224,7 @@ def kirsch(
     grad_ne = filter2d(img, kernel_45.flip(0))
     grad_nw = filter2d(img, kernel_135.flip(0))
 
-    mag = gradient_magnitude(
+    mag = torch.stack((
         grad_south,
         grad_north,
         grad_east,
@@ -225,8 +233,8 @@ def kirsch(
         grad_sw,
         grad_ne,
         grad_nw,
-        magnitude='inf',
-    )
+    ))
+    mag = mag.abs_().amax(dim=0)
     if ret_angle:
         angle = atan2(grad_south, grad_east, angle_unit=angle_unit)
         return mag, angle

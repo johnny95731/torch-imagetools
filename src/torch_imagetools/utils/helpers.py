@@ -13,7 +13,9 @@ Tensorlike = torch.Tensor | np.ndarray | list[Number] | Number
 def pairing(item: Any):
     """Converts item to a tuple with two items.
     If the item is indexble, returns first two items;
-    otherwise, returns (item, item)
+    otherwise, returns (item, item).
+
+    This function is not jit-able.
     """
     if is_indexable(item):
         return (item[0], item[1])
@@ -21,7 +23,10 @@ def pairing(item: Any):
 
 
 def is_indexable(item: Any) -> bool:
-    """Check whether an item contains `__getitem__` method."""
+    """Check whether an item contains `__getitem__` method.
+
+    This function is not jit-able.
+    """
     return hasattr(item, '__getitem__')
 
 
@@ -47,6 +52,8 @@ def arrayize(img: Tensorlike) -> np.ndarray:
         1. Moves -3-axis to the last for ndim >= 3.
         2. Without any handling for the other cases.
     For other types, convert to a ndarray by np.array.
+
+    This function is not jit-able.
 
     Parameters
     ----------
@@ -74,6 +81,8 @@ def tensorize(img: Tensorlike) -> torch.Tensor:
         2. Reshape to (1, H, W) for ndim = 2.
         3. Without any handling for the other cases.
     For other types, convert to a tensor by torch.tensor.
+
+    This function is not jit-able.
 
     Parameters
     ----------

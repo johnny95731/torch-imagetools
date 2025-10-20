@@ -1,5 +1,3 @@
-from typing import Literal, overload
-
 import torch
 
 from ..utils.math import atan2, filter2d
@@ -9,9 +7,9 @@ from ._edges import gradient_magnitude
 
 def scharr(
     img: torch.Tensor,
-    magnitude: Literal['stack', 'inf', '-inf'] | int | float = 2,
+    magnitude: str | int | float = 2,
     ret_angle: bool = False,
-    angle_unit: Literal['rad', 'deg'] = 'deg',
+    angle_unit: str = 'deg',
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Edge detection by the Scharr operators.
 

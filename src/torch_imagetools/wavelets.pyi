@@ -7,7 +7,6 @@ import torch
 
 def scaling_coeffs_to_wavelet_coeffs(
     scaling: torch.Tensor,
-    *_,
     device: torch.DeviceObjType | str | None = None,
 ) -> torch.Tensor: ...
 

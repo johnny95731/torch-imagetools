@@ -1,12 +1,7 @@
-import numpy as np
 import torch
 
 
-def scaling_coeffs_to_wavelet_coeffs(
-    scaling: torch.Tensor,
-    *_,
-    device: torch.DeviceObjType | str | None = None,
-) -> torch.Tensor:
+def scaling_coeffs_to_wavelet_coeffs(scaling: torch.Tensor) -> torch.Tensor:
     """Calculate coefficients of the wavelet function from given coefficients of
     the scaling function.
 
@@ -23,11 +18,6 @@ def scaling_coeffs_to_wavelet_coeffs(
     torch.Tensor
         _description_
     """
-    if isinstance(scaling, np.ndarray):
-        scaling = torch.from_numpy(scaling)
-    device = scaling.device if device is None else device
-    if scaling.device != device:
-        scaling = scaling.to(device)
     # Reverse the order and then multiply -1 to odd order elements.
     # wavelet[i] = (-1)**i * scaling[N - k], where N = scaling.numel() - 1
     wavelet = torch.flip(scaling, dims=(0,))
@@ -60,7 +50,8 @@ def wavelet_hh(
     ValueError
         img.ndim should be 3 or 4.
     """
-    if (ndim := img.ndim) != 4 and ndim != 3:
+    ndim = img.ndim
+    if ndim != 4 and ndim != 3:
         raise ValueError(
             f'Dimention of the image should be 3 or 4, but found {ndim}.'
         )

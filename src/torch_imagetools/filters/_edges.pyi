@@ -10,7 +10,8 @@ from typing import Literal, overload
 import torch
 
 def gradient_magnitude(
-    *derivatives: torch.Tensor,
+    grad_y: torch.Tensor,
+    grad_x: torch.Tensor,
     magnitude: Literal['stack', 'inf', '-inf'] | int | float = 2,
 ) -> torch.Tensor: ...
 
