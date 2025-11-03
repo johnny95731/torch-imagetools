@@ -30,6 +30,14 @@ def is_indexable(item: Any) -> bool:
     return hasattr(item, '__getitem__')
 
 
+def check_valid_image_ndim(img: torch.Tensor):
+    ndim = img.ndim
+    if ndim != 4 and ndim != 3:
+        raise ValueError(
+            f'Dimention of the image should be 3 or 4, but found {ndim}.'
+        )
+
+
 def align_device_type(source: torch.Tensor, target: torch.Tensor):
     """Aligns device and dtype of the source tensor to the target tensor.
 

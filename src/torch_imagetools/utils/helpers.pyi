@@ -2,6 +2,7 @@ __all__ = [
     'Tensorlike',
     'pairing',
     'is_indexable',
+    'check_valid_image_ndim',
     'align_device_type',
     'arrayize',
     'tensorize',
@@ -24,6 +25,9 @@ def pairing(item: T) -> tuple[T, T]: ...
 
 #
 def is_indexable(item: Any) -> bool: ...
+
+#
+def check_valid_image_ndim(img: torch.Tensor): ...
 
 #
 def align_device_type(
