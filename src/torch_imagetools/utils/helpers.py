@@ -30,6 +30,23 @@ def is_indexable(item: Any) -> bool:
 
 
 def check_valid_image_ndim(img: torch.Tensor) -> bool:
+    """Check whether 2 <= img.ndim <= 4.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        A tensor.
+
+    Returns
+    -------
+    bool
+        Whether img.ndim <= 3.
+
+    Raises
+    ------
+    ValueError
+        When img.ndim < 2 or img.ndim > 4.
+    """
     ndim = img.ndim
     if 2 <= ndim <= 4:
         raise ValueError(
