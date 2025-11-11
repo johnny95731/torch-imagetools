@@ -148,7 +148,7 @@ def arrayize(img: Tensorlike) -> np.ndarray:
 
 def tensorize(img: Tensorlike) -> torch.Tensor:
     """
-    Converts an item to a torch.Tensor.
+    Converts an item to a contiguous torch.Tensor.
 
     If input is a np.ndarray:
         1. Moves -1-axis to -3-axis for ndim >= 3.
@@ -172,6 +172,7 @@ def tensorize(img: Tensorlike) -> torch.Tensor:
             if img.ndim == 2
             else img
         )
-    elif not torch.is_tensor(img):
+    elif not isinstance(img, torch.Tensor):
         img = torch.tensor(img)
+    img = img.contiguous()
     return img
