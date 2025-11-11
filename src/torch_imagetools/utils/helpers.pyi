@@ -4,6 +4,7 @@ __all__ = [
     'is_indexable',
     'check_valid_image_ndim',
     'align_device_type',
+    'to_channel_coeff',
     'arrayize',
     'tensorize',
 ]
@@ -27,13 +28,16 @@ def pairing(item: T) -> tuple[T, T]: ...
 def is_indexable(item: Any) -> bool: ...
 
 #
-def check_valid_image_ndim(img: torch.Tensor): ...
+def check_valid_image_ndim(img: torch.Tensor) -> bool: ...
 
 #
 def align_device_type(
     source: torch.Tensor,
     target: torch.Tensor,
 ) -> torch.Tensor: ...
+
+#
+def to_channel_coeff(coeff: torch.Tensor, num_ch: int) -> torch.Tensor: ...
 
 #
 def arrayize(img: Tensorlike) -> np.ndarray: ...

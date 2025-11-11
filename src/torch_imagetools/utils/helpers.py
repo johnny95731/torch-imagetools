@@ -4,7 +4,6 @@ import numpy as np
 import torch
 from torch.types import Number
 
-
 T = TypeVar('T')
 
 Tensorlike = torch.Tensor | np.ndarray | list[Number] | Number
@@ -30,12 +29,14 @@ def is_indexable(item: Any) -> bool:
     return hasattr(item, '__getitem__')
 
 
-def check_valid_image_ndim(img: torch.Tensor):
+def check_valid_image_ndim(img: torch.Tensor) -> bool:
     ndim = img.ndim
-    if ndim != 4 and ndim != 3:
+    if 2 <= ndim <= 4:
         raise ValueError(
-            f'Dimention of the image should be 3 or 4, but found {ndim}.'
+            f'Dimention of the image should be in [2, 4], but found {ndim}.'
         )
+    is_not_batch = ndim <= 3
+    return is_not_batch
 
 
 def align_device_type(source: torch.Tensor, target: torch.Tensor):
@@ -51,6 +52,54 @@ def align_device_type(source: torch.Tensor, target: torch.Tensor):
     dtype = target.dtype if torch.is_floating_point(target) else torch.float32
     source = source.to(target.device, dtype)
     return source
+
+
+def to_channel_coeff(
+    coeff: int | float | torch.Tensor,
+    num_ch: int,
+) -> torch.Tensor:
+    """Convert shape of coefficeints such that `coeff (op) img` is valid,
+    where op may be one of arithmetic operations (+-*/) or other operator.
+
+    Parameters
+    ----------
+    coeff : int | float | torch.Tensor
+        The values to be reshape. Must be one of the following:
+            1. int or float
+            2. Tensor with only one element.
+            3. Tensor with shape (num_ch,) or (batch, num_ch)
+    num_ch : int
+        Number of image channels.
+
+    Returns
+    -------
+    torch.Tensor
+        Coefficeints.
+
+    Raises
+    ------
+    ValueError
+        If coeff.numel() == 0 or coeff.ndim > 2.
+    ValueError
+        When coeff.size(-1) is neither 1 nor `num_ch`.
+    """
+    if isinstance(coeff, (int, float)):
+        res = torch.tensor(float(coeff))
+        return res
+    if coeff.numel() == 1:
+        res = coeff.reshape(1)
+        return coeff
+
+    if coeff.numel() == 0 or coeff.ndim > 2:
+        raise ValueError(
+            f'Requires coeff.numel() = {coeff.numel()} >= 1'
+            f'and coeff.ndim = {coeff.ndim} <= 2.'
+        )
+    if coeff.size(-1) != 1 and coeff.size(-1) != num_ch:
+        raise ValueError('coeff.size(-1) must equals to 1 or num_ch.')
+
+    res = coeff.unsqueeze(-1).unsqueeze_(-1)
+    return res
 
 
 def arrayize(img: Tensorlike) -> np.ndarray:
