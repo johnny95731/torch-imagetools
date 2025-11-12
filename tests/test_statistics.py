@@ -12,9 +12,9 @@ class StatsCombinaiton(unittest.TestCase):
         stats = [(d.mean(), d.std(), d.numel()) for d in data1]
         ret = combine_mean_std(*stats)
         for s, r in zip(sol, ret):
-            if torch.is_tensor(s):
+            if isinstance(s, torch.Tensor):
                 s = s.item()
-            if torch.is_tensor(r):
+            if isinstance(r, torch.Tensor):
                 r = r.item()
             self.assertAlmostEqual(s, r, place)
 
@@ -23,9 +23,9 @@ class StatsCombinaiton(unittest.TestCase):
         stats = [(d.mean(), d.std(), d.numel()) for d in data2]
         ret = combine_mean_std(*stats)
         for s, r in zip(sol, ret):
-            if torch.is_tensor(s):
+            if isinstance(s, torch.Tensor):
                 s = s.item()
-            if torch.is_tensor(r):
+            if isinstance(r, torch.Tensor):
                 r = r.item()
             self.assertAlmostEqual(s, r, place)
 

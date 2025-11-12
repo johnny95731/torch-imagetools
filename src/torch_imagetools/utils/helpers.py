@@ -134,7 +134,7 @@ def arrayize(img: Tensorlike) -> np.ndarray:
     img : Tensorlike
         An item to be converted to tensor.
     """
-    if torch.is_tensor(img):
+    if isinstance(img, torch.Tensor):
         img = (
             img.movedim(-3, -1)  # (*, C, H, W) -> (*, H, W, C)
             if img.ndim >= 3

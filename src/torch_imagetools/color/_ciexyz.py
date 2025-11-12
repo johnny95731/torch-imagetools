@@ -257,7 +257,7 @@ def rgb_to_xyz(
         The image is in CIE XYZ space with the shape (*, 3, H, W).
         The matrix is 3x3 for mapping image from rgb to xyz.
     """
-    if torch.is_tensor(rgb_spec):
+    if isinstance(rgb_spec, torch.Tensor):
         matrix = rgb_spec
     else:
         rgb = linearize_rgb(rgb, rgb_spec)
@@ -306,13 +306,13 @@ def xyz_to_rgb(
     """
     matrix = (
         get_xyz_to_rgb_matrix(rgb_spec, white, obs)
-        if not torch.is_tensor(rgb_spec)
+        if not isinstance(rgb_spec, torch.Tensor)
         else rgb_spec
     )
 
     linear = matrix_transform(xyz, matrix)
     linear.clip_(0.0, 1.0)
-    if not torch.is_tensor(rgb_spec):
+    if not isinstance(rgb_spec, torch.Tensor):
         gammaize_rgb(linear, rgb_spec, out=linear)
     if ret_matrix:
         return linear, matrix
@@ -345,7 +345,7 @@ def normalize_xyz(
     """
     matrix = (
         get_rgb_to_xyz_matrix(rgb_spec, white, obs)
-        if not torch.is_tensor(rgb_spec)
+        if not isinstance(rgb_spec, torch.Tensor)
         else rgb_spec
     )
     max_ = matrix.sum(dim=1)
@@ -383,7 +383,7 @@ def unnormalize_xyz(
     """
     matrix = (
         get_rgb_to_xyz_matrix(rgb_spec, white, obs)
-        if not torch.is_tensor(rgb_spec)
+        if not isinstance(rgb_spec, torch.Tensor)
         else rgb_spec
     )
     max_ = matrix.sum(dim=1)

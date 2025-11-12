@@ -24,7 +24,7 @@ def mccamy_approximation(
     torch.Tensor
         Correlated color temperature in Kelvin.
     """
-    x, y = xy.unbind(0) if torch.is_tensor(xy) else xy
+    x, y = xy.unbind(0) if isinstance(xy, torch.Tensor) else xy
 
     n = (x - 0.3320) / (y - 0.1858)
     p = n * n

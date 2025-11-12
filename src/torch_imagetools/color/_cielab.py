@@ -80,7 +80,7 @@ def xyz_to_lab(
 
     matrix = (
         get_rgb_to_xyz_matrix(rgb_spec, white, obs)
-        if not torch.is_tensor(rgb_spec)
+        if not isinstance(rgb_spec, torch.Tensor)
         else rgb_spec
     )
     max_ = matrix.sum(dim=1)
@@ -137,7 +137,7 @@ def lab_to_xyz(
 
     matrix = (
         get_rgb_to_xyz_matrix(rgb_spec, white, obs)
-        if not torch.is_tensor(rgb_spec)
+        if not isinstance(rgb_spec, torch.Tensor)
         else rgb_spec
     )
     max_ = matrix.sum(dim=1)
@@ -238,7 +238,7 @@ def lab_to_rgb(
     matrix = matrix.inverse()
     rgb = xyz_to_rgb(xyz, matrix)
 
-    if not torch.is_tensor(rgb_spec):
+    if not isinstance(rgb_spec, torch.Tensor):
         gammaize_rgb(rgb, rgb_spec, out=rgb)
     if ret_matrix:
         return rgb, matrix
