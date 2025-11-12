@@ -1,6 +1,6 @@
 import sys
-from collections.abc import Callable
 import unittest
+from collections.abc import Callable
 from timeit import timeit
 
 import torch

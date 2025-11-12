@@ -1,7 +1,7 @@
 import unittest
 
 from tests.basic import ColorTest
-from torch_imagetools.color import rgb_to_gray, gray_to_rgb
+from src.imgtools.color import rgb_to_gray, gray_to_rgb
 
 
 class Grayscale(ColorTest):

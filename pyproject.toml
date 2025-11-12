@@ -4,21 +4,30 @@ version = "0.1.0"
 description = ""
 authors = [{ name = "johnny95731", email = "johnny95731@yahoo.com" }]
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.15"
 dependencies = [
-    "torch (>=2.7.1,<3.0)",
-    "numpy (>=2.2.0,<2.3.4)",
+    "numpy (>=2.1.0,<2.3.4)",
     "pywavelets (>=1.9.0,<2.0.0)",
+    "torch (>=2.7.0,<3.0.0)",
+    "torchvision (>=0.22.0,<0.25.0)",
 ]
 
-[tool.poetry]
-packages = [{ include = "torch_imagetools", from = "src" }]
+[[tool.poetry.source]]
+name = "torch"
+url = "https://download.pytorch.org/whl/cu128"
+priority = "explicit"
 
+[tool.poetry]
+packages = [{ include = "imgtools", from = "src" }]
+
+[tool.poetry.dependencies]
+torch = { source = "torch" }
+torchvision = { source = "torch" }
 
 [tool.poetry.group.dev.dependencies]
 kornia = "^0.8.1"
 matplotlib = "^3.10.6"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
+requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

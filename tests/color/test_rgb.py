@@ -2,7 +2,7 @@ from timeit import timeit
 import unittest
 
 from tests.basic import ColorTest
-from torch_imagetools.color import gammaize_rgb, linearize_rgb
+from src.imgtools.color import gammaize_rgb, linearize_rgb
 
 
 class RGB(ColorTest):

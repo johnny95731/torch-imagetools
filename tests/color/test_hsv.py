@@ -1,7 +1,7 @@
 import unittest
 
 from tests.basic import ColorTest
-from torch_imagetools.color import rgb_to_hsv, hsv_to_rgb
+from src.imgtools.color import rgb_to_hsv, hsv_to_rgb
 
 
 class HSV(ColorTest):

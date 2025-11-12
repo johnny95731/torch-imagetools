@@ -1,13 +1,13 @@
 import unittest
 
-from tests.basic import ColorTest
-from torch_imagetools.color import (
-    rgb_to_xyz,
+from src.imgtools.color import (
     lab_to_rgb,
     lab_to_xyz,
     rgb_to_lab,
+    rgb_to_xyz,
     xyz_to_lab,
 )
+from tests.basic import ColorTest
 
 
 class LAB(ColorTest):

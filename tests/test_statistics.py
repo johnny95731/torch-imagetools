@@ -2,7 +2,7 @@ import unittest
 
 import torch
 
-from torch_imagetools.statistics import combine_mean_std
+from src.imgtools.statistics import combine_mean_std
 
 
 class StatsCombinaiton(unittest.TestCase):
