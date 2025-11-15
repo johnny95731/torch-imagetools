@@ -1,3 +1,8 @@
+__all__ = [
+    'rgb_to_hed',
+    'hed_to_rgb',
+]
+
 import torch
 
 from ..utils.math import matrix_transform

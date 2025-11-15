@@ -1,3 +1,7 @@
+__all__ = [
+    'scharr',
+]
+
 from typing import Literal, overload
 
 import torch

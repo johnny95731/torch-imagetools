@@ -2,6 +2,14 @@
 correction, log transformation.
 """
 
+__all__ = [
+    'adjust_linear',
+    'adjust_gamma',
+    'adjust_log',
+    'adjust_sigmoid',
+    'adjust_inverse',
+]
+
 from math import log1p
 
 import torch

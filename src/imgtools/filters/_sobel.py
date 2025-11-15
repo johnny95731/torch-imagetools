@@ -1,3 +1,7 @@
+__all__ = [
+    'sobel',
+]
+
 import torch
 
 from ..utils.math import atan2, filter2d

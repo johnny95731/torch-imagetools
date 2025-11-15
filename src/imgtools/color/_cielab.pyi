@@ -9,8 +9,8 @@ from typing import Literal, overload
 
 import torch
 
-from ._rgb import RGBSpec
 from ._ciexyz import StandardIlluminants
+from ._rgb import RGBSpec
 
 @overload
 def xyz_to_lab(

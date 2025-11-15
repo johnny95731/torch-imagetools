@@ -26,6 +26,12 @@ https://github.com/PyWavelets/pywt
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+__all__ = [
+    'get_families',
+    'get_wavelets',
+    'Wavelet',
+]
+
 from typing import Literal
 
 import torch

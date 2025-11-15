@@ -1,3 +1,7 @@
+__all__ = [
+    'sobel',
+]
+
 from typing import Literal, overload
 
 import torch

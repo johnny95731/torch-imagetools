@@ -1,3 +1,7 @@
+__all__ = [
+    'prewitt',
+]
+
 from typing import Literal, overload
 
 import torch
