@@ -16,8 +16,8 @@ from typing import Literal, overload
 
 import torch
 
-from ...utils.helpers import align_device_type
-from ...utils.math import matrix_transform
+from ..utils.helpers import align_device_type
+from ..utils.math import matrix_transform
 from ._lms import xyz_to_lms
 
 

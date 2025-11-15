@@ -7,7 +7,7 @@ __all__ = [
 
 import torch
 
-from ...utils.math import matrix_transform
+from ..utils.math import matrix_transform
 
 
 def get_xyz_to_lms_matrix(method: str = 'bradford'):
