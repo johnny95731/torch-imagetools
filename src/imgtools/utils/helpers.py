@@ -59,7 +59,7 @@ def check_valid_image_ndim(img: torch.Tensor) -> bool:
         When img.ndim < 2 or img.ndim > 4.
     """
     ndim = img.ndim
-    if 2 <= ndim <= 4:
+    if not (2 <= ndim <= 4):
         raise ValueError(
             f'Dimention of the image should be in [2, 4], but found {ndim}.'
         )
