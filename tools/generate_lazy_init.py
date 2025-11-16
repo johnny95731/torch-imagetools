@@ -1,5 +1,5 @@
+import importlib
 import os
-from importlib.machinery import SourceFileLoader
 from pathlib import Path
 
 
@@ -13,7 +13,7 @@ def path_to_module_path(file_path: str) -> str:
     return module_path
 
 
-def handle_a_folder(path: str):
+def handle_a_folder(path: str, depth: int):
     entries = os.listdir(path)
     entries = [
         file
@@ -31,9 +31,9 @@ def handle_a_folder(path: str):
         full_path = os.path.join(path, file)
         module_path = path_to_module_path(full_path)
         if os.path.isdir(full_path):
-            handle_a_folder(full_path)
+            handle_a_folder(full_path, depth + 1)
         elif file.endswith('.py'):
-            module = SourceFileLoader(module_path, full_path).load_module()
+            module = importlib.import_module(module_path)
             root, _ = os.path.splitext(file)
             submodules.append(root)
             _all = getattr(module, '__all__', None)
@@ -44,27 +44,43 @@ def handle_a_folder(path: str):
 
     print('Done:', path)
 
-    merged_all = sorted(merged_all)
-    with open(os.path.join(path, '__init__.pyi'), 'w') as f:
-        content = "',\n    '".join(merged_all)
-        all_str = f"__all__ = [\n    '{content}',\n]\n"
-        f.write(all_str)
-        f.write('\n')
-
-        # writting `from .{submod} import``
+    if depth > 0:
         submodules = sorted(submodules)
+        merged_all = sorted(merged_all)
+        # Load docstring of __init.py
+        full_path = os.path.join(path, '__init__.py')
+        module_path = path_to_module_path(full_path)
+        module = importlib.import_module(module_path)
+        docstring = module.__doc__
+
+        # Format `__all__ = [...]`
+        content = "',\n    '".join(merged_all)
+        all_string = f"__all__ = [\n    '{content}',\n]\n"
+
+        # Format `from .{submod} import`
+        submodules = sorted(submodules)
+        import_string = ''
         for submod in submodules:
             suball = submod_attrs[submod]
             subcontent = ',\n    '.join(suball)
             s = f'from .{submod} import (\n    {subcontent},\n)\n'
-            f.write(s)
+            import_string += s
+
+        pycontent = ''
+        if docstring is not None:
+            pycontent += f'"""{docstring}"""\n\n'
+        pycontent += f'{all_string}\n{import_string}'
+        with open(
+            os.path.join(path, '__init__.py'), 'w', encoding='utf-8'
+        ) as f:
+            f.write(pycontent)
 
 
 def main():
     """Generate __init__.pyi files."""
     basedir = './src'
     module_path = os.path.join(basedir, os.listdir(basedir)[0])
-    handle_a_folder(module_path)
+    handle_a_folder(module_path, 0)
 
 
 if __name__ == '__main__':

@@ -2,7 +2,8 @@ import importlib as _importlib
 
 __version__ = '0.1.0'
 
-_submodules = [  # Lazy loading sub-modules with __getattr__
+# Lazy loading sub-modules with __getattr__
+_submodules = [
     'balance',
     'color',
     'enhance',

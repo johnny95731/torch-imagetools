@@ -1,4 +1,25 @@
-from ._edges import *
-from ._prewitt import *
-from ._scharr import *
-from ._sobel import *
+__all__ = [
+    'gradient_magnitude',
+    'kirsch',
+    'laplacian',
+    'prewitt',
+    'robinson',
+    'scharr',
+    'sobel',
+]
+
+from ._edges import (
+    gradient_magnitude,
+    kirsch,
+    laplacian,
+    robinson,
+)
+from ._prewitt import (
+    prewitt,
+)
+from ._scharr import (
+    scharr,
+)
+from ._sobel import (
+    sobel,
+)
