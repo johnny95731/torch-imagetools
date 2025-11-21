@@ -10,15 +10,18 @@ __all__ = [
     'gray_edge_balance',
     'white_patch_balance',
     'linear_regression_balance',
+    'cheng_pca_balance',
 ]
 
 from typing import Literal, overload
 
 import torch
 
-from ..utils.helpers import align_device_type
+from ..color import rgb_to_xyz, xyz_to_rgb
+from ..utils.helpers import align_device_type, to_channel_coeff
 from ..utils.math import matrix_transform
 from ._lms import xyz_to_lms
+from .est_illuminant import estimate_illuminant_cheng
 
 
 def get_von_kries_transform_matrix(
@@ -333,4 +336,57 @@ def linear_regression_balance(
     balanced_b = (beta[2] * g).add_(r, alpha=beta[1]).add_(beta[0])
     balanced_b.clip_(0.0, 1.0)
     balanced = torch.stack([r, g, balanced_b], dim=0).reshape_as(rgb)
+    return balanced
+
+
+def cheng_pca_balance(
+    rgb: torch.Tensor,
+    adaptation: Literal['rgb', 'von kries'] = 'von kries',
+):
+    """White balance by Cheng's PCA method [1]. Estimate the illuminant and
+    applies chromatic adaptation transformation.
+
+    Parameters
+    ----------
+    rgb : torch.Tensor
+        An RGB image in the range of [0, 1] with shape (*, C, H, W).
+    adaptation : Literal['rgb', 'von kries'], default='von kries'
+        Chromatic adaptation method. RGB scaling or von Kries transformation.
+
+    Returns
+    -------
+    torch.Tensor
+        A balanced image with shape (*, C, H, W).
+
+    Raises
+    ------
+    ValueError
+        When `adaptation` is not in ('rgb', 'von kries')
+
+    References
+    ----------
+    [1] Cheng, Dongliang, Dilip K. Prasad, and Michael S. Brown. "Illuminant
+        estimation for color constancy: why spatial-domain methods work and
+        the role of the color distribution." JOSA A 31.5 (2014): 1049-1058.
+    """
+    adaptation = adaptation.lower()
+    if adaptation not in ('rgb', 'von kries'):
+        raise ValueError(
+            f"`adaptation` should be 'rgb' or 'von kries', but got {adaptation}."
+        )
+
+    illuminant = estimate_illuminant_cheng(rgb)
+    illuminant = to_channel_coeff(illuminant, 3)
+
+    if adaptation == 'rgb':
+        coeff = 1.0 / illuminant
+        balanced = (coeff * rgb).clip_(0.0, 1.0)
+    elif adaptation == 'von kries':
+        xyz, xyz_mat = rgb_to_xyz(rgb, 'widegamut', ret_matrix=True)
+
+        white_img = matrix_transform(illuminant, xyz_mat)
+        white_xyz = xyz_mat.sum(dim=1)
+        balanced_xyz = von_kries_transform(xyz, white_img, white_xyz)
+
+        balanced = xyz_to_rgb(balanced_xyz, 'widegamut')
     return balanced

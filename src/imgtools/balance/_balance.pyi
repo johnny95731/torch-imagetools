@@ -92,3 +92,6 @@ def white_patch_balance(
 
 #
 def linear_regression_balance(rgb: torch.Tensor) -> torch.Tensor: ...
+
+#
+def cheng_pca_balance(rgb: torch.Tensor) -> torch.Tensor: ...
