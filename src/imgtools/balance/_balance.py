@@ -13,8 +13,6 @@ __all__ = [
     'cheng_pca_balance',
 ]
 
-from typing import Literal, overload
-
 import torch
 
 from ..color import rgb_to_xyz, xyz_to_rgb
@@ -57,22 +55,6 @@ def get_von_kries_transform_matrix(
     return cat_matrix
 
 
-@overload
-def von_kries_transform(
-    xyz: torch.Tensor,
-    xyz_white: torch.Tensor,
-    xyz_target_white: torch.Tensor,
-    method: str | torch.Tensor = 'bradford',
-    ret_matrix: Literal[False] = False,
-) -> torch.Tensor: ...
-@overload
-def von_kries_transform(
-    xyz: torch.Tensor,
-    xyz_white: torch.Tensor,
-    xyz_target_white: torch.Tensor,
-    method: str | torch.Tensor = 'bradford',
-    ret_matrix: Literal[True] = True,
-) -> tuple[torch.Tensor, torch.Tensor]: ...
 def von_kries_transform(
     xyz: torch.Tensor,
     xyz_white: torch.Tensor,
@@ -341,8 +323,8 @@ def linear_regression_balance(
 
 def cheng_pca_balance(
     rgb: torch.Tensor,
-    adaptation: Literal['rgb', 'von kries'] = 'von kries',
-):
+    adaptation: str = 'von kries',
+) -> torch.Tensor:
     """White balance by Cheng's PCA method [1]. Estimate the illuminant and
     applies chromatic adaptation transformation.
 
@@ -386,7 +368,7 @@ def cheng_pca_balance(
 
         white_img = matrix_transform(illuminant, xyz_mat)
         white_xyz = xyz_mat.sum(dim=1)
-        balanced_xyz = von_kries_transform(xyz, white_img, white_xyz)
+        balanced_xyz = von_kries_transform(xyz, white_img, white_xyz)  # type: torch.Tensor
 
         balanced = xyz_to_rgb(balanced_xyz, 'widegamut')
     return balanced

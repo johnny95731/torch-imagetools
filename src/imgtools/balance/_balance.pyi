@@ -12,10 +12,12 @@ from typing import Literal, overload
 
 import torch
 
+from ._lms import CATMethod
+
 def get_von_kries_transform_matrix(
     xyz_white: torch.Tensor,
     xyz_target_white: torch.Tensor,
-    method: str = 'bradford',
+    method: CATMethod = 'bradford',
 ) -> torch.Tensor: ...
 
 #
@@ -24,7 +26,7 @@ def von_kries_transform(
     xyz: torch.Tensor,
     xyz_white: torch.Tensor,
     xyz_target_white: torch.Tensor,
-    method: str | torch.Tensor = 'bradford',
+    method: CATMethod | torch.Tensor = 'bradford',
     ret_matrix: Literal[False] = False,
 ) -> torch.Tensor: ...
 @overload
@@ -32,7 +34,7 @@ def von_kries_transform(
     xyz: torch.Tensor,
     xyz_white: torch.Tensor,
     xyz_target_white: torch.Tensor,
-    method: str | torch.Tensor = 'bradford',
+    method: CATMethod | torch.Tensor = 'bradford',
     ret_matrix: Literal[True] = True,
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 
@@ -94,4 +96,7 @@ def white_patch_balance(
 def linear_regression_balance(rgb: torch.Tensor) -> torch.Tensor: ...
 
 #
-def cheng_pca_balance(rgb: torch.Tensor) -> torch.Tensor: ...
+def cheng_pca_balance(
+    rgb: torch.Tensor,
+    adaptation: Literal['rgb', 'von kries'] = 'von kries',
+) -> torch.Tensor: ...

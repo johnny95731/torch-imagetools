@@ -1,3 +1,7 @@
+__all__ = [
+    'light_compensation_htchen',
+]
+
 import torch
 from torch.nn.functional import avg_pool2d
 
