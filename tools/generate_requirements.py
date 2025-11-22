@@ -17,7 +17,7 @@ except ImportError:
         sys.exit('Please install `tomli` first: `pip install tomli`')
 
 script_pth = Path(__file__)
-repo_dir = script_pth.parent
+repo_dir = script_pth.parent.parent
 script_relpth = script_pth.relative_to(repo_dir)
 header = [
     f'# Generated via {script_relpth.as_posix()} and pre-commit hook.',
