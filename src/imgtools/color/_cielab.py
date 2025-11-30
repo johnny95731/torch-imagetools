@@ -12,7 +12,6 @@ from ._ciexyz import (
     rgb_to_xyz,
     xyz_to_rgb,
 )
-from ._rgb import gammaize_rgb
 
 _6_29 = 6 / 29  # threshold for _lab_helper_inv
 _6_29_pow3 = _6_29**3  # threshold for _lab_helper
@@ -48,7 +47,7 @@ def _lab_helper_inv(value: torch.Tensor):
 
 def xyz_to_lab(
     xyz: torch.Tensor,
-    rgb_spec: str | torch.Tensor = 'srgb',
+    rgb_spec: str = 'srgb',
     white: str = 'D65',
     obs: str | int = 10,
     ret_matrix: bool = False,
@@ -59,9 +58,8 @@ def xyz_to_lab(
     ----------
     xyz : torch.Tensor
         An image in CIE XYZ space with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
-        The RGB specification or a conversion matrix for transforming image
-        from rgb to xyz. The string type is case-insensitive.
+    rgb_spec : RGBSpec, default='srgb'
+        The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
         Reference white point for the rgb to xyz conversion.
         The input is case-insensitive.
@@ -81,11 +79,7 @@ def xyz_to_lab(
     """
     x, y, z = xyz.unbind(-3)
 
-    matrix = (
-        get_rgb_to_xyz_matrix(rgb_spec, white, obs)
-        if not isinstance(rgb_spec, torch.Tensor)
-        else rgb_spec
-    )
+    matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
 
     fx = _lab_helper(x.mul(1 / max_[0]))
@@ -103,7 +97,7 @@ def xyz_to_lab(
 
 def lab_to_xyz(
     lab: torch.Tensor,
-    rgb_spec: str | torch.Tensor = 'srgb',
+    rgb_spec: str = 'srgb',
     white: str = 'D65',
     obs: str | int = 10,
     ret_matrix: bool = False,
@@ -114,9 +108,8 @@ def lab_to_xyz(
     ----------
     lab : torch.Tensor
         An image in CIE LAB space with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
-        The RGB specification or a conversion matrix for transforming image
-        from rgb to xyz. The string type is case-insensitive.
+    rgb_spec : RGBSpec, default='srgb'
+        The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
         Reference white point for the rgb to xyz conversion.
         The input is case-insensitive.
@@ -136,11 +129,7 @@ def lab_to_xyz(
     """
     l, a, b = lab.unbind(-3)
 
-    matrix = (
-        get_rgb_to_xyz_matrix(rgb_spec, white, obs)
-        if not isinstance(rgb_spec, torch.Tensor)
-        else rgb_spec
-    )
+    matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
 
     l = l.add(0.16).mul_(1 / 1.16)
@@ -156,7 +145,7 @@ def lab_to_xyz(
 
 def rgb_to_lab(
     rgb: torch.Tensor,
-    rgb_spec: str | torch.Tensor = 'srgb',
+    rgb_spec: str = 'srgb',
     white: str = 'D65',
     obs: str | int = 10,
     ret_matrix: bool = False,
@@ -170,10 +159,8 @@ def rgb_to_lab(
     ----------
     rgb : torch.Tensor
         An RGB image in the range of [0, 1] with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
-        The RGB specification or a conversion matrix for transforming image
-        from rgb to xyz. The string type is case-insensitive.\\
-        If `rgb_spec` is a tensor, then the input rgb is assumed to be linear.
+    rgb_spec : RGBSpec, default='srgb'
+        The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
         Reference white point for the rgb to xyz conversion.
         The input is case-insensitive.
@@ -211,9 +198,8 @@ def lab_to_rgb(
     ----------
     lab : torch.Tensor
         An image in CIE LAB space with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
-        The RGB specification or a conversion matrix for transforming image
-        from rgb to xyz. The string type is case-insensitive.
+    rgb_spec : RGBSpec, default='srgb'
+        The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
         Reference white point for the rgb to xyz conversion.
         The input is case-insensitive.
@@ -234,9 +220,6 @@ def lab_to_rgb(
     xyz, matrix = lab_to_xyz(lab, rgb_spec, white, obs, ret_matrix=True)
     matrix = matrix.inverse()
     rgb = xyz_to_rgb(xyz, matrix)
-
-    if not isinstance(rgb_spec, torch.Tensor):
-        gammaize_rgb(rgb, rgb_spec, out=rgb)
     if ret_matrix:
         return rgb, matrix
     return rgb

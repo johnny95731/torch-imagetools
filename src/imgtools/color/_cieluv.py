@@ -12,7 +12,6 @@ from ._ciexyz import (
     rgb_to_xyz,
     xyz_to_rgb,
 )
-from ._rgb import gammaize_rgb
 
 _6_29 = 6 / 29  # threshold for _luv_helper_inv
 _6_29_pow3 = _6_29**3  # threshold for _luv_helper
@@ -53,7 +52,7 @@ def _calc_uv_prime(x: torch.Tensor, y: torch.Tensor, z: torch.Tensor):
 
 def xyz_to_luv(
     xyz: torch.Tensor,
-    rgb_spec: str | torch.Tensor = 'srgb',
+    rgb_spec: str = 'srgb',
     white: str = 'D65',
     obs: str | int = 10,
     ret_matrix: bool = False,
@@ -64,9 +63,8 @@ def xyz_to_luv(
     ----------
     xyz : torch.Tensor
         An image in CIE XYZ space with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
-        The RGB specification or a conversion matrix for transforming image
-        from rgb to xyz. The string type is case-insensitive.
+    rgb_spec : RGBSpec, default='srgb'
+        The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
         Reference white point for the rgb to xyz conversion.
         The input is case-insensitive.
@@ -86,11 +84,7 @@ def xyz_to_luv(
     """
     x, y, z = xyz.unbind(-3)
 
-    matrix = (
-        get_rgb_to_xyz_matrix(rgb_spec, white, obs)
-        if not isinstance(rgb_spec, torch.Tensor)
-        else rgb_spec
-    )
+    matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
 
     u_white, v_white = _calc_uv_prime(*max_)
@@ -109,7 +103,7 @@ def xyz_to_luv(
 
 def luv_to_xyz(
     luv: torch.Tensor,
-    rgb_spec: str | torch.Tensor = 'srgb',
+    rgb_spec: str = 'srgb',
     white: str = 'D65',
     obs: str | int = 10,
     ret_matrix: bool = False,
@@ -120,9 +114,8 @@ def luv_to_xyz(
     ----------
     luv : torch.Tensor
         An image in CIE LUV space with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
-        The RGB specification or a conversion matrix for transforming image
-        from rgb to xyz. The string type is case-insensitive.
+    rgb_spec : RGBSpec, default='srgb'
+        The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
         Reference white point for the rgb to xyz conversion.
         The input is case-insensitive.
@@ -142,11 +135,7 @@ def luv_to_xyz(
     """
     l, u, v = luv.unbind(-3)
 
-    matrix = (
-        get_rgb_to_xyz_matrix(rgb_spec, white, obs)
-        if not isinstance(rgb_spec, torch.Tensor)
-        else rgb_spec
-    )
+    matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
 
     u_white, v_white = _calc_uv_prime(*max_)
@@ -176,7 +165,7 @@ def luv_to_xyz(
 
 def rgb_to_luv(
     rgb: torch.Tensor,
-    rgb_spec: str | torch.Tensor = 'srgb',
+    rgb_spec: str = 'srgb',
     white: str = 'D65',
     obs: str | int = 10,
     ret_matrix: bool = False,
@@ -190,10 +179,8 @@ def rgb_to_luv(
     ----------
     rgb : torch.Tensor
         An RGB image in the range of [0, 1] with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
-        The RGB specification or a conversion matrix for transforming image
-        from rgb to xyz. The string type is case-insensitive.\\
-        If `rgb_spec` is a tensor, then the input rgb is assumed to be linear.
+    rgb_spec : RGBSpec, default='srgb'
+        The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
         Reference white point for the rgb to xyz conversion.
         The input is case-insensitive.
@@ -220,7 +207,7 @@ def rgb_to_luv(
 
 def luv_to_rgb(
     luv: torch.Tensor,
-    rgb_spec: str | torch.Tensor = 'srgb',
+    rgb_spec: str = 'srgb',
     white: str = 'D65',
     obs: str | int = 10,
     ret_matrix: bool = False,
@@ -231,9 +218,8 @@ def luv_to_rgb(
     ----------
     luv : torch.Tensor
         An image in CIE LUV space with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
-        The RGB specification or a conversion matrix for transforming image
-        from rgb to xyz. The string type is case-insensitive.
+    rgb_spec : RGBSpec, default='srgb'
+        The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
         Reference white point for the rgb to xyz conversion.
         The input is case-insensitive.
@@ -254,9 +240,6 @@ def luv_to_rgb(
     xyz, matrix = luv_to_xyz(luv, rgb_spec, white, obs, ret_matrix=True)
     matrix = matrix.inverse()
     rgb = xyz_to_rgb(xyz, matrix)
-
-    if not isinstance(rgb_spec, torch.Tensor):
-        gammaize_rgb(rgb, rgb_spec, out=rgb)
     if ret_matrix:
         return rgb, matrix
     return rgb

@@ -13,7 +13,7 @@ import numpy as np
 import torch
 
 from ..utils.math import matrix_transform
-from ._rgb import gammaize_rgb, linearize_rgb
+from ._rgb import linearize_rgb
 
 
 def get_white_point(
@@ -103,7 +103,7 @@ def get_rgb_model(rgb_spec: str):
     Parameters
     ----------
     rgb_spec : RGBSpec
-        Name of the specification, such as sRGB, displayP3, and adobeRGB....
+        Name of the RGB specification, such as sRGB, displayP3, etc.
         The input is case-insensitive.
     """
     spaces = {
@@ -170,8 +170,7 @@ def get_rgb_to_xyz_matrix(
     Parameters
     ----------
     rgb_spec : RGBSpec, default='srgb'
-        The RGB specification or a conversion matrix. The input
-        is case-insensitive.
+        The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
         White point. The input is case-insensitive.
     obs : {2, '2', 10, '10'}, default=10
@@ -223,8 +222,7 @@ def get_xyz_to_rgb_matrix(
     Parameters
     ----------
     rgb_spec : RGBSpec, default='srgb'
-        The RGB specification or a conversion matrix. The input
-        is case-insensitive.
+        The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
         White point. The input is case-insensitive.
     obs : {2, '2', 10, '10'}, default=10
@@ -242,7 +240,7 @@ def get_xyz_to_rgb_matrix(
 
 def rgb_to_xyz(
     rgb: torch.Tensor,
-    rgb_spec: str | torch.Tensor = 'srgb',
+    rgb_spec: str = 'srgb',
     white: str = 'D65',
     obs: str | int = 10,
     ret_matrix: bool = False,
@@ -259,10 +257,8 @@ def rgb_to_xyz(
     ----------
     rgb : torch.Tensor
         An RGB image in the range of [0, 1] with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
-        The RGB specification or a conversion matrix for transforming image
-        from rgb to xyz. The string type is case-insensitive.\\
-        If `rgb_spec` is a tensor, then the input rgb is assumed to be linear.
+    rgb_spec : RGBSpec, default='srgb'
+        The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
         Reference white point for the rgb to xyz conversion.
         The input is case-insensitive.
@@ -280,11 +276,8 @@ def rgb_to_xyz(
         A transformation matrix used to convert RGB to CIE XYZ.
         `mat` is returned only if `ret_matrix` is true.
     """
-    if isinstance(rgb_spec, torch.Tensor):
-        matrix = rgb_spec
-    else:
-        rgb = linearize_rgb(rgb, rgb_spec)
-        matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
+    rgb = linearize_rgb(rgb, rgb_spec)
+    matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
 
     xyz = matrix_transform(rgb, matrix)
     if ret_matrix:
@@ -294,7 +287,7 @@ def rgb_to_xyz(
 
 def xyz_to_rgb(
     xyz: torch.Tensor,
-    rgb_spec: str | torch.Tensor = 'srgb',
+    rgb_spec: str = 'srgb',
     white: str = 'D65',
     obs: str | int = 10,
     ret_matrix: bool = False,
@@ -305,9 +298,8 @@ def xyz_to_rgb(
     ----------
     xyz : torch.Tensor
         An image in CIE XYZ space with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
-        The RGB specification or a conversion matrix for transforming image
-        from xyz to rgb. The string type is case-insensitive.
+    rgb_spec : RGBSpec, default='srgb'
+        The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
         Reference white point for the rgb to xyz conversion.
         The input is case-insensitive.
@@ -325,16 +317,10 @@ def xyz_to_rgb(
         A transformation matrix used to convert CIE XYZ to RGB.
         `mat` is returned only if `ret_matrix` is true.
     """
-    matrix = (
-        get_xyz_to_rgb_matrix(rgb_spec, white, obs)
-        if not isinstance(rgb_spec, torch.Tensor)
-        else rgb_spec
-    )
+    matrix = get_xyz_to_rgb_matrix(rgb_spec, white, obs)
 
     linear = matrix_transform(xyz, matrix)
     linear.clip_(0.0, 1.0)
-    if not isinstance(rgb_spec, torch.Tensor):
-        gammaize_rgb(linear, rgb_spec, out=linear)
     if ret_matrix:
         return linear, matrix
     return linear
@@ -342,7 +328,7 @@ def xyz_to_rgb(
 
 def normalize_xyz(
     xyz: torch.Tensor,
-    rgb_spec: str | torch.Tensor = 'srgb',
+    rgb_spec: str = 'srgb',
     white: str = 'D65',
     obs: str | int = 10,
     inplace: bool = False,
@@ -354,9 +340,8 @@ def normalize_xyz(
     ----------
     xyz : torch.Tensor
         An image in CIE XYZ space with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
-        The RGB specification or a conversion matrix for transforming image
-        from rgb to xyz. The string type is case-insensitive.
+    rgb_spec : RGBSpec, default='srgb'
+        The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
         White point. The input is case-insensitive.
     obs : {2, '2', 10, '10'}, default=10
@@ -364,11 +349,7 @@ def normalize_xyz(
     inplace : bool, default=False
         If true, modifies the orginal tensor directly without copying.
     """
-    matrix = (
-        get_rgb_to_xyz_matrix(rgb_spec, white, obs)
-        if not isinstance(rgb_spec, torch.Tensor)
-        else rgb_spec
-    )
+    matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
 
     out = xyz if inplace else xyz.clone()
@@ -381,7 +362,7 @@ def normalize_xyz(
 
 def unnormalize_xyz(
     xyz: torch.Tensor,
-    rgb_spec: str | torch.Tensor = 'srgb',
+    rgb_spec: str = 'srgb',
     white: str = 'D65',
     obs: str | int = 10,
     inplace: bool = False,
@@ -392,9 +373,8 @@ def unnormalize_xyz(
     ----------
     xyz : torch.Tensor
         An image in CIE XYZ space with shape (*, 3, H, W).
-    rgb_spec : RGBSpec | torch.Tensor, default='srgb'
-        The RGB specification or a conversion matrix for transforming image
-        from rgb to xyz. The string type is case-insensitive.
+    rgb_spec : RGBSpec, default='srgb'
+        The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
         White point. The input is case-insensitive.
     obs : {2, '2', 10, '10'}, default=10
@@ -402,11 +382,7 @@ def unnormalize_xyz(
     inplace : bool, default=False
         In-place operation or not.
     """
-    matrix = (
-        get_rgb_to_xyz_matrix(rgb_spec, white, obs)
-        if not isinstance(rgb_spec, torch.Tensor)
-        else rgb_spec
-    )
+    matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
 
     out = xyz if inplace else xyz.clone()

@@ -89,7 +89,7 @@ def get_xyz_to_rgb_matrix(
 @overload
 def rgb_to_xyz(
     rgb: torch.Tensor,
-    rgb_spec: str | RGBSpec | torch.Tensor = 'srgb',
+    rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
     ret_matrix: bool = False,
@@ -97,7 +97,7 @@ def rgb_to_xyz(
 @overload
 def rgb_to_xyz(
     rgb: torch.Tensor,
-    rgb_spec: str | RGBSpec | torch.Tensor = 'srgb',
+    rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
     ret_matrix: bool = True,
@@ -107,7 +107,7 @@ def rgb_to_xyz(
 @overload
 def xyz_to_rgb(
     xyz: torch.Tensor,
-    rgb_spec: str | RGBSpec | torch.Tensor = 'srgb',
+    rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
     ret_matrix: Literal[False] = False,
@@ -115,7 +115,7 @@ def xyz_to_rgb(
 @overload
 def xyz_to_rgb(
     xyz: torch.Tensor,
-    rgb_spec: str | RGBSpec | torch.Tensor = 'srgb',
+    rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
     ret_matrix: Literal[True] = True,
@@ -125,14 +125,14 @@ def xyz_to_rgb(
 
 def normalize_xyz(
     xyz: torch.Tensor,
-    rgb_spec: str | RGBSpec | torch.Tensor = 'srgb',
+    rgb_spec: str | RGBSpec = 'srgb',
     white: StandardIlluminants = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
     inplace: bool = False,
 ) -> torch.Tensor: ...
 def unnormalize_xyz(
     xyz: torch.Tensor,
-    rgb_spec: str | RGBSpec | torch.Tensor = 'srgb',
+    rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
     obs: Literal[2, '2', 10, '10'] = 10,
     inplace: bool = False,
