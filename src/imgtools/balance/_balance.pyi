@@ -17,7 +17,7 @@ from ._lms import CATMethod
 def get_von_kries_transform_matrix(
     xyz_white: torch.Tensor,
     xyz_target_white: torch.Tensor,
-    method: CATMethod = 'bradford',
+    method: str | CATMethod = 'bradford',
 ) -> torch.Tensor: ...
 
 #
@@ -26,7 +26,7 @@ def von_kries_transform(
     xyz: torch.Tensor,
     xyz_white: torch.Tensor,
     xyz_target_white: torch.Tensor,
-    method: CATMethod | torch.Tensor = 'bradford',
+    method: str | CATMethod | torch.Tensor = 'bradford',
     ret_matrix: Literal[False] = False,
 ) -> torch.Tensor: ...
 @overload
@@ -34,7 +34,7 @@ def von_kries_transform(
     xyz: torch.Tensor,
     xyz_white: torch.Tensor,
     xyz_target_white: torch.Tensor,
-    method: CATMethod | torch.Tensor = 'bradford',
+    method: str | CATMethod | torch.Tensor = 'bradford',
     ret_matrix: Literal[True] = True,
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 

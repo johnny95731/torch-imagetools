@@ -36,13 +36,13 @@ def get_lms_to_xyz_matrix(method: CATMethod = 'bradford') -> torch.Tensor: ...
 @overload
 def xyz_to_lms(
     xyz: torch.Tensor,
-    method: CATMethod = 'bradford',
+    method: str | CATMethod = 'bradford',
     ret_matrix: bool = False,
 ) -> torch.Tensor: ...
 @overload
 def xyz_to_lms(
     xyz: torch.Tensor,
-    method: CATMethod = 'bradford',
+    method: str | CATMethod = 'bradford',
     ret_matrix: bool = True,
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 
@@ -50,12 +50,12 @@ def xyz_to_lms(
 @overload
 def lms_to_xyz(
     lms: torch.Tensor,
-    method: CATMethod = 'bradford',
+    method: str | CATMethod = 'bradford',
     ret_matrix: bool = False,
 ) -> torch.Tensor: ...
 @overload
 def lms_to_xyz(
     lms: torch.Tensor,
-    method: CATMethod = 'bradford',
+    method: str | CATMethod = 'bradford',
     ret_matrix: bool = True,
 ) -> tuple[torch.Tensor, torch.Tensor]: ...

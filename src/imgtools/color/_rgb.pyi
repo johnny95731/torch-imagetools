@@ -69,11 +69,11 @@ def gammaize_rec2020(
 #
 def linearize_rgb(
     rgb: torch.Tensor,
-    rgb_spec: RGBSpec = 'srgb',
+    rgb_spec: str | RGBSpec = 'srgb',
     out: torch.Tensor | None = None,
 ) -> torch.Tensor: ...
 def gammaize_rgb(
     rgb: torch.Tensor,
-    rgb_spec: RGBSpec = 'srgb',
+    rgb_spec: str | RGBSpec = 'srgb',
     out: torch.Tensor | None = None,
 ) -> torch.Tensor: ...

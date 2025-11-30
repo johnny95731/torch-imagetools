@@ -146,12 +146,12 @@ def robinson(
 
     Returns
     -------
-    torch.Tensor
+    mag : torch.Tensor
         Image gradient's magnitude. The value is the maximum along all compass
         kernel.
-    torch.Tensor
-        Image gradient's direction with shape (*, C, H, W) if `ret_angle` is
-        True. Otherwise, returns magnitude only.
+    angle : torch.Tensor
+        Image gradient's direction with shape (*, C, H, W).
+        `angle` is returned only if `ret_angle` is true.
     """
     kernel_y = torch.tensor((
         (-1, -2, -1),
@@ -197,12 +197,12 @@ def kirsch(
 
     Returns
     -------
-    torch.Tensor
+    mag : torch.Tensor
         Image gradient's magnitude. The value is the maximum along all compass
         kernel.
-    torch.Tensor
-        Image gradient's direction with shape (*, C, H, W) if `ret_angle` is
-        True. Otherwise, returns magnitude only.
+    angle : torch.Tensor
+        Image gradient's direction with shape (*, C, H, W).
+        `angle` is returned only if `ret_angle` is true.
     """
     kernel_y = torch.tensor((
         (-3, -3, -3),

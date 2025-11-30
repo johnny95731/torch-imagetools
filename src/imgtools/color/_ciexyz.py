@@ -9,21 +9,19 @@ __all__ = [
     'unnormalize_xyz',
 ]
 
-from typing import Literal
-
 import numpy as np
 import torch
 
-from ._rgb import gammaize_rgb, linearize_rgb
 from ..utils.math import matrix_transform
+from ._rgb import gammaize_rgb, linearize_rgb
 
 
 def get_white_point(
     white: str,
     obs: str | int = 10,
 ):
-    """Returns the name, x, y, CCT, and degree of observer of the standard
-    illuminant.
+    """Returns a dictionary that contains name, x, y, CCT, and degree of
+    observer of the standard illuminant.
 
     Parameters
     ----------
@@ -178,6 +176,11 @@ def get_rgb_to_xyz_matrix(
         White point. The input is case-insensitive.
     obs : {2, '2', 10, '10'}, default=10
         The degree of oberver
+
+    Returns
+    -------
+    mat : torch.Tensor
+        A transformation matrix used to convert RGB to CIE XYZ.
     """
     white_ = get_white_point(white, obs)
     rgb_ = get_rgb_model(rgb_spec)
@@ -212,8 +215,26 @@ def get_rgb_to_xyz_matrix(
 def get_xyz_to_rgb_matrix(
     rgb_spec: str,
     white: str,
-    obs: Literal[2, 10] = 10,
+    obs: str | int = 10,
 ) -> torch.Tensor:
+    """Evaluate the matrix for converting CIE XYZ to RGB by the given RGB
+    model, white point, and degree of observer.
+
+    Parameters
+    ----------
+    rgb_spec : RGBSpec, default='srgb'
+        The RGB specification or a conversion matrix. The input
+        is case-insensitive.
+    white : StandardIlluminants, default='D65'
+        White point. The input is case-insensitive.
+    obs : {2, '2', 10, '10'}, default=10
+        The degree of oberver
+
+    Returns
+    -------
+    mat : torch.Tensor
+        A transformation matrix used to convert CIE XYZ to RGB.
+    """
     matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     matrix = torch.linalg.inv(matrix)
     return matrix
@@ -223,7 +244,7 @@ def rgb_to_xyz(
     rgb: torch.Tensor,
     rgb_spec: str | torch.Tensor = 'srgb',
     white: str = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: str | int = 10,
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Converts an image from RGB space to CIE XYZ space.
@@ -248,25 +269,16 @@ def rgb_to_xyz(
     obs : {2, '2', 10, '10'}, default=10
         Degree of the standard observer (2° or 10°).
     ret_matrix : bool, default=False
-        If False, only the image is returned.
-        If True, also return the matrix that maps image from xyz to rgb.
+        If false, only the image is returned.
+        If true, also returns the transformation matrix.
 
     Returns
     -------
-    torch.Tensor
-        An image in CIE XYZ space with the shape (*, 3, H, W) when
-        `ret_matrix` is False.
-    tuple[torch.Tensor, torch.Tensor]
-        An image and a transformation matrix when `ret_matrix` is True.
-        The image is in CIE XYZ space with the shape (*, 3, H, W) and the
-        matrix is with shape (3, 3) for transforming image from rgb to xyz.
-    torch.Tensor
-        An image in CIE XYZ space with the shape (*, 3, H, W) when
-        `ret_matrix` is False.
-    tuple[torch.Tensor, torch.Tensor]
-        An RGB image and a transformation matrix when `ret_matrix` is True.\\
-        The image is in CIE XYZ space with the shape (*, 3, H, W).
-        The matrix is 3x3 for mapping image from rgb to xyz.
+    xyz : torch.Tensor
+        An image in CIE XYZ space with the shape (*, 3, H, W).
+    mat : torch.Tensor
+        A transformation matrix used to convert RGB to CIE XYZ.
+        `mat` is returned only if `ret_matrix` is true.
     """
     if isinstance(rgb_spec, torch.Tensor):
         matrix = rgb_spec
@@ -284,7 +296,7 @@ def xyz_to_rgb(
     xyz: torch.Tensor,
     rgb_spec: str | torch.Tensor = 'srgb',
     white: str = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: str | int = 10,
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Converts an image from CIE XYZ space to RGB space.
@@ -302,18 +314,16 @@ def xyz_to_rgb(
     obs : {2, '2', 10, '10'}, default=10
         Degree of the standard observer (2° or 10°).
     ret_matrix : bool, default=False
-        If False, only the image is returned.
-        If True, also return the matrix that maps image from xyz to rgb.
+        If false, only the image is returned.
+        If true, also returns the transformation matrix.
 
     Returns
     -------
-    torch.Tensor
-        An RGB image in the range of [0, 1] with the shape (*, 3, H, W) when
-        `ret_matrix` is False.
-    tuple[torch.Tensor, torch.Tensor]
-        An RGB image and a transformation matrix when `ret_matrix` is True.\\
-        The image is in [0, 1] with the shape (*, 3, H, W).\\
-        The matrix is 3x3 for mapping image from xyz to rgb.
+    rgb : torch.Tensor
+        An RGB image in the range of [0, 1] with the shape (*, 3, H, W).
+    mat : torch.Tensor
+        A transformation matrix used to convert CIE XYZ to RGB.
+        `mat` is returned only if `ret_matrix` is true.
     """
     matrix = (
         get_xyz_to_rgb_matrix(rgb_spec, white, obs)
@@ -334,7 +344,7 @@ def normalize_xyz(
     xyz: torch.Tensor,
     rgb_spec: str | torch.Tensor = 'srgb',
     white: str = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: str | int = 10,
     inplace: bool = False,
 ) -> torch.Tensor:
     """Normalize the image in CIE XYZ to [0, 1] by evaluting
@@ -352,7 +362,7 @@ def normalize_xyz(
     obs : {2, '2', 10, '10'}, default=10
         The degree of oberver.
     inplace : bool, default=False
-        If True, modifies the orginal tensor directly without copying.
+        If true, modifies the orginal tensor directly without copying.
     """
     matrix = (
         get_rgb_to_xyz_matrix(rgb_spec, white, obs)
@@ -373,7 +383,7 @@ def unnormalize_xyz(
     xyz: torch.Tensor,
     rgb_spec: str | torch.Tensor = 'srgb',
     white: str = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: str | int = 10,
     inplace: bool = False,
 ) -> torch.Tensor:
     """The inverse function of normalize_xyz.

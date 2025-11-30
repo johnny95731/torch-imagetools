@@ -5,16 +5,14 @@ __all__ = [
     'lab_to_rgb',
 ]
 
-from typing import Literal
-
 import torch
 
-from ._rgb import gammaize_rgb
 from ._ciexyz import (
     get_rgb_to_xyz_matrix,
     rgb_to_xyz,
     xyz_to_rgb,
 )
+from ._rgb import gammaize_rgb
 
 _6_29 = 6 / 29  # threshold for _lab_helper_inv
 _6_29_pow3 = _6_29**3  # threshold for _lab_helper
@@ -52,7 +50,7 @@ def xyz_to_lab(
     xyz: torch.Tensor,
     rgb_spec: str | torch.Tensor = 'srgb',
     white: str = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: str | int = 10,
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Converts an image from CIE XYZ space to CIE LAB space.
@@ -70,18 +68,16 @@ def xyz_to_lab(
     obs : {2, '2', 10, '10'}, default=10
         Degree of the standard observer (2° or 10°).
     ret_matrix : bool, default=False
-        If False, only the image is returned.
-        If True, also return the matrix that maps image from rgb to xyz.
+        If false, only the image is returned.
+        If true, also returns the transformation matrix.
 
     Returns
     -------
-    torch.Tensor
-        An image in CIE LAB space with the shape (*, 3, H, W) when
-        `ret_matrix` is False.
-    tuple[torch.Tensor, torch.Tensor]
-        An image and a transformation matrix when `ret_matrix` is True.\\
-        The image is in CIE LAB space with the shape (*, 3, H, W).\\
-        The matrix is 3x3 for mapping image from rgb to xyz.
+    lab : torch.Tensor
+        An image in CIE LAB space with the shape (*, 3, H, W).
+    mat : torch.Tensor
+        A transformation matrix used to convert RGB to CIE XYZ.
+        `mat` is returned only if `ret_matrix` is true.
     """
     x, y, z = xyz.unbind(-3)
 
@@ -109,7 +105,7 @@ def lab_to_xyz(
     lab: torch.Tensor,
     rgb_spec: str | torch.Tensor = 'srgb',
     white: str = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: str | int = 10,
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Converts an image from CIE LAB space to CIE XYZ space.
@@ -127,18 +123,16 @@ def lab_to_xyz(
     obs : {2, '2', 10, '10'}, default=10
         Degree of the standard observer (2° or 10°).
     ret_matrix : bool, default=False
-        If False, only the image is returned.
-        If True, also return the matrix that maps image from rgb to xyz.
+        If false, only the image is returned.
+        If true, also returns the transformation matrix.
 
     Returns
     -------
-    torch.Tensor
-        An image in CIE XYZ space with the shape (*, 3, H, W) when
-        `ret_matrix` is False.
-    tuple[torch.Tensor, torch.Tensor]
-        An image and a transformation matrix when `ret_matrix` is True.\\
-        The image is in CIE XYZ space with the shape (*, 3, H, W).\\
-        The matrix is 3x3 for mapping image from rgb to xyz.
+    xyz : torch.Tensor
+        An image in CIE XYZ space with the shape (*, 3, H, W).
+    mat : torch.Tensor
+        A transformation matrix used to convert RGB to CIE XYZ.
+        `mat` is returned only if `ret_matrix` is true.
     """
     l, a, b = lab.unbind(-3)
 
@@ -164,7 +158,7 @@ def rgb_to_lab(
     rgb: torch.Tensor,
     rgb_spec: str | torch.Tensor = 'srgb',
     white: str = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: str | int = 10,
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Converts an image from RGB space to CIE LAB space.
@@ -186,18 +180,16 @@ def rgb_to_lab(
     obs : {2, '2', 10, '10'}, default=10
         Degree of the standard observer (2° or 10°).
     ret_matrix : bool, default=False
-        If False, only the image is returned.
-        If True, also return the matrix that maps image from rgb to xyz.
+        If false, only the image is returned.
+        If true, also returns the transformation matrix.
 
     Returns
     -------
-    torch.Tensor
-        An image in CIE LAB space with the shape (*, 3, H, W) when
-        `ret_matrix` is False.
-    tuple[torch.Tensor, torch.Tensor]
-        An image and a transformation matrix when `ret_matrix` is True.\\
-        The image is in in CIE LAB space with the shape (*, 3, H, W).\\
-        The matrix is 3x3 for mapping image from rgb to xyz.
+    lab : torch.Tensor
+        An image in CIE LAB space with the shape (*, 3, H, W).
+    mat : torch.Tensor
+        A transformation matrix used to convert RGB to CIE XYZ.
+        `mat` is returned only if `ret_matrix` is true.
     """
     xyz, matrix = rgb_to_xyz(rgb, rgb_spec, white, obs, ret_matrix=True)
     lab = xyz_to_lab(xyz, matrix)
@@ -210,7 +202,7 @@ def lab_to_rgb(
     lab: torch.Tensor,
     rgb_spec: str | torch.Tensor = 'srgb',
     white: str = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: str | int = 10,
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Converts an image from CIE LAB space to RGB space.
@@ -228,18 +220,16 @@ def lab_to_rgb(
     obs : {2, '2', 10, '10'}, default=10
         Degree of the standard observer (2° or 10°).
     ret_matrix : bool, default=False
-        If False, only the image is returned.
-        If True, also return the matrix that maps image from xyz to rgb.
+        If false, only the image is returned.
+        If true, also returns the transformation matrix.
 
     Returns
     -------
-    torch.Tensor
-        An RGB image in [0, 1] with the shape (*, 3, H, W) when
-        `ret_matrix` is False.
-    tuple[torch.Tensor, torch.Tensor]
-        An RGB image and a transformation matrix when `ret_matrix` is True.\\
-        The image is in [0, 1] with the shape (*, 3, H, W).\\
-        The matrix is 3x3 for mapping image from xyz to rgb.
+    rgb : torch.Tensor
+        An RGB image in [0, 1] with the shape (*, 3, H, W).
+    mat : torch.Tensor
+        A transformation matrix used to convert CIE XYZ to RGB.
+        `mat` is returned only if `ret_matrix` is true.
     """
     xyz, matrix = lab_to_xyz(lab, rgb_spec, white, obs, ret_matrix=True)
     matrix = matrix.inverse()

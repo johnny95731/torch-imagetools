@@ -30,14 +30,14 @@ def prewitt(
 
     Returns
     -------
-    torch.Tensor
+    mag : torch.Tensor
         Image gradient's magnitude.\\
         The magnitude stacks (y-direction, x-direction) if `magnitude`
         is 'stack'.\\
         For details, check `torch_imagetools.filters.gradient_magnitude`.
-    torch.Tensor
-        Image gradient's direction with shape (*, C, H, W) if `ret_angle` is
-        True. Otherwise, returns magnitude only.
+    angle : torch.Tensor
+        Image gradient's direction with shape (*, C, H, W).
+        `angle` is returned only if `ret_angle` is true.
     """
     kernel_y = torch.tensor((
         (-1, -1, -1),

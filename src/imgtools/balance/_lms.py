@@ -100,18 +100,21 @@ def xyz_to_lms(
     method : CATMethod, default='bradford'
         The method of conversion. The argument is case-insensitive.
     ret_matrix : bool, default=False
-        If True, returns image and conversion matrix (XYZ -> LMS).
+        If false, only the image is returned.
+        If true, also returns the transformation matrix.
 
     Returns
     -------
-    torch.Tensor | tuple[torch.Tensor, torch.Tensor]
-        An image in LMS space with the shape (*, 3, H, W). If ret_matrix
-        is True, returns image and the transformation matrix.
+    lms : torch.Tensor
+        An image in LMS space with the shape (*, 3, H, W).
+    mat : torch.Tensor
+        A transformation matrix used to convert CIE XYZ to LMS.
+        `mat` is returned only if `ret_matrix` is true.
     """
-    matrix = get_xyz_to_lms_matrix(method)
-    lms = matrix_transform(xyz, matrix)
+    mat = get_xyz_to_lms_matrix(method)
+    lms = matrix_transform(xyz, mat)
     if ret_matrix:
-        return lms, matrix
+        return lms, mat
     return lms
 
 
@@ -129,16 +132,19 @@ def lms_to_xyz(
     method : CATMethod, default='bradford'
         The method of conversion. The argument is case-insensitive.
     ret_matrix : bool, default=False
-        If True, returns image and conversion matrix (LMS -> XYZ).
+        If false, only the image is returned.
+        If true, also returns the transformation matrix.
 
     Returns
     -------
-    torch.Tensor | tuple[torch.Tensor, torch.Tensor]
-        An image in CIE XYZ space with the shape (*, 3, H, W). If ret_matrix
-        is True, returns image and the transformation matrix.
+    xyz : torch.Tensor
+        An image in CIE XYZ space with the shape (*, 3, H, W).
+    mat : torch.Tensor
+        A transformation matrix used to convert LMS to CIE XYZ.
+        `mat` is returned only if `ret_matrix` is true.
     """
-    matrix = get_lms_to_xyz_matrix(method)
-    xyz = matrix_transform(lms, matrix)
+    mat = get_lms_to_xyz_matrix(method)
+    xyz = matrix_transform(lms, mat)
     if ret_matrix:
-        return xyz, matrix
+        return xyz, mat
     return xyz
