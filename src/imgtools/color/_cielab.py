@@ -14,9 +14,9 @@ from ._ciexyz import (
 )
 
 _6_29 = 6 / 29  # threshold for _lab_helper_inv
-_6_29_pow3 = _6_29**3  # threshold for _lab_helper
-_scaling = 1 / (3 * _6_29**2)  # = 1 / (3 * _6_29**2)
-_bias = 4 / 29  # = 16 / 116
+_6_29_POW3 = _6_29**3  # threshold for _lab_helper
+_SCALING_LAB = 1 / (3 * _6_29**2)  # = (29 / 6)**2 / 3
+_BIAS_LAB = 16 / 116
 
 
 def _lab_helper(value: torch.Tensor):
@@ -25,9 +25,9 @@ def _lab_helper(value: torch.Tensor):
     """
     output = torch.empty_like(value)
     torch.where(
-        value > _6_29_pow3,
+        value > _6_29_POW3,
         value.pow(1 / 3),
-        value.mul_(_scaling).add_(_bias),
+        value.mul(_SCALING_LAB).add(_BIAS_LAB),
         out=output,
     )
     return output
@@ -40,7 +40,7 @@ def _lab_helper_inv(value: torch.Tensor):
     output = torch.where(
         value > _6_29,
         value.pow(3.0),
-        value.sub(_bias).mul(1 / _scaling),
+        value.sub(_BIAS_LAB).div(_SCALING_LAB),
     )
     return output
 

@@ -7,23 +7,22 @@ __all__ = [
 
 import torch
 
+from ._cielab import _6_29_POW3
 from ._ciexyz import (
     get_rgb_to_xyz_matrix,
     rgb_to_xyz,
     xyz_to_rgb,
 )
 
-_6_29 = 6 / 29  # threshold for _luv_helper_inv
-_6_29_pow3 = _6_29**3  # threshold for _luv_helper
-_scaling = 0.01 / ((_6_29 / 2) ** 3)  # = (29 / 3)**3 / 100
+_SCALING_LUV = 0.01 / (((6 / 29) / 2) ** 3)  # = (29 / 3)**3 / 100
 
 
 def _luv_helper(value: torch.Tensor):
     """Function that be used in the transformation from CIE XYZ to CIE LUV."""
     output = torch.where(
-        value > _6_29_pow3,
-        value.pow(1 / 3).mul_(1.16).sub_(0.16),
-        value.mul(_scaling),
+        value > _6_29_POW3,
+        value.pow(1 / 3).mul(1.16).sub(0.16),
+        value.mul(_SCALING_LUV),
     )
     return output
 
@@ -33,9 +32,9 @@ def _luv_helper_inv(
 ):
     """Function that be used in the transformation from CIE LUV to CIE XYZ."""
     output = torch.where(
-        value > 0.08,
-        value.add(0.16).mul_(1 / 1.16).pow_(3.0),
-        value.mul(1 / _scaling),
+        value > 0.08,  # = _6_29_POW3 ** (1/3) * 1.16 - 0.16
+        value.add(0.16).div(1.16).pow(3.0),
+        value.div(_SCALING_LUV),
     )
     return output
 
