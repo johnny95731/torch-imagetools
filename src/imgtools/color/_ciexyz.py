@@ -180,6 +180,7 @@ def get_rgb_to_xyz_matrix(
     -------
     mat : torch.Tensor
         A transformation matrix used to convert RGB to CIE XYZ.
+        Note that the dtype is float64.
     """
     white_ = get_white_point(white, obs)
     rgb_ = get_rgb_model(rgb_spec)
@@ -196,15 +197,15 @@ def get_rgb_to_xyz_matrix(
     Zb = (1.0 - bx - by) / by  # noqa
 
     matrix = np.array(
-        [
-            [Xr, Xg, Xb],
-            [1.0, 1.0, 1.0],
-            [Zr, Zg, Zb],
-        ],
-        dtype=np.float32,
+        (
+            (Xr, Xg, Xb),
+            (1.0, 1.0, 1.0),
+            (Zr, Zg, Zb),
+        ),
+        dtype=np.float64,
     )
     s_mat = np.linalg.inv(matrix)
-    s_vec = np.dot(s_mat, [wx / wy, 1.0, (1 - wx - wy) / wy])  # type: np.ndarray
+    s_vec = np.dot(s_mat, (wx / wy, 1.0, (1 - wx - wy) / wy))  # type: np.ndarray
 
     np.multiply(matrix, s_vec, out=matrix)
     matrix = torch.from_numpy(matrix)
@@ -232,6 +233,7 @@ def get_xyz_to_rgb_matrix(
     -------
     mat : torch.Tensor
         A transformation matrix used to convert CIE XYZ to RGB.
+        Note that the dtype is float64.
     """
     matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     matrix = torch.linalg.inv(matrix)

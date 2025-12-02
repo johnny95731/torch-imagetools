@@ -7,6 +7,7 @@ __all__ = [
 
 import torch
 
+from ..utils.helpers import align_device_type, to_channel_coeff
 from ._ciexyz import (
     get_rgb_to_xyz_matrix,
     rgb_to_xyz,
@@ -77,14 +78,15 @@ def xyz_to_lab(
         A transformation matrix used to convert RGB to CIE XYZ.
         `mat` is returned only if `ret_matrix` is true.
     """
-    x, y, z = xyz.unbind(-3)
-
     matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
+    max_ = align_device_type(max_, xyz)
+    max_ = to_channel_coeff(max_, 3)
 
-    fx = _lab_helper(x.mul(1 / max_[0]))
-    fy = _lab_helper(y.mul(1 / max_[1]))
-    fz = _lab_helper(z.mul(1 / max_[2]))
+    normalized = xyz.div(max_)
+    temp = _lab_helper(normalized)
+    fx, fy, fz = temp.unbind(-3)
+
     l = 1.16 * fy - 0.16
     a = fx.sub(fy).mul(5.0)
     b = fz.sub(fy).mul(-2.0)
@@ -131,13 +133,21 @@ def lab_to_xyz(
 
     matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
+    max_ = align_device_type(max_, lab)
+    max_ = to_channel_coeff(max_, 3)
 
     l = l.add(0.16).mul(1 / 1.16)
-    x = _lab_helper_inv(l.add(a, alpha=0.2)).mul(max_[0])
-    y = _lab_helper_inv(l).mul(max_[1])
-    z = _lab_helper_inv(l.sub(b, alpha=0.5)).mul(max_[2])
+    temp_xyz = torch.stack(
+        (
+            l.add(a, alpha=0.2),
+            l,
+            l.sub(b, alpha=0.5),
+        ),
+        dim=-3,
+    )
 
-    xyz = torch.stack((x, y, z), dim=-3)
+    xyz = _lab_helper_inv(temp_xyz)
+    xyz = xyz * max_
     if ret_matrix:
         return xyz, matrix
     return xyz

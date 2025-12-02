@@ -7,6 +7,7 @@ __all__ = [
 
 import torch
 
+from ..utils.helpers import align_device_type
 from ._cielab import _6_29_POW3
 from ._ciexyz import (
     get_rgb_to_xyz_matrix,
@@ -17,35 +18,14 @@ from ._ciexyz import (
 _SCALING_LUV = 0.01 / (((6 / 29) / 2) ** 3)  # = (29 / 3)**3 / 100
 
 
-def _luv_helper(value: torch.Tensor):
-    """Function that be used in the transformation from CIE XYZ to CIE LUV."""
-    output = torch.where(
-        value > _6_29_POW3,
-        value.pow(1 / 3).mul(1.16).sub(0.16),
-        value.mul(_SCALING_LUV),
-    )
-    return output
-
-
-def _luv_helper_inv(
-    value: torch.Tensor,
-):
-    """Function that be used in the transformation from CIE LUV to CIE XYZ."""
-    output = torch.where(
-        value > 0.08,  # = _6_29_POW3 ** (1/3) * 1.16 - 0.16
-        value.add(0.16).div(1.16).pow(3.0),
-        value.div(_SCALING_LUV),
-    )
-    return output
-
-
 def _calc_uv_prime(x: torch.Tensor, y: torch.Tensor, z: torch.Tensor):
     # 4.0 / (x + 15 * y + 3 * z)
     coeff = x.add(y, alpha=15.0).add(z, alpha=3.0)
     torch.divide(4.0, coeff, out=coeff)
-    coeff.nan_to_num(0.0, 0.0, 0.0)
-    u_prime = coeff.mul(x)  # x * coeff
-    v_prime = coeff.mul(y).mul(2.25)  # 2.25 * y * coeff
+    coeff = coeff.nan_to_num(0.0, 0.0, 0.0)
+
+    u_prime = x * coeff
+    v_prime = 2.25 * y * coeff
     return u_prime, v_prime
 
 
@@ -85,14 +65,21 @@ def xyz_to_luv(
 
     matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
+    max_ = align_device_type(max_, xyz)
 
     u_white, v_white = _calc_uv_prime(*max_)
     u_prime, v_prime = _calc_uv_prime(x, y, z)
 
-    l = _luv_helper(y / max_[1])
+    l = y / max_[1]
+    l = torch.where(
+        l > _6_29_POW3,
+        l.pow(1 / 3).mul(1.16).sub(0.16),
+        l * _SCALING_LUV,
+    )
+
     l_13 = 13.0 * l
-    u = u_prime.sub(u_white).mul(l_13)
-    v = v_prime.sub(v_white).mul(l_13)
+    u = (u_prime - u_white) * l_13
+    v = (v_prime - v_white) * l_13
 
     luv = torch.stack((l, u, v), dim=-3)
     if ret_matrix:
@@ -136,25 +123,26 @@ def luv_to_xyz(
 
     matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
+    max_ = align_device_type(max_, luv)
 
     u_white, v_white = _calc_uv_prime(*max_)
 
     l_13 = 1 / (13.0 * l)
-    u_prime = (u * l_13).add(u_white)
-    v_prime = (v * l_13).add(v_white)
+    u_prime = (u * l_13) + u_white
+    v_prime = (v * l_13) + v_white
 
-    y = max_[1] * _luv_helper_inv(l)
-    # x = 2.25 * u_prime / v_prime * y
-    x = u_prime.divide(v_prime).mul(y).mul(2.25).nan_to_num(0.0)
-    # z = (3.0 - 0.75 * u_prime - 5.0 * v_prime) / v_prime * y
-    z = (
-        u_prime.mul(-0.75)
-        .sub(v_prime, alpha=5.0)
-        .add(3.0)
-        .divide(v_prime)
-        .mul(y)
-        .nan_to_num(0.0)
+    y = torch.where(
+        l > 0.08,  # = _6_29_POW3 ** (1/3) * 1.16 - 0.16
+        l.add(0.16).div(1.16).pow(3.0),
+        l.div(_SCALING_LUV),
     )
+    y = max_[1] * y
+
+    u_v = (u_prime / v_prime).nan_to_num(0.0, 0.0, 0.0)
+    # x = 2.25 * u_prime / v_prime * y
+    x = 2.25 * u_v * y
+    # z = (3.0 - 0.75 * u_prime - 5.0 * v_prime) / v_prime * y
+    z = (3.0 / v_prime - 0.75 * u_v - 5.0) * y
 
     xyz = torch.stack((x, y, z), dim=-3)
     if ret_matrix:
