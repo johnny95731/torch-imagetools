@@ -23,7 +23,7 @@ def linearize_srgb(
     torch.where(
         srgb <= 0.04045,
         srgb.mul(1 / 12.92),
-        srgb.add(0.055).mul_(1 / 1.055).pow_(2.4),
+        srgb.add(0.055).mul(1 / 1.055).pow(2.4),
         out=linear,
     )
     return linear
@@ -38,7 +38,7 @@ def gammaize_srgb(
     torch.where(
         linear <= 0.0031308,
         linear.mul(12.92),
-        torch.pow(linear, 1 / 2.4).mul_(1.055).sub_(0.055),
+        torch.pow(linear, 1 / 2.4).mul(1.055).sub(0.055),
         out=srgb,
     )
     return srgb
@@ -88,7 +88,7 @@ def gammaize_prophoto_rgb(
     torch.where(
         linear <= 0.03125,  # 16/512
         linear.mul(16.0),
-        linear.pow_(1 / 1.8),
+        linear.pow(1 / 1.8),
         out=prophoto_rgb,
     )
     return prophoto_rgb
@@ -104,7 +104,7 @@ def linearize_rec2020(
     torch.where(
         rec2020 < 0.0812428582986315,
         rec2020.mul(1 / 4.5),
-        rec2020.add(alpha - 1.0).mul_(1 / alpha).pow_(1 / 0.45),
+        rec2020.add(alpha - 1.0).mul(1 / alpha).pow(1 / 0.45),
         out=linear,
     )
     return linear
@@ -120,7 +120,7 @@ def gammaize_rec2020(
     torch.where(
         linear < 0.018053968510807,
         linear.mul(4.5),
-        linear.pow(0.45).mul_(alpha).sub_(alpha - 1.0),
+        linear.pow(0.45).mul(alpha).sub(alpha - 1.0),
         out=rec2020,
     )
     return rec2020

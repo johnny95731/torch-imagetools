@@ -51,17 +51,17 @@ def hernandez_andre_approximation(
     x, y = xy.unbind(0)
 
     # Low-temperature formula 3-50 kilo Kelvin
-    n = (x - 0.3366).div_(y - 0.1735)
-    cct = (n * (1 / 0.92159)).exp_().mul_(6253.80338).sub_(949.86315)
-    cct += (n * (1 / 0.20039)).exp_().mul_(28.70599)
-    cct += (n * (1 / 0.07125)).exp_().mul_(0.00004)
+    n = (x - 0.3366).div(y - 0.1735)
+    cct = (n * (1 / 0.92159)).exp().mul(6253.80338).sub(949.86315)
+    cct += (n * (1 / 0.20039)).exp().mul(28.70599)
+    cct += (n * (1 / 0.07125)).exp().mul(0.00004)
 
     over_50k_kelvin = cct > 50000.0
     if torch.any(over_50k_kelvin).item():
         # high-temperature formula 50-800 kilo Kelvin
         n = (x - 0.3356) / (y - 0.1691)
-        high_temp = (n * (1 / 0.07861)).exp_().mul_(0.00228).add_(36284.48953)
-        high_temp += (n * (1 / 0.01543)).exp_().mul_(5.4535e-36)
+        high_temp = (n * (1 / 0.07861)).exp().mul(0.00228).add(36284.48953)
+        high_temp += (n * (1 / 0.01543)).exp().mul(5.4535e-36)
 
         cct = torch.where(over_50k_kelvin, high_temp, cct)
     return cct

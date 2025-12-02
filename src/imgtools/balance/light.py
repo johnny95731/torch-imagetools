@@ -110,8 +110,8 @@ def light_compensation_htchen(
     mean_lum = avg_pool2d(lum.unsqueeze(-3), 5, 1, 2).squeeze(-3)
     mean_sat = avg_pool2d(sat.unsqueeze(-3), 5, 1, 2).squeeze(-3)
     # Suppression overexposed region.
-    d_saturation = (1.0 + mean_sat).mul_(0.5)  # range: [0.5, 1]
-    d_brightness = (1.0 + mean_lum).pow_(power)  # range: [1, 2**power]
+    d_saturation = (1.0 + mean_sat).mul(0.5)  # range: [0.5, 1]
+    d_brightness = (1.0 + mean_lum).pow(power)  # range: [1, 2**power]
     img_dark = d_saturation / d_brightness  # range: [2 ** (-1 - power), 1]
 
     new_lum = img_brighter * img_dark

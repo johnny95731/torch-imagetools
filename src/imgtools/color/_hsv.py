@@ -36,13 +36,13 @@ def hsv_helper(
 
     r, g, b = torch.unbind(rgb, dim=-3)
 
-    h1 = (g - b).divide_(delta)
-    h2 = (b - r).divide_(delta).add_(2.0)
-    h3 = (r - g).divide_(delta).add_(4.0)
+    h1 = (g - b).divide(delta)
+    h2 = (b - r).divide(delta).add(2.0)
+    h3 = (r - g).divide(delta).add(4.0)
 
     hue = torch.stack((h1, h2, h3), dim=-3)
     hue = torch.gather(hue, dim=-3, index=argmax_rgb.unsqueeze(-3)).squeeze(-3)
-    hue = hue.remainder_(6.0).mul_(60.0).nan_to_num_(0.0, 0.0, 0.0)
+    hue = hue.remainder(6.0).mul(60.0).nan_to_num(0.0, 0.0, 0.0)
     return (hue, amax, amin, delta)
 
 
@@ -63,7 +63,7 @@ def rgb_to_hsv(rgb: torch.Tensor) -> torch.Tensor:
         are in the range [0, 360), S and V are in the range of [0, 1].
     """
     hue, amax, _, delta = hsv_helper(rgb)
-    sat = delta.divide_(amax).nan_to_num_(0.0, 0.0, 0.0)
+    sat = delta.divide(amax).nan_to_num(0.0, 0.0, 0.0)
     bri = amax
 
     hsv = torch.stack((hue, sat, bri), dim=-3)

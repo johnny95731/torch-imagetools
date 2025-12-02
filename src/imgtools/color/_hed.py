@@ -88,5 +88,5 @@ def hed_to_rgb(hed: torch.Tensor) -> torch.Tensor:
         if hed.device == 'cpu'
         else _MAT_RGB_TO_HED.to(hed.device)
     )
-    rgb = matrix_transform(hed, matrix).clip_(0.0, 1.0)
+    rgb = matrix_transform(hed, matrix).clip(0.0, 1.0)
     return rgb

@@ -320,7 +320,7 @@ def xyz_to_rgb(
     matrix = get_xyz_to_rgb_matrix(rgb_spec, white, obs)
 
     linear = matrix_transform(xyz, matrix)
-    linear.clip_(0.0, 1.0)
+    linear.clip(0.0, 1.0)
     if ret_matrix:
         return linear, matrix
     return linear
@@ -353,10 +353,10 @@ def normalize_xyz(
     max_ = matrix.sum(dim=1)
 
     out = xyz if inplace else xyz.clone()
-    out[..., 0, :, :].mul_(1 / max_[0])
-    # xyz[..., 1, :, :].mul_(1 / max[1])  # Ignore this line since max[1] = 1
-    out[..., 2, :, :].mul_(1 / max_[2])
-    out.clip_(0.0, 1.0)
+    out[..., 0, :, :].mul(1 / max_[0])
+    # xyz[..., 1, :, :].mul(1 / max[1])  # Ignore this line since max[1] = 1
+    out[..., 2, :, :].mul(1 / max_[2])
+    out.clip(0.0, 1.0)
     return out
 
 
@@ -386,7 +386,7 @@ def unnormalize_xyz(
     max_ = matrix.sum(dim=1)
 
     out = xyz if inplace else xyz.clone()
-    out[..., 0, :, :].mul_(max_[0])
-    # xyz[..., 1, :, :].mul_(max[1])  # Ignore this line since max[1] = 1
-    out[..., 2, :, :].mul_(max_[2])
+    out[..., 0, :, :].mul(max_[0])
+    # xyz[..., 1, :, :].mul(max[1])  # Ignore this line since max[1] = 1
+    out[..., 2, :, :].mul(max_[2])
     return out

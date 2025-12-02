@@ -56,7 +56,7 @@ def gradient_magnitude(
         magnitude = float(magnitude)
 
     mag = torch.stack((grad_y, grad_x))
-    mag = mag.abs_()
+    mag = mag.abs()
     if magnitude == float('inf'):
         mag = torch.amax(mag, dim=0)
     elif magnitude == float('-inf'):
@@ -70,9 +70,9 @@ def gradient_magnitude(
         if magnitude == 1.0:
             mag = mag.sum(0)
         elif magnitude == 2.0:
-            mag = mag.square_().sum(0).sqrt_()
+            mag = mag.square().sum(0).sqrt()
         else:
-            mag = mag.pow_(magnitude).sum(0).pow_(1 / magnitude)
+            mag = mag.pow(magnitude).sum(0).pow(1 / magnitude)
     else:
         raise TypeError(
             "Argument `magnitude` must be 'stack', 'inf', '-inf', or a "
@@ -172,7 +172,7 @@ def robinson(
     grad_135 = filter2d(img, kernel_45.flip(0))
 
     mag = torch.stack((grad_y, grad_x, grad_45, grad_135))
-    mag = mag.abs_().amax(dim=0)
+    mag = mag.abs().amax(dim=0)
     if ret_angle:
         angle = atan2(grad_y, grad_x, angle_unit=angle_unit)
         return mag, angle
@@ -241,7 +241,7 @@ def kirsch(
         grad_ne,
         grad_nw,
     ))
-    mag = mag.abs_().amax(dim=0)
+    mag = mag.abs().amax(dim=0)
     if ret_angle:
         angle = atan2(grad_south, grad_east, angle_unit=angle_unit)
         return mag, angle

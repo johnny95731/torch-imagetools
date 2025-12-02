@@ -112,7 +112,7 @@ def atan2(
         )
     angle = torch.atan2(y, x)
     if angle_unit == 'deg':
-        angle.mul_(180 / torch.pi)
+        angle.mul(180 / torch.pi)
     return angle
 
 

@@ -53,7 +53,7 @@ def adjust_linear(
     # (img - center) * slope + center
     # = slope * img + center * (1 - slope)
     bias = center * (1.0 - slope)
-    res = img.mul_(slope).add_(bias)
+    res = img.mul(slope).add(bias)
     return res
 
 
@@ -88,7 +88,7 @@ def adjust_gamma(
     if scale is not None:
         scale = to_channel_coeff(scale, num_ch)
         scale = align_device_type(scale, img)
-        res.mul_(scale)
+        res.mul(scale)
     return res
 
 
@@ -115,7 +115,7 @@ def adjust_log(
     if scale is not None:
         scale = to_channel_coeff(scale, num_ch)
         scale = align_device_type(scale, img)
-        res.mul_(scale)
+        res.mul(scale)
     return res
 
 
@@ -148,7 +148,7 @@ def adjust_sigmoid(
     gain = to_channel_coeff(gain, num_ch)
     gain = align_device_type(gain, img)
 
-    res = (img - shift).mul_(gain).sigmoid_()
+    res = (img - shift).mul(gain).sigmoid()
     return res
 
 

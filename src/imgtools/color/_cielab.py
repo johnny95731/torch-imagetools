@@ -86,8 +86,8 @@ def xyz_to_lab(
     fy = _lab_helper(y.mul(1 / max_[1]))
     fz = _lab_helper(z.mul(1 / max_[2]))
     l = 1.16 * fy - 0.16
-    a = fx.sub_(fy).mul_(5.0)
-    b = fz.sub_(fy).mul_(-2.0)
+    a = fx.sub(fy).mul(5.0)
+    b = fz.sub(fy).mul(-2.0)
 
     lab = torch.stack((l, a, b), dim=-3)
     if ret_matrix:
@@ -132,10 +132,10 @@ def lab_to_xyz(
     matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
 
-    l = l.add(0.16).mul_(1 / 1.16)
-    x = _lab_helper_inv(l.add(a, alpha=0.2)).mul_(max_[0])
+    l = l.add(0.16).mul(1 / 1.16)
+    x = _lab_helper_inv(l.add(a, alpha=0.2)).mul(max_[0])
     y = _lab_helper_inv(l).mul(max_[1])
-    z = _lab_helper_inv(l.sub(b, alpha=0.5)).mul_(max_[2])
+    z = _lab_helper_inv(l.sub(b, alpha=0.5)).mul(max_[2])
 
     xyz = torch.stack((x, y, z), dim=-3)
     if ret_matrix:

@@ -210,7 +210,7 @@ def gray_world_balance(
 
     factors = (img_mean / ch_mean).reshape(num_ch, 1, 1)
 
-    balanced = (rgb * factors).clip_(0.0, 1.0)
+    balanced = (rgb * factors).clip(0.0, 1.0)
     if ret_factors:
         return balanced, factors
     return balanced
@@ -251,7 +251,7 @@ def gray_edge_balance(
 
     factors = (img_grad_mean / ch_grad_mean).reshape(num_ch, 1, 1)
 
-    balanced = (rgb * factors).clip_(0.0, 1.0)
+    balanced = (rgb * factors).clip(0.0, 1.0)
     if ret_factors:
         return balanced, factors
     return balanced
@@ -305,7 +305,7 @@ def white_patch_balance(
         q = torch.full((num_ch,), q)
     if q.numel() == 1:
         q = q.repeat(num_ch)
-    q.clip_(0.0, 1.0)
+    q.clip(0.0, 1.0)
 
     q = align_device_type(q, flatten)
     ch_quantile_ = []  # type: list[torch.Tensor]
@@ -317,7 +317,7 @@ def white_patch_balance(
 
     factors = (img_quantile / ch_quantile).reshape(num_ch, 1, 1)
 
-    balanced = (rgb * factors).clip_(0.0, 1.0)
+    balanced = (rgb * factors).clip(0.0, 1.0)
     if ret_factors:
         return balanced, factors
     return balanced
@@ -347,8 +347,8 @@ def linear_regression_balance(
     x = torch.stack([ones, r, g], dim=0)  # n x 3
     beta = (x @ x.T).inverse() @ x @ b
 
-    balanced_b = (beta[2] * g).add_(r, alpha=beta[1]).add_(beta[0])
-    balanced_b.clip_(0.0, 1.0)
+    balanced_b = (beta[2] * g).add(r, alpha=beta[1]).add(beta[0])
+    balanced_b.clip(0.0, 1.0)
     balanced = torch.stack([r, g, balanced_b], dim=0).reshape_as(rgb)
     return balanced
 
@@ -394,7 +394,7 @@ def cheng_pca_balance(
 
     if adaptation == 'rgb':
         coeff = 1.0 / illuminant
-        balanced = (coeff * rgb).clip_(0.0, 1.0)
+        balanced = (coeff * rgb).clip(0.0, 1.0)
     elif adaptation == 'von kries':
         xyz, xyz_mat = rgb_to_xyz(rgb, 'widegamut', ret_matrix=True)
 

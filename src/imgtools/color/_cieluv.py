@@ -41,11 +41,11 @@ def _luv_helper_inv(
 
 def _calc_uv_prime(x: torch.Tensor, y: torch.Tensor, z: torch.Tensor):
     # 4.0 / (x + 15 * y + 3 * z)
-    coeff = x.add(y, alpha=15.0).add_(z, alpha=3.0)
+    coeff = x.add(y, alpha=15.0).add(z, alpha=3.0)
     torch.divide(4.0, coeff, out=coeff)
-    coeff.nan_to_num_(0.0, 0.0, 0.0)
+    coeff.nan_to_num(0.0, 0.0, 0.0)
     u_prime = coeff.mul(x)  # x * coeff
-    v_prime = coeff.mul_(y).mul_(2.25)  # 2.25 * y * coeff
+    v_prime = coeff.mul(y).mul(2.25)  # 2.25 * y * coeff
     return u_prime, v_prime
 
 
@@ -91,8 +91,8 @@ def xyz_to_luv(
 
     l = _luv_helper(y / max_[1])
     l_13 = 13.0 * l
-    u = u_prime.sub_(u_white).mul_(l_13)
-    v = v_prime.sub_(v_white).mul_(l_13)
+    u = u_prime.sub(u_white).mul(l_13)
+    v = v_prime.sub(v_white).mul(l_13)
 
     luv = torch.stack((l, u, v), dim=-3)
     if ret_matrix:
@@ -140,20 +140,20 @@ def luv_to_xyz(
     u_white, v_white = _calc_uv_prime(*max_)
 
     l_13 = 1 / (13.0 * l)
-    u_prime = (u * l_13).add_(u_white)
-    v_prime = (v * l_13).add_(v_white)
+    u_prime = (u * l_13).add(u_white)
+    v_prime = (v * l_13).add(v_white)
 
     y = max_[1] * _luv_helper_inv(l)
     # x = 2.25 * u_prime / v_prime * y
-    x = u_prime.divide(v_prime).mul_(y).mul_(2.25).nan_to_num_(0.0)
+    x = u_prime.divide(v_prime).mul(y).mul(2.25).nan_to_num(0.0)
     # z = (3.0 - 0.75 * u_prime - 5.0 * v_prime) / v_prime * y
     z = (
-        u_prime.mul_(-0.75)
-        .sub_(v_prime, alpha=5.0)
-        .add_(3.0)
-        .divide_(v_prime)
-        .mul_(y)
-        .nan_to_num_(0.0)
+        u_prime.mul(-0.75)
+        .sub(v_prime, alpha=5.0)
+        .add(3.0)
+        .divide(v_prime)
+        .mul(y)
+        .nan_to_num(0.0)
     )
 
     xyz = torch.stack((x, y, z), dim=-3)

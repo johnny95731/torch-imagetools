@@ -64,5 +64,5 @@ def yuv_to_rgb(yuv: torch.Tensor) -> torch.Tensor:
         device=yuv.device
     )
     # fmt: on
-    rgb = matrix_transform(yuv, matrix).clip_(0.0, 1.0)
+    rgb = matrix_transform(yuv, matrix).clip(0.0, 1.0)
     return rgb
