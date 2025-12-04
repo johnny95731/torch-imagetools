@@ -12,7 +12,7 @@ from typing import Literal, overload
 
 import torch
 
-from ._lms import CATMethod
+from ..color._lms import CATMethod
 
 def get_von_kries_transform_matrix(
     xyz_white: torch.Tensor,

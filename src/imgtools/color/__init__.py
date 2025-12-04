@@ -82,9 +82,11 @@ __all__ = [
     'gammaize_rec2020',
     'gammaize_rgb',
     'gammaize_srgb',
+    'get_lms_to_xyz_matrix',
     'get_rgb_model',
     'get_rgb_to_xyz_matrix',
     'get_white_point',
+    'get_xyz_to_lms_matrix',
     'get_xyz_to_rgb_matrix',
     'gray_to_rgb',
     'hed_to_rgb',
@@ -99,6 +101,7 @@ __all__ = [
     'linearize_rec2020',
     'linearize_rgb',
     'linearize_srgb',
+    'lms_to_xyz',
     'luv_to_rgb',
     'luv_to_xyz',
     'normalize_xyz',
@@ -114,6 +117,7 @@ __all__ = [
     'rgb_to_yuv',
     'unnormalize_xyz',
     'xyz_to_lab',
+    'xyz_to_lms',
     'xyz_to_luv',
     'xyz_to_rgb',
     'yuv_to_rgb',
@@ -164,6 +168,12 @@ from ._hsv import (
 from ._hwb import (
     hwb_to_rgb,
     rgb_to_hwb,
+)
+from ._lms import (
+    get_lms_to_xyz_matrix,
+    get_xyz_to_lms_matrix,
+    lms_to_xyz,
+    xyz_to_lms,
 )
 from ._rgb import (
     gammaize_adobe_rgb,

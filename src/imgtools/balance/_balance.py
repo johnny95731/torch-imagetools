@@ -15,10 +15,9 @@ __all__ = [
 
 import torch
 
-from ..color import rgb_to_xyz, xyz_to_rgb
+from ..color import rgb_to_xyz, xyz_to_lms, xyz_to_rgb
 from ..utils.helpers import align_device_type, to_channel_coeff
 from ..utils.math import matrix_transform
-from ._lms import xyz_to_lms
 from .est_illuminant import estimate_illuminant_cheng
 
 
