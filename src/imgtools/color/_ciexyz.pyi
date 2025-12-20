@@ -82,11 +82,15 @@ def get_rgb_to_xyz_matrix(
     rgb_spec: str | RGBSpec,
     white: str | StandardIlluminants,
     obs: Literal[2, '2', 10, '10'] | str | int = 10,
+    dtype: torch.dtype = torch.float32,
+    device: torch.device | str = 'cpu',
 ) -> torch.Tensor: ...
 def get_xyz_to_rgb_matrix(
     rgb_spec: str | RGBSpec,
     white: str | StandardIlluminants,
-    obs: Literal[2, 10] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
+    dtype: torch.dtype = torch.float32,
+    device: torch.device | str = 'cpu',
 ) -> torch.Tensor: ...
 
 #

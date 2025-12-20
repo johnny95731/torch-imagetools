@@ -31,8 +31,16 @@ CATMethod = Literal[
 """
 
 def get_chromatic_adaptation() -> tuple[CATMethod, ...]: ...
-def get_xyz_to_lms_matrix(method: CATMethod = 'bradford') -> torch.Tensor: ...
-def get_lms_to_xyz_matrix(method: CATMethod = 'bradford') -> torch.Tensor: ...
+def get_xyz_to_lms_matrix(
+    method: CATMethod = 'bradford',
+    dtype: torch.dtype = torch.float32,
+    device: torch.device | str = 'cpu',
+) -> torch.Tensor: ...
+def get_lms_to_xyz_matrix(
+    method: CATMethod = 'bradford',
+    dtype: torch.dtype = torch.float32,
+    device: torch.device | str = 'cpu',
+) -> torch.Tensor: ...
 
 #
 @overload
