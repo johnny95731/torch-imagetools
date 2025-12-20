@@ -188,8 +188,8 @@ def rgb_to_lab(
         A transformation matrix used to convert RGB to CIE XYZ.
         `mat` is returned only if `ret_matrix` is true.
     """
-    xyz, matrix = rgb_to_xyz(rgb, rgb_spec, white, obs, ret_matrix=True)
-    lab = xyz_to_lab(xyz, matrix)
+    xyz = rgb_to_xyz(rgb, rgb_spec, white, obs)
+    lab, matrix = xyz_to_lab(xyz, rgb_spec, white, obs, ret_matrix=True)
     if ret_matrix:
         return lab, matrix
     return lab
@@ -197,7 +197,7 @@ def rgb_to_lab(
 
 def lab_to_rgb(
     lab: torch.Tensor,
-    rgb_spec: str | torch.Tensor = 'srgb',
+    rgb_spec: str = 'srgb',
     white: str = 'D65',
     obs: str | int = 10,
     ret_matrix: bool = False,
@@ -227,9 +227,8 @@ def lab_to_rgb(
         A transformation matrix used to convert CIE XYZ to RGB.
         `mat` is returned only if `ret_matrix` is true.
     """
-    xyz, matrix = lab_to_xyz(lab, rgb_spec, white, obs, ret_matrix=True)
-    matrix = matrix.inverse()
-    rgb = xyz_to_rgb(xyz, matrix)
+    xyz = lab_to_xyz(lab, rgb_spec, white, obs)  # type: torch.Tensor
+    rgb, matrix = xyz_to_rgb(xyz, rgb_spec, white, obs, ret_matrix=True)
     if ret_matrix:
         return rgb, matrix
     return rgb

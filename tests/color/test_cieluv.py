@@ -1,55 +1,40 @@
 import unittest
 
-from src.imgtools.color import (
-    luv_to_rgb,
-    luv_to_xyz,
-    rgb_to_luv,
-    rgb_to_xyz,
-    xyz_to_luv,
-)
-from tests.basic import ColorTest
+from src.imgtools import color
+
+from tests.basic import ColorTest, run_over_all_dtype_device
 
 
 class LAB(ColorTest):
-    def test_xyz_luv_3dim(self):
+    def test_xyz_luv(self):
         self.print_name()
 
-        num = 100
-        img = self.get_img((3, 512, 512))
-        self.img = rgb_to_xyz(img)
-        self.fns = [xyz_to_luv, luv_to_xyz]
+        cases = run_over_all_dtype_device(color.xyz_to_luv)
+        for inps, res in cases:
+            self._basic_assertion(inps, res)
 
-        self.benchmark(num)
+        cases = run_over_all_dtype_device(color.luv_to_xyz)
+        for inps, res in cases:
+            self._basic_assertion(inps, res)
 
-    def test_xyz_luv_4dim(self):
-        self.print_name()
-
-        num = 30
-        img = self.get_img((8, 3, 512, 512))
-        self.img = rgb_to_xyz(img)
-        self.fns = [xyz_to_luv, luv_to_xyz]
-
+        self.img = self.get_img((3, 1000, 1000))
+        self.fns = [color.xyz_to_luv, color.luv_to_xyz]
         self.max_error()
-        self.benchmark(num)
 
-    def test_rgb_luv_3dim(self):
+    def test_rgb_luv(self):
         self.print_name()
 
-        num = 100
-        self.img = self.get_img((3, 512, 512))
-        self.fns = [rgb_to_luv, luv_to_rgb]
+        cases = run_over_all_dtype_device(color.rgb_to_luv)
+        for inps, res in cases:
+            self._basic_assertion(inps, res)
 
-        self.benchmark(num)
+        cases = run_over_all_dtype_device(color.luv_to_rgb)
+        for inps, res in cases:
+            self._basic_assertion(inps, res)
 
-    def test_rgb_luv_4dim(self):
-        self.print_name()
-
-        num = 30
-        self.img = self.get_img((8, 3, 512, 512))
-        self.fns = [rgb_to_luv, luv_to_rgb]
-
+        self.img = self.get_img((3, 1000, 1000))
+        self.fns = [color.rgb_to_luv, color.luv_to_rgb]
         self.max_error()
-        self.benchmark(num)
 
 
 if __name__ == '__main__':

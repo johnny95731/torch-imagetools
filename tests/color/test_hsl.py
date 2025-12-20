@@ -1,28 +1,25 @@
 import unittest
 
-from tests.basic import ColorTest
-from src.imgtools.color import rgb_to_hsl, hsl_to_rgb
+from src.imgtools import color
+
+from tests.basic import ColorTest, run_over_all_dtype_device
 
 
 class HSL(ColorTest):
-    def test_hsl_3dim(self):
+    def test_hsl(self):
         self.print_name()
 
-        num = 100
-        self.img = self.get_img((3, 512, 512))
-        self.fns = [rgb_to_hsl, hsl_to_rgb]
+        cases = run_over_all_dtype_device(color.rgb_to_hsl)
+        for inps, res in cases:
+            self._basic_assertion(inps, res)
 
-        self.benchmark(num)
+        cases = run_over_all_dtype_device(color.hsl_to_rgb)
+        for inps, res in cases:
+            self._basic_assertion(inps, res)
 
-    def test_hsl_4dim(self):
-        self.print_name()
-
-        num = 30
-        self.img = self.get_img((8, 3, 512, 512))
-        self.fns = [rgb_to_hsl, hsl_to_rgb]
-
+        self.img = self.get_img((3, 1000, 1000))
+        self.fns = [color.rgb_to_hsl, color.hsl_to_rgb]
         self.max_error()
-        self.benchmark(num)
 
 
 if __name__ == '__main__':

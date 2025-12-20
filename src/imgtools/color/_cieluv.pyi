@@ -17,7 +17,7 @@ def xyz_to_luv(
     xyz: torch.Tensor,
     rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
     ret_matrix: Literal[False] = False,
 ) -> torch.Tensor: ...
 @overload
@@ -25,7 +25,7 @@ def xyz_to_luv(
     xyz: torch.Tensor,
     rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
     ret_matrix: Literal[True] = True,
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 
@@ -35,7 +35,7 @@ def luv_to_xyz(
     luv: torch.Tensor,
     rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
     ret_matrix: Literal[False] = False,
 ) -> torch.Tensor: ...
 @overload
@@ -43,7 +43,7 @@ def luv_to_xyz(
     luv: torch.Tensor,
     rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
     ret_matrix: Literal[True] = True,
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 
@@ -53,7 +53,7 @@ def rgb_to_luv(
     rgb: torch.Tensor,
     rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
     ret_matrix: Literal[False] = False,
 ) -> torch.Tensor: ...
 @overload
@@ -61,7 +61,7 @@ def rgb_to_luv(
     rgb: torch.Tensor,
     rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
     ret_matrix: Literal[True] = True,
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 
@@ -71,7 +71,7 @@ def luv_to_rgb(
     luv: torch.Tensor,
     rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
     ret_matrix: Literal[False] = False,
 ) -> torch.Tensor: ...
 @overload
@@ -79,6 +79,6 @@ def luv_to_rgb(
     luv: torch.Tensor,
     rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
     ret_matrix: Literal[True] = True,
 ) -> tuple[torch.Tensor, torch.Tensor]: ...

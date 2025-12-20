@@ -1,5 +1,7 @@
 __all__ = [
+    'get_white_point_names',
     'get_white_point',
+    'get_rgb_names',
     'get_rgb_model',
     'get_rgb_to_xyz_matrix',
     'get_xyz_to_rgb_matrix',
@@ -12,8 +14,43 @@ __all__ = [
 import numpy as np
 import torch
 
+from ..utils.helpers import align_device_type, to_channel_coeff
 from ..utils.math import matrix_transform
-from ._rgb import linearize_rgb
+from ._rgb import gammaize_rgb, linearize_rgb
+
+
+def get_white_point_names() -> tuple[str, ...]:
+    """Support standard illuminants.
+
+    Returns
+    -------
+    tuple[str, ...]
+        Names of standard illuminants.
+    """
+    res = (
+        'A',
+        'B',
+        'C',
+        'D50',
+        'D55',
+        'D65',
+        'D75',
+        'D93',
+        'E',
+        'F1',
+        'F2',
+        'F3',
+        'F4',
+        'F5',
+        'F6',
+        'F7',
+        'F8',
+        'F9',
+        'F10',
+        'F11',
+        'F12',
+    )
+    return res
 
 
 def get_white_point(
@@ -31,6 +68,15 @@ def get_white_point(
     obs : {2, '2', 10, '10'}, default=10
         Degree of observer. None and invalid value will be regarded as
         10 degree. The input is case-insensitive.
+
+    Returns
+    -------
+    WhitePoint
+        Dict with the folloing keys:
+        - name: The name of the standard illuminant.
+        - xy: The (x, y) values in xyY space.
+        - cct: The correlated color temperature.
+        - obs: The degree of observer.
     """
     obs_deg_2 = str(obs) == '2'
     obs = 2 if obs_deg_2 else 10  # degree of oberver.
@@ -97,6 +143,26 @@ def get_white_point(
     return white_point
 
 
+def get_rgb_names() -> tuple[str, ...]:
+    """Names of RGB models, such as srgb or displayp3.
+
+    Returns
+    -------
+    tuple[str, ...]
+        Names of RGB models.
+    """
+    res = (
+        'adobergb',
+        'ciergb',
+        'displayp3',
+        'prophotorgb',
+        'rec2020',
+        'srgb',
+        'widegamut',
+    )
+    return res
+
+
 def get_rgb_model(rgb_spec: str):
     """Returns a dict containing informations about a RGB specification.
 
@@ -105,6 +171,16 @@ def get_rgb_model(rgb_spec: str):
     rgb_spec : RGBSpec
         Name of the RGB specification, such as sRGB, displayP3, etc.
         The input is case-insensitive.
+
+    Returns
+    -------
+    RGBModel
+        Dict with the folloing keys:
+        - name: The name of the color space.
+        - r: (x, y) value of red in xyY space.
+        - g: (x, y) value of green in xyY space.
+        - b: (x, y) value of blue in xyY space.
+        - w: The name of the white point.
     """
     spaces = {
         'adobergb': {
@@ -163,6 +239,8 @@ def get_rgb_to_xyz_matrix(
     rgb_spec: str,
     white: str,
     obs: int | str = 10,
+    dtype: torch.dtype = torch.float32,
+    device: torch.device | str = 'cpu',
 ) -> torch.Tensor:
     """Evaluate the matrix for converting RGB to CIE XYZ by the given RGB
     model, white point, and degree of observer.
@@ -175,13 +253,24 @@ def get_rgb_to_xyz_matrix(
         White point. The input is case-insensitive.
     obs : {2, '2', 10, '10'}, default=10
         The degree of oberver
+    dtype : torch.dtype, default=torch.float32
+        The data type of the tensor. Must be a floating point.
+    device: torch.device | str, default='cpu'
+        The device of the tensor.
 
     Returns
     -------
     mat : torch.Tensor
         A transformation matrix used to convert RGB to CIE XYZ.
-        Note that the dtype is float64.
+
+    Raises
+    ------
+    ValueError
+        When `dtype` is not a floating point.
     """
+    if not dtype.is_floating_point:
+        raise ValueError(f'dtype must be floating point.')
+
     white_ = get_white_point(white, obs)
     rgb_ = get_rgb_model(rgb_spec)
     rx, ry = rgb_['r']
@@ -208,7 +297,7 @@ def get_rgb_to_xyz_matrix(
     s_vec = np.dot(s_mat, (wx / wy, 1.0, (1 - wx - wy) / wy))  # type: np.ndarray
 
     np.multiply(matrix, s_vec, out=matrix)
-    matrix = torch.from_numpy(matrix)
+    matrix = torch.as_tensor(matrix, dtype=dtype, device=device)
     return matrix
 
 
@@ -216,6 +305,8 @@ def get_xyz_to_rgb_matrix(
     rgb_spec: str,
     white: str,
     obs: str | int = 10,
+    dtype: torch.dtype = torch.float32,
+    device: torch.device | str = 'cpu',
 ) -> torch.Tensor:
     """Evaluate the matrix for converting CIE XYZ to RGB by the given RGB
     model, white point, and degree of observer.
@@ -227,16 +318,30 @@ def get_xyz_to_rgb_matrix(
     white : StandardIlluminants, default='D65'
         White point. The input is case-insensitive.
     obs : {2, '2', 10, '10'}, default=10
-        The degree of oberver
+        The degree of oberver.
+    dtype : torch.dtype, default=torch.float32
+        The data type of the tensor. Must be a floating point.
+    device: torch.device | str, default='cpu'
+        The device of the tensor.
 
     Returns
     -------
     mat : torch.Tensor
         A transformation matrix used to convert CIE XYZ to RGB.
-        Note that the dtype is float64.
+
+    Raises
+    ------
+    ValueError
+        When `dtype` is not a floating point.
     """
-    matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
-    matrix = torch.linalg.inv(matrix)
+    if not dtype.is_floating_point:
+        raise ValueError(f'dtype must be floating point.')
+
+    _dtype = dtype if dtype in (torch.float32, torch.float64) else torch.float32
+    matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs, _dtype, device)
+    matrix = matrix.inverse()
+    if _dtype is not dtype:
+        matrix = matrix.type(dtype)
     return matrix
 
 
@@ -321,8 +426,9 @@ def xyz_to_rgb(
     """
     matrix = get_xyz_to_rgb_matrix(rgb_spec, white, obs)
 
-    linear = matrix_transform(xyz, matrix)
-    linear.clip(0.0, 1.0)
+    nonlinear_rgb = matrix_transform(xyz, matrix)
+    nonlinear_rgb = nonlinear_rgb.clip(0.0, 1.0)
+    linear = gammaize_rgb(nonlinear_rgb, rgb_spec)
     if ret_matrix:
         return linear, matrix
     return linear
@@ -333,7 +439,6 @@ def normalize_xyz(
     rgb_spec: str = 'srgb',
     white: str = 'D65',
     obs: str | int = 10,
-    inplace: bool = False,
 ) -> torch.Tensor:
     """Normalize the image in CIE XYZ to [0, 1] by evaluting
     xyz / rgb_to_xyz(white_rgb) and clips to [0, 1].
@@ -348,18 +453,14 @@ def normalize_xyz(
         White point. The input is case-insensitive.
     obs : {2, '2', 10, '10'}, default=10
         The degree of oberver.
-    inplace : bool, default=False
-        If true, modifies the orginal tensor directly without copying.
     """
     matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
+    max_ = align_device_type(max_, xyz)
+    max_ = to_channel_coeff(max_, 3)
 
-    out = xyz if inplace else xyz.clone()
-    out[..., 0, :, :].mul(1 / max_[0])
-    # xyz[..., 1, :, :].mul(1 / max[1])  # Ignore this line since max[1] = 1
-    out[..., 2, :, :].mul(1 / max_[2])
-    out.clip(0.0, 1.0)
-    return out
+    res = xyz / max_
+    return res
 
 
 def unnormalize_xyz(
@@ -367,7 +468,6 @@ def unnormalize_xyz(
     rgb_spec: str = 'srgb',
     white: str = 'D65',
     obs: str | int = 10,
-    inplace: bool = False,
 ) -> torch.Tensor:
     """The inverse function of normalize_xyz.
 
@@ -386,9 +486,8 @@ def unnormalize_xyz(
     """
     matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
+    max_ = align_device_type(max_, xyz)
+    max_ = to_channel_coeff(max_, 3)
 
-    out = xyz if inplace else xyz.clone()
-    out[..., 0, :, :].mul(max_[0])
-    # xyz[..., 1, :, :].mul(max[1])  # Ignore this line since max[1] = 1
-    out[..., 2, :, :].mul(max_[2])
-    return out
+    res = xyz * max_
+    return res

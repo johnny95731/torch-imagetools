@@ -21,9 +21,9 @@ def gradient_magnitude(
     Parameters
     ----------
     grad_y
-        The derivatives with respect to y of an image.
+        The derivatives with respect to y of an image. Shape=(*, C, H, W).
     grad_x
-        The derivatives with respect to x of an image.
+        The derivatives with respect to x of an image. Shape=(*, C, H, W).
     magnitude : {'stack', 'inf', '-inf'} | int | float, default=2
         The strategy of magnitude computation.
         'stack' : Stack derivatives with fusion.
@@ -36,17 +36,32 @@ def gradient_magnitude(
     -------
     torch.Tensor
         The magnitude of gradient.\\
-        The tensor has shape (*, C, H, W) if `magnitude` is not 'stack'.
-        Otherwise, with shape (N, *, C, H, W) where N is the number of the
-        derivatives.
+        The tensor has shape (*, C, H, W) if `magnitude` is *NOT* 'stack'.
+        Shape=(2, *, C, H, W) if `magnitude` is 'stack'.
 
     Raises
     ------
     ValueError
         When magnitude <= 0.
     TypeError
-        When the type of magnitude is not one of None, 'inf', float, and int.
+        When the magnitude != 'stack' and magnitude cant not be converted to a
+        number.
+
+    Examples
+    --------
+
+    >>> from imgtools.filters import gradient_magnitude
+    >>>
+    >>> grad_y = torch.rand(3, 512, 512)
+    >>> grad_x = torch.rand(3, 512, 512)
+    >>>
+    >>> mag = gradient_magnitude(grad_y, grad_x)
+    >>> mag.shape  # (3, 512, 512)
+    >>>
+    >>> mag = gradient_magnitude(grad_y, grad_x, 'stack')
+    >>> mag.shape  # (2, 3, 512, 512)
     """
+    grad_x = align_device_type(grad_x, grad_y)
     if isinstance(magnitude, str) and magnitude == 'stack':
         mag = torch.stack((grad_y, grad_x))
         return mag
@@ -95,14 +110,22 @@ def laplacian(
     diagonal : bool, default=False
         The kernel detects 45 degree and 135 degree.
     inflection_only : bool, default=False
-        Filtering to remove non-inflection points.
+        Set non-inflection points to 0.
         A inflection point means that the sign of laplacian changes near
         the point.
 
     Returns
     -------
     torch.Tensor
-        The laplacian of an image with shape (*, C, H, W)..
+        The laplacian of an image with shape (*, C, H, W).
+
+    Examples
+    --------
+
+    >>> from imgtools.filters import laplacian
+    >>>
+    >>> img = torch.rand(3, 512, 512)
+    >>> grad = laplacian(img)
     """
     if not diagonal:
         kernel = torch.tensor((

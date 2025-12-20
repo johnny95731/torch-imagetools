@@ -5,14 +5,16 @@ __all__ = [
     'gray_world_balance',
     'gray_edge_balance',
     'white_patch_balance',
-    'linear_regression_balance',
+    'cheng_pca_balance',
 ]
 
 from typing import Literal, overload
 
 import torch
 
+from ..color._ciexyz import StandardIlluminants
 from ..color._lms import CATMethod
+from ..color._rgb import RGBSpec
 
 def get_von_kries_transform_matrix(
     xyz_white: torch.Tensor,
@@ -99,4 +101,7 @@ def linear_regression_balance(rgb: torch.Tensor) -> torch.Tensor: ...
 def cheng_pca_balance(
     rgb: torch.Tensor,
     adaptation: Literal['rgb', 'von kries'] = 'von kries',
+    rgb_spec: str | RGBSpec = 'srgb',
+    white: str | StandardIlluminants = 'D65',
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
 ) -> torch.Tensor: ...

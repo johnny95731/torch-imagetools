@@ -82,10 +82,13 @@ __all__ = [
     'gammaize_rec2020',
     'gammaize_rgb',
     'gammaize_srgb',
+    'get_chromatic_adaptation',
     'get_lms_to_xyz_matrix',
     'get_rgb_model',
+    'get_rgb_names',
     'get_rgb_to_xyz_matrix',
     'get_white_point',
+    'get_white_point_names',
     'get_xyz_to_lms_matrix',
     'get_xyz_to_rgb_matrix',
     'gray_to_rgb',
@@ -137,8 +140,10 @@ from ._cieluv import (
 )
 from ._ciexyz import (
     get_rgb_model,
+    get_rgb_names,
     get_rgb_to_xyz_matrix,
     get_white_point,
+    get_white_point_names,
     get_xyz_to_rgb_matrix,
     normalize_xyz,
     rgb_to_xyz,
@@ -170,6 +175,7 @@ from ._hwb import (
     rgb_to_hwb,
 )
 from ._lms import (
+    get_chromatic_adaptation,
     get_lms_to_xyz_matrix,
     get_xyz_to_lms_matrix,
     lms_to_xyz,

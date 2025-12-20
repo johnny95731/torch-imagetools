@@ -73,6 +73,14 @@ def light_compensation_htchen(
         Shitou, Taiwan, B3-9, p. 87, 2009.
     [3] PDF from C. S. Fuh's personal webpsite
         https://www.csie.ntu.edu.tw/~fuh/personal/LightCompensation.pdf
+
+    Examples
+    --------
+
+    >>> from imgtools.balance import light_compensation_htchen
+    >>>
+    >>> rgb = torch.rand((3, 512, 512))
+    >>> balanced = light_compensation_htchen(rgb)
     """
     check_valid_image_ndim(rgb)
 

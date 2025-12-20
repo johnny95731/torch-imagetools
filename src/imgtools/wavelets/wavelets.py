@@ -6,7 +6,6 @@ __all__ = [
 import torch
 
 from ..utils.helpers import align_device_type, check_valid_image_ndim
-from ..utils.math import filter2d
 
 
 def dwt(
@@ -29,43 +28,43 @@ def dwt(
     -------
     list[torch.Tensor]
         The wavelet decomposition components with the following order:
-        ```[LL, LH, HL, HH]
+        - `[LL, LH, HL, HH]`
+        The first letter represents the filter (lowpass/highpass)
+        in x-direction.
 
     Raises
     ------
     ValueError
         When img.ndim is neither 3 nor 4.
     """
-    check_valid_image_ndim(img)
+    length = scaling.numel()
+    assert length == wavelet.numel(), 'Kernels must be the same size.'
+    is_not_batch = check_valid_image_ndim(img)
 
-    single_image = img.ndim == 3
-    if single_image:
+    if is_not_batch:
         img = img.unsqueeze(0)
     num_ch = img.size(-3)
 
+    p = (length - 1) // 2
+    padding = (p, p)
+
     scaling = align_device_type(scaling, img)
-    length_scaling = scaling.numel()
-    scaling = scaling.view(length_scaling)
-
     wavelet = align_device_type(wavelet, img)
-    length_wavelet = wavelet.numel()
-    wavelet = wavelet.view(length_wavelet)
-
+    kernels = (scaling, wavelet)
     # [LL, LH, HL, HH]
     decomps = []  # type: list[torch.Tensor]
-    for row_vector in (scaling, wavelet):
-        for col_vector in (scaling, wavelet):
+    for row_vector in kernels:  # x-direction
+        for col_vector in kernels:  # y-direction
             kernel_2d = torch.outer(col_vector, row_vector)
-            padding = [(length - 1) // 2 for length in kernel_2d.shape]
-            kernel_2d = kernel_2d[None, None, :, :].repeat(num_ch, 1, 1, 1)
-            dec = torch.nn.functional.conv2d(  # y-direction
+            kernel_2d = kernel_2d.repeat(num_ch, 1, 1, 1)
+            dec = torch.nn.functional.conv2d(
                 img,
                 weight=kernel_2d,
                 stride=(2, 2),
                 padding=padding,
                 groups=num_ch,
             )
-            if single_image:
+            if is_not_batch:
                 dec = dec.squeeze(0)
             decomps.append(dec)
     return decomps
@@ -89,7 +88,8 @@ def dwt_partial(
         The wavelet filter (mother wavelet) with shape (K,).
     target : {'LL', 'LH', 'HL', 'HH'}
         The component of discrete wavelet transform. The argument is case
-        insensitive.
+        insensitive. The first letter represents the filter (lowpass/highpass)
+        in x-direction.
 
     Returns
     -------
@@ -103,7 +103,12 @@ def dwt_partial(
     ValueError
         When `img.ndim` is neither 3 nor 4.
     """
-    check_valid_image_ndim(img)
+    length = scaling.numel()
+    assert length == wavelet.numel(), 'Kernels must be the same size.'
+    is_not_batch = check_valid_image_ndim(img)
+
+    scaling = align_device_type(scaling, img)
+    wavelet = align_device_type(wavelet, img)
 
     target = target.upper()
     if target == 'LL':
@@ -119,5 +124,18 @@ def dwt_partial(
             f"`target` must be one of 'LL', 'LH', 'HL', 'HH', not {target}"
         )
 
-    res = filter2d(img, kernel_2d)
+    num_ch = img.size(-3)
+    p = (length - 1) // 2
+    padding = (p, p)
+
+    kernel_2d = kernel_2d.repeat(num_ch, 1, 1, 1)
+    res = torch.nn.functional.conv2d(
+        img,
+        weight=kernel_2d,
+        stride=(2, 2),
+        padding=padding,
+        groups=num_ch,
+    )
+    if is_not_batch:
+        res = res.squeeze(0)
     return res

@@ -1,4 +1,5 @@
 __all__ = [
+    'get_chromatic_adaptation',
     'get_xyz_to_lms_matrix',
     'get_lms_to_xyz_matrix',
     'xyz_to_lms',
@@ -10,20 +11,57 @@ import torch
 from ..utils.math import matrix_transform
 
 
-def get_xyz_to_lms_matrix(method: str = 'bradford'):
+def get_chromatic_adaptation() -> tuple[str, ...]:
+    """Returns the support chromatic adaptation methods.
+
+    Returns
+    -------
+    list[str]
+        A list of chromatic adaptation names.
+    """
+    res = (
+        'bradford',
+        'cat02',
+        'cat97s',
+        'cam16',
+        'hpe',
+        'vonkries',
+        'xyz',
+    )
+    return res
+
+
+def get_xyz_to_lms_matrix(
+    method: str = 'bradford',
+    dtype: torch.dtype = torch.float32,
+    device: torch.device | str = 'cpu',
+):
     """Returns a transformation matrix for the conversion from CIE XYZ space
     to LMS space.
 
     Parameters
     ----------
     method : CATMethod, default='bradford'
-        The method of conversion. The argument is case-insensitive.
+        The method of conversion. The argument is case-insensitive. Check
+        valid values by calling `get_chromatic_adaptation()`.
+    dtype : torch.dtype, default=torch.float32
+        The data type of the tensor. Must be a floating point.
+    device: torch.device | str, default='cpu'
+        The device of the tensor.
 
     Returns
     -------
     torch.Tensor
         The transformation matrix with shape (3, 3).
+
+    Raises
+    ------
+    ValueError
+        When `dtype` is not a floating point.
     """
+    if not dtype.is_floating_point:
+        raise ValueError(f'dtype must be floating point.')
+
     method = method.lower()
     data = {
         'bradford': (
@@ -63,11 +101,15 @@ def get_xyz_to_lms_matrix(method: str = 'bradford'):
         ),
     }
 
-    matrix = torch.tensor(data[method])
+    matrix = torch.tensor(data[method], dtype=dtype, device=device)
     return matrix
 
 
-def get_lms_to_xyz_matrix(method: str = 'bradford'):
+def get_lms_to_xyz_matrix(
+    method: str = 'bradford',
+    dtype: torch.dtype = torch.float32,
+    device: torch.device | str = 'cpu',
+):
     """Returns a transformation matrix for the conversion from LMS space to
     CIE XYZ space.
 
@@ -75,14 +117,28 @@ def get_lms_to_xyz_matrix(method: str = 'bradford'):
     ----------
     method : CATMethod, default='bradford'
         The method of conversion. The argument is case-insensitive.
+    dtype : torch.dtype, default=torch.float32
+        The data type of the tensor. Must be a floating point.
+    device: torch.device | str, default='cpu'
+        The device of the tensor.
 
     Returns
     -------
     torch.Tensor
         The transformation matrix with shape (3, 3).
+
+    Raises
+    ------
+    ValueError
+        When `dtype` is not a floating point.
     """
-    matrix = get_xyz_to_lms_matrix(method)
+    if not dtype.is_floating_point:
+        raise ValueError(f'dtype must be floating point.')
+    _dtype = dtype if dtype in (torch.float32, torch.float64) else torch.float32
+    matrix = get_xyz_to_lms_matrix(method, _dtype, device)
     matrix = matrix.inverse()
+    if _dtype is not dtype:
+        matrix = matrix.type(dtype)
     return matrix
 
 
@@ -111,7 +167,7 @@ def xyz_to_lms(
         A transformation matrix used to convert CIE XYZ to LMS.
         `mat` is returned only if `ret_matrix` is true.
     """
-    mat = get_xyz_to_lms_matrix(method)
+    mat = get_xyz_to_lms_matrix(method, xyz.dtype, xyz.device)
     lms = matrix_transform(xyz, mat)
     if ret_matrix:
         return lms, mat
@@ -143,7 +199,7 @@ def lms_to_xyz(
         A transformation matrix used to convert LMS to CIE XYZ.
         `mat` is returned only if `ret_matrix` is true.
     """
-    mat = get_lms_to_xyz_matrix(method)
+    mat = get_lms_to_xyz_matrix(method, lms.dtype, lms.device)
     xyz = matrix_transform(lms, mat)
     if ret_matrix:
         return xyz, mat

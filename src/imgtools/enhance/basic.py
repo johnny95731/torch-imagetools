@@ -35,12 +35,21 @@ def adjust_linear(
         Image with shape (*, C, H, W).
     slope : int | float | torch.Tensor
         Slope of the linear function.
-        The tensor must have shape (1 or C,) or (B, 1 or C) (only if
-        img.shape = (B, C, H, W)).
+        The tensor must have shape (1 or C,) or (B, 1 or C).
     center : int | float | torch.Tensor, default=0.5
         The center of the image.
-        The tensor must have shape (1 or C,) or (B, 1 or C) (only if
-        img.shape = (B, C, H, W)).
+        The tensor must have shape (1 or C,) or (B, 1 or C).
+
+    Returns
+    -------
+    torch.Tensor
+        Enhanced image. The shape equals
+        - (C, H, W) if `img` has shape (C, H, W) and both `slope` and `center`
+          have shape (1 or C,).
+        - (B, C, H, W) if
+            1. `img` has shape (B, C, H, W).
+            2. `img` has shape (C, H, W) and one of `slope` and `center`
+                have shape (B, 1 or C,).
     """
     check_valid_image_ndim(img)
 
@@ -77,6 +86,17 @@ def adjust_gamma(
         Linear scale coefficients.
         The tensor must have shape (1 or C,) or (B, 1 or C) (only if
         img.shape = (B, C, H, W)).
+
+    Returns
+    -------
+    torch.Tensor
+        Enhanced image. The shape equals
+        - (C, H, W) if `img` has shape (C, H, W) and both `gamma` and `scale`
+          have shape (1 or C,).
+        - (B, C, H, W) if
+            1. `img` has shape (B, C, H, W).
+            2. `img` has shape (C, H, W) and one of `gamma` and `scale`
+                have shape (B, 1 or C,).
     """
     check_valid_image_ndim(img)
 
@@ -107,6 +127,16 @@ def adjust_log(
         Linear scale coefficients.
         The tensor must have shape (1 or C,) or (B, 1 or C) (only if
         img.shape = (B, C, H, W)).
+
+    Returns
+    -------
+    torch.Tensor
+        Enhanced image. The shape equals
+        - (C, H, W) if `img` has shape (C, H, W) and `scale` has shape
+          (1 or C,).
+        - (B, C, H, W) if
+            1. `img` has shape (B, C, H, W).
+            2. `img` has shape (C, H, W) and `scale` has shape (B, 1 or C,).
     """
     check_valid_image_ndim(img)
 
@@ -139,6 +169,17 @@ def adjust_sigmoid(
         Multipler of the derivative of the sigmoid function
         The tensor must have shape (1 or C,) or (B, 1 or C) (only if
         img.shape = (B, C, H, W)).
+
+    Returns
+    -------
+    torch.Tensor
+        Enhanced image. The shape equals
+        - (C, H, W) if `img` has shape (C, H, W) and both `shift` and `gain`
+          have shape (1 or C,).
+        - (B, C, H, W) if
+            1. `img` has shape (B, C, H, W).
+            2. `img` has shape (C, H, W) and one of `shift` and `gain`
+                have shape (B, 1 or C,).
     """
     check_valid_image_ndim(img)
 
@@ -167,6 +208,16 @@ def adjust_inverse(
         The maximum of the range of the image.
         The tensor must have shape (1 or C,) or (B, 1 or C) (only if
         img.shape = (B, C, H, W)).
+
+    Returns
+    -------
+    torch.Tensor
+        Enhanced image. The shape equals
+        - (C, H, W) if `img` has shape (C, H, W) and `maxi` has shape
+          (1 or C,).
+        - (B, C, H, W) if
+            1. `img` has shape (B, C, H, W).
+            2. `img` has shape (C, H, W) and `maxi` has shape (B, 1 or C,).
     """
     check_valid_image_ndim(img)
 

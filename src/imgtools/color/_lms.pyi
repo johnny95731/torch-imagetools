@@ -1,4 +1,5 @@
 __all__ = [
+    'get_chromatic_adaptation',
     'get_xyz_to_lms_matrix',
     'get_lms_to_xyz_matrix',
     'xyz_to_lms',
@@ -29,6 +30,7 @@ CATMethod = Literal[
 - xyz : Regards XYZ as the cone response of the human eyes.
 """
 
+def get_chromatic_adaptation() -> tuple[CATMethod, ...]: ...
 def get_xyz_to_lms_matrix(method: CATMethod = 'bradford') -> torch.Tensor: ...
 def get_lms_to_xyz_matrix(method: CATMethod = 'bradford') -> torch.Tensor: ...
 

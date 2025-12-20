@@ -25,5 +25,5 @@ def scaling_coeffs_to_wavelet_coeffs(scaling: torch.Tensor) -> torch.Tensor:
     # Reverse the order and then multiply -1 to odd order elements.
     # wavelet[i] = (-1)**i * scaling[N - k], where N = scaling.numel() - 1
     wavelet = torch.flip(scaling, dims=(0,))
-    wavelet[1::2].mul(-1)
+    wavelet[1::2] = wavelet[1::2].mul(-1)
     return wavelet

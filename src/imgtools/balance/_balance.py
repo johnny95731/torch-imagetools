@@ -9,7 +9,6 @@ __all__ = [
     'gray_world_balance',
     'gray_edge_balance',
     'white_patch_balance',
-    'linear_regression_balance',
     'cheng_pca_balance',
 ]
 
@@ -32,20 +31,21 @@ def get_von_kries_transform_matrix(
     Parameters
     ----------
     xyz_white : torch.Tensor
-        The source white point in CIE XYZ space.
+        The source white point in CIE XYZ space. A tensor with numel = 3.
     xyz_target_white : torch.Tensor
-        The target white point in CIE XYZ space.
+        The target white point in CIE XYZ space. A tensor with numel = 3.
     method : CATMethod, default='bradford'
         Chromatic adaptation method.
 
     Returns
     -------
     torch.Tensor
-        Matrix with shape (3, 3).
+        Matrix with shape=(3, 3). Same dtype and device as `xyz_white`.
 
     Examples
     --------
 
+    >>> from imgtools.balance import get_von_kries_transform_matrix
     >>> from imgtools.color import get_rgb_to_xyz_matrix, rgb_to_xyz, xyz_to_rgb
     >>> from imgtools.utils import matrix_transform
     >>>
@@ -59,14 +59,19 @@ def get_von_kries_transform_matrix(
     >>> # Equivalent to: new_xyz = von_kries_transform(xyz, white_d65, white_d50)
     >>> new_rgb = xyz_to_rgb(xyz, 'srgb', 'D50')  # tensor([0.6935, 0.1019, 0.2713])
     """
+    xyz_target_white = align_device_type(xyz_target_white, xyz_white)
+
     xyz_white = xyz_white.reshape(3, 1, 1)
     xyz_target_white = xyz_target_white.view(3, 1, 1)
     lms_white, lms_matrix = xyz_to_lms(xyz_white, method, ret_matrix=True)
     lms_target_white = matrix_transform(xyz_target_white, lms_matrix)
+    lms_target_white = align_device_type(lms_target_white, lms_white)
     ratio = (lms_target_white / lms_white).view(3)
 
     # Chromatic apaptation transformation matrix
-    cat_matrix = lms_matrix.inverse() @ torch.diag(ratio) @ lms_matrix
+    diag = torch.diag(ratio)
+    lms_matrix = align_device_type(lms_matrix, diag)
+    cat_matrix = lms_matrix.inverse() @ diag @ lms_matrix
     return cat_matrix
 
 
@@ -74,7 +79,7 @@ def von_kries_transform(
     xyz: torch.Tensor,
     xyz_white: torch.Tensor,
     xyz_target_white: torch.Tensor,
-    method: str | torch.Tensor = 'bradford',
+    method: str = 'bradford',
     ret_matrix: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Applies chromatic adaptation transformation to an image in CIE XYZ
@@ -89,9 +94,9 @@ def von_kries_transform(
     xyz : torch.Tensor
         An image in CIE XYZ space with shape (*, 3, H, W).
     xyz_white : torch.Tensor
-        The source white point in CIE XYZ space.
+        The source white point in CIE XYZ space. A tensor with numel = 3.
     xyz_target_white : torch.Tensor
-        The target white point in CIE XYZ space.
+        The target white point in CIE XYZ space. A tensor with numel = 3.
     method : CATMethod, default='bradford'
         Chromatic adaptation method. If method is a
         Tensor, then it will be regarded as the transformation matrix (
@@ -111,6 +116,7 @@ def von_kries_transform(
     Examples
     --------
 
+    >>> from imgtools.balance import von_kries_transform
     >>> from imgtools.color import get_rgb_to_xyz_matrix, rgb_to_xyz, xyz_to_rgb
     >>> from imgtools.utils import matrix_transform
     >>>
@@ -125,12 +131,7 @@ def von_kries_transform(
     >>> # new_xyz = matrix_transform(xyz, mat_adap)
     >>> new_rgb = xyz_to_rgb(xyz, 'srgb', 'D50')  # tensor([0.6935, 0.1019, 0.2713])
     """
-    if torch.is_tensor(method):
-        mat = method
-    else:
-        mat = get_von_kries_transform_matrix(
-            xyz_white, xyz_target_white, method
-        )
+    mat = get_von_kries_transform_matrix(xyz_white, xyz_target_white, method)
     new_xyz = matrix_transform(xyz, mat)
     if ret_matrix:
         return new_xyz, mat
@@ -151,6 +152,8 @@ def balance_by_scaling(
         Image in RGB space with shape (*, C, H, W).
     scaled_max : int | float | torch.Tensor
         The maximum(s) after scaling.
+        - A single number: A coefficient for all channels.
+        - Tensor with shape (C,): the coefficients of each channels.
     ret_factors : bool, default=False
         If true, returns image and scaling factors.
 
@@ -161,15 +164,24 @@ def balance_by_scaling(
     factors : torch.Tensor
         Scaling factors with shape (C,).
         `factors` is returned only if `ret_factors` is true.
+
+    Examples
+    --------
+
+    >>> from imgtools.balance import balance_by_scaling
+    >>>
+    >>> rgb = torch.rand((3, 512, 512))
+    >>> maxi = torch.tensor((1.0, 1.0, 0.95))
+    >>> balanced, factors = balance_by_scaling(rgb, maxi, ret_factors=True)
+    >>> factors.reshape(3)  # tensor([1.0000, 1.0000, 0.9500])
     """
     num_ch = img.shape[-3]
     # Get max of each channel
-    ndim = img.ndim
-    reduced = list(range(ndim))
-    reduced = reduced[:-3] + reduced[-2:]
-    ch_max = img.amax(reduced)
+    ch_max = img.amax((-1, -2), keepdim=True)
+    scaled_max = to_channel_coeff(scaled_max, num_ch)
+    scaled_max = align_device_type(scaled_max, img)
 
-    factors = (scaled_max / ch_max).reshape(num_ch, 1, 1)
+    factors = scaled_max / ch_max
 
     balanced = img * factors
     if ret_factors:
@@ -198,16 +210,21 @@ def gray_world_balance(
     factors : torch.Tensor
         Scaling factors with shape (C,).
         `factors` is returned only if `ret_factors` is true.
+
+    Examples
+    --------
+
+    >>> from imgtools.balance import gray_world_balance
+    >>>
+    >>> rgb = torch.rand((3, 512, 512))
+    >>> balanced, factors = gray_world_balance(rgb, ret_factors=True)
+    >>> factors.reshape(3)  # tensor([1.0003, 1.0013, 0.9984])
     """
-    num_ch = rgb.shape[-3]
     # Get mean values
-    ndim = rgb.ndim
-    reduced = list(range(ndim))
-    reduced = reduced[:-3] + reduced[-2:]
-    ch_mean = rgb.mean(reduced)
+    ch_mean = rgb.mean((-1, -2), keepdim=True)
     img_mean = ch_mean.mean()
 
-    factors = (img_mean / ch_mean).reshape(num_ch, 1, 1)
+    factors = img_mean / ch_mean
 
     balanced = (rgb * factors).clip(0.0, 1.0)
     if ret_factors:
@@ -239,16 +256,24 @@ def gray_edge_balance(
     factors : torch.Tensor
         Scaling factors with shape (C,).
         `factors` is returned only if `ret_factors` is true.
+
+    Examples
+    --------
+
+    >>> from imgtools.balance import gray_edge_balance
+    >>> from imgtools.filter import laplacian
+    >>>
+    >>> rgb = torch.rand((3, 512, 512))
+    >>> edge = laplacian(rgb)
+    >>> balanced, factors = gray_edge_balance(rgb, edge, ret_factors=True)
+    >>> factors.reshape(3)  # tensor([1.0094, 0.9822, 1.0089])
     """
-    num_ch = rgb.shape[-3]
     # Get mean values of gradients
-    ndim = edge.ndim
-    reduced = list(range(ndim))
-    reduced = reduced[:-3] + reduced[-2:]
-    ch_grad_mean = edge.mean(reduced)
+    ch_grad_mean = edge.mean((-1, -2), keepdim=True)
     img_grad_mean = ch_grad_mean.mean()
 
-    factors = (img_grad_mean / ch_grad_mean).reshape(num_ch, 1, 1)
+    factors = img_grad_mean / ch_grad_mean
+    factors = align_device_type(factors, rgb)
 
     balanced = (rgb * factors).clip(0.0, 1.0)
     if ret_factors:
@@ -272,12 +297,12 @@ def white_patch_balance(
     ----------
     rgb : torch.Tensor
         An RGB Image in range of [0, 1] with shape (*, 3, H, W).
-        If ndim > 3, the quantile value is calculated across multiple images,
+        If ndim > 3, the quantile value is calculated across images,
         and images will be scaled by same factors.
     q : int | float | torch.Tensor, default=1.0
-        q-quantile. If q is a Tensor with shape (3,), the values will be
-        regarded as the quantile of each channel. The values will be cliped to
-        [0, 1].
+        q-quantile. The values will be cliped to [0, 1].
+        - A single number: the quantile for all channels.
+        - Tensor with shape (3,): the quantiles of channels.
     ret_factors : bool, default=False
         If false, only the image is returned.
         If true, also return the scaling factors.
@@ -289,6 +314,16 @@ def white_patch_balance(
     factors : torch.Tensor
         Scaling factors with shape (C,).
         `factors` is returned only if `ret_factors` is true.
+
+    Examples
+    --------
+
+    >>> from imgtools.balance import white_patch_balance
+    >>> from imgtools.filter import laplacian
+    >>>
+    >>> rgb = torch.rand((3, 512, 512))
+    >>> balanced, factors = white_patch_balance(rgb, 0.9, ret_factors=True)
+    >>> factors.reshape(3)  # tensor([1.0008, 0.9999, 1.0005])
     """
     if not torch.is_floating_point(rgb):
         raise ValueError
@@ -304,17 +339,18 @@ def white_patch_balance(
         q = torch.full((num_ch,), q)
     if q.numel() == 1:
         q = q.repeat(num_ch)
-    q.clip(0.0, 1.0)
+    q = q.clip(0.0, 1.0)
+    q = align_device_type(q, rgb)
 
-    q = align_device_type(q, flatten)
-    ch_quantile_ = []  # type: list[torch.Tensor]
+    ch_quantile = torch.empty(len(q), dtype=flatten.dtype, device=rgb.device)
     for i, _q in enumerate(q):
-        _q = int(round(_q.item() * length))
-        ch_quantile_.append(flatten[i, _q])
-    ch_quantile = torch.stack(ch_quantile_)
+        _q = int(round(_q.item() * length))  # `int()` make it jit-able
+        ch_quantile[i] = flatten[i, _q]
     img_quantile = ch_quantile.quantile(q)  # approximation
 
-    factors = (img_quantile / ch_quantile).reshape(num_ch, 1, 1)
+    factors = img_quantile / ch_quantile
+    factors = align_device_type(factors, rgb)
+    factors = to_channel_coeff(factors, num_ch)
 
     balanced = (rgb * factors).clip(0.0, 1.0)
     if ret_factors:
@@ -322,39 +358,12 @@ def white_patch_balance(
     return balanced
 
 
-def linear_regression_balance(
-    rgb: torch.Tensor,
-) -> torch.Tensor:
-    """White balance by the linear regression. Estimation the coefficient by the
-    red and green channel and predict the blue channel.
-
-    Parameters
-    ----------
-    rgb : torch.Tensor
-        An RGB image with shape (*, C, H, W). The model will evaluate the
-        coefficients over all images in the batch.
-
-    Returns
-    -------
-    torch.Tensor
-        A balanced image with shape (*, C, H, W).
-    """
-    flattened = rgb.movedim(-3, 0).flatten(1)
-    r, g, b = flattened.unbind()
-
-    ones = torch.ones_like(r)
-    x = torch.stack([ones, r, g], dim=0)  # n x 3
-    beta = (x @ x.T).inverse() @ x @ b
-
-    balanced_b = (beta[2] * g).add(r, alpha=beta[1]).add(beta[0])
-    balanced_b.clip(0.0, 1.0)
-    balanced = torch.stack([r, g, balanced_b], dim=0).reshape_as(rgb)
-    return balanced
-
-
 def cheng_pca_balance(
     rgb: torch.Tensor,
     adaptation: str = 'von kries',
+    rgb_spec: str = 'srgb',
+    white: str = 'd65',
+    obs: str | int = 10,
 ) -> torch.Tensor:
     """White balance by Cheng's PCA method [1]. Estimate the illuminant and
     applies chromatic adaptation transformation.
@@ -365,6 +374,16 @@ def cheng_pca_balance(
         An RGB image in the range of [0, 1] with shape (*, C, H, W).
     adaptation : Literal['rgb', 'von kries'], default='von kries'
         Chromatic adaptation method. RGB scaling or von Kries transformation.
+        - 'RGB': Scaling the illuminant to 1.
+        - 'von kries': von Kries transformation.
+    rgb_spec : RGBSpec, default='srgb'
+        The name of RGB specification. The argument is case-insensitive.
+        Only works for `adaptation='von kries'`.
+    white : StandardIlluminants, default='D65'
+        White point. The input is case-insensitive. Only works for
+        `adaptation='von kries'`.
+    obs : {2, '2', 10, '10'}, default=10
+        The degree of oberver. Only works for `adaptation='von kries'`.
 
     Returns
     -------
@@ -381,6 +400,14 @@ def cheng_pca_balance(
     [1] Cheng, Dongliang, Dilip K. Prasad, and Michael S. Brown. "Illuminant
         estimation for color constancy: why spatial-domain methods work and
         the role of the color distribution." JOSA A 31.5 (2014): 1049-1058.
+
+    Examples
+    --------
+
+    >>> from imgtools.balance import cheng_pca_balance
+    >>>
+    >>> rgb = torch.rand((3, 512, 512))
+    >>> balanced = cheng_pca_balance(rgb)
     """
     adaptation = adaptation.lower()
     if adaptation not in ('rgb', 'von kries'):
@@ -390,12 +417,11 @@ def cheng_pca_balance(
 
     illuminant = estimate_illuminant_cheng(rgb)
     illuminant = to_channel_coeff(illuminant, 3)
-
     if adaptation == 'rgb':
         coeff = 1.0 / illuminant
         balanced = (coeff * rgb).clip(0.0, 1.0)
     elif adaptation == 'von kries':
-        xyz, xyz_mat = rgb_to_xyz(rgb, 'widegamut', ret_matrix=True)
+        xyz, xyz_mat = rgb_to_xyz(rgb, rgb_spec, white, obs, ret_matrix=True)
 
         white_img = matrix_transform(illuminant, xyz_mat)
         white_xyz = xyz_mat.sum(dim=1)

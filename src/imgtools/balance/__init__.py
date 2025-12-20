@@ -7,7 +7,6 @@ __all__ = [
     'gray_world_balance',
     'hernandez_andre_approximation',
     'light_compensation_htchen',
-    'linear_regression_balance',
     'mccamy_approximation',
     'von_kries_transform',
     'white_patch_balance',
@@ -19,7 +18,6 @@ from ._balance import (
     get_von_kries_transform_matrix,
     gray_edge_balance,
     gray_world_balance,
-    linear_regression_balance,
     von_kries_transform,
     white_patch_balance,
 )

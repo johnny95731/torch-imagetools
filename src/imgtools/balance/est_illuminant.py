@@ -4,11 +4,7 @@ __all__ = [
 
 import torch
 
-from ..utils.helpers import (
-    align_device_type,
-    check_valid_image_ndim,
-    to_channel_coeff,
-)
+from ..utils.helpers import check_valid_image_ndim
 
 
 def estimate_illuminant_cheng(
@@ -28,7 +24,7 @@ def estimate_illuminant_cheng(
     Returns
     -------
     torch.Tensor
-        _description_
+        The illuminant of the image. An RGB value with shape=(3,).
 
     References
     ----------
@@ -39,12 +35,8 @@ def estimate_illuminant_cheng(
     """
     is_not_batch = check_valid_image_ndim(img)
     shape = img.shape
-    num_ch = shape[-3]
 
-    ch_mean = torch.mean(img, dim=(-1, -2))
-    ch_mean = to_channel_coeff(ch_mean, num_ch)
-    ch_mean = align_device_type(ch_mean, img)
-
+    ch_mean = img.mean(dim=(-1, -2), keepdim=True)
     # Calculate distance
     proj = torch.sum(img * ch_mean, dim=-3)
     norm = torch.norm(img, 2, dim=-3) * torch.norm(ch_mean, 2)
@@ -73,9 +65,12 @@ def estimate_illuminant_cheng(
             flatted[i, :, selected_keys[i]] for i in range(shape[0])
         ])
     # Find the illuminant by pca.
+    is_float16 = selected.dtype == torch.float16
+    if is_float16:
+        selected = selected.type(torch.float32)
     mean_ = selected.mean(dim=-1)
     data = selected @ selected.movedim(-1, -2)
-    data = data - 2 * selected_num * mean_.unsqueeze(-1) * mean_.unsqueeze(-2)
+    data = data - 2 * selected_num * (mean_.unsqueeze(-1) * mean_.unsqueeze(-2))
     data = data / (2 * selected_num - 1)
     L, V = torch.linalg.eig(data)  # noqa: N806
     V = V.real.movedim(-1, -2)  # noqa: N806
@@ -85,4 +80,6 @@ def estimate_illuminant_cheng(
     else:
         illuminant = torch.stack([V[i, max_eigen[i]] for i in range(shape[0])])
     illuminant = illuminant.contiguous().abs()
+    if is_float16:
+        illuminant = illuminant.type(torch.float16)
     return illuminant

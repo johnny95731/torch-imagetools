@@ -1,5 +1,7 @@
 __all__ = [
+    'get_white_point_names',
     'get_white_point',
+    'get_rgb_names',
     'get_rgb_model',
     'get_rgb_to_xyz_matrix',
     'get_xyz_to_rgb_matrix',
@@ -57,7 +59,7 @@ class WhitePoint(TypedDict):
 
     name: StandardIlluminants
     """The name of the standard illuminant."""
-    xy: float
+    xy: tuple[float, float]
     """The (x, y) values in xyY space."""
     cct: int
     """The correlated color temperature."""
@@ -65,19 +67,21 @@ class WhitePoint(TypedDict):
     """The degree of observer."""
 
 #
+def get_white_point_names() -> tuple[StandardIlluminants, ...]: ...
 def get_white_point(
     white: str | StandardIlluminants,
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
 ) -> WhitePoint: ...
 
 #
+def get_rgb_names() -> tuple[RGBSpec, ...]: ...
 def get_rgb_model(rgb_spec: RGBSpec) -> RGBModel: ...
 
 #
 def get_rgb_to_xyz_matrix(
     rgb_spec: str | RGBSpec,
     white: str | StandardIlluminants,
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
 ) -> torch.Tensor: ...
 def get_xyz_to_rgb_matrix(
     rgb_spec: str | RGBSpec,
@@ -91,7 +95,7 @@ def rgb_to_xyz(
     rgb: torch.Tensor,
     rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
     ret_matrix: bool = False,
 ) -> torch.Tensor: ...
 @overload
@@ -99,7 +103,7 @@ def rgb_to_xyz(
     rgb: torch.Tensor,
     rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
     ret_matrix: bool = True,
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 
@@ -109,7 +113,7 @@ def xyz_to_rgb(
     xyz: torch.Tensor,
     rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
     ret_matrix: Literal[False] = False,
 ) -> torch.Tensor: ...
 @overload
@@ -117,7 +121,7 @@ def xyz_to_rgb(
     xyz: torch.Tensor,
     rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
     ret_matrix: Literal[True] = True,
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 
@@ -127,13 +131,13 @@ def normalize_xyz(
     xyz: torch.Tensor,
     rgb_spec: str | RGBSpec = 'srgb',
     white: StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
     inplace: bool = False,
 ) -> torch.Tensor: ...
 def unnormalize_xyz(
     xyz: torch.Tensor,
     rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
-    obs: Literal[2, '2', 10, '10'] = 10,
+    obs: Literal[2, '2', 10, '10'] | str | int = 10,
     inplace: bool = False,
 ) -> torch.Tensor: ...

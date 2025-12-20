@@ -93,7 +93,7 @@ def luv_to_xyz(
     white: str = 'D65',
     obs: str | int = 10,
     ret_matrix: bool = False,
-) -> torch.Tensor:
+):
     """Converts an image from CIE LUV space to CIE XYZ space.
 
     Parameters
@@ -185,8 +185,8 @@ def rgb_to_luv(
         A transformation matrix used to convert RGB to CIE XYZ.
         `mat` is returned only if `ret_matrix` is true.
     """
-    xyz, matrix = rgb_to_xyz(rgb, rgb_spec, white, obs, ret_matrix=True)
-    luv = xyz_to_luv(xyz, matrix)
+    xyz = rgb_to_xyz(rgb, rgb_spec, white, obs)
+    luv, matrix = xyz_to_luv(xyz, rgb_spec, white, obs, ret_matrix=True)
     if ret_matrix:
         return luv, matrix
     return luv
@@ -224,9 +224,8 @@ def luv_to_rgb(
         A transformation matrix used to convert CIE XYZ to RGB.
         `mat` is returned only if `ret_matrix` is true.
     """
-    xyz, matrix = luv_to_xyz(luv, rgb_spec, white, obs, ret_matrix=True)
-    matrix = matrix.inverse()
-    rgb = xyz_to_rgb(xyz, matrix)
+    xyz = luv_to_xyz(luv, rgb_spec, white, obs)  # type: torch.Tensor
+    rgb, matrix = xyz_to_rgb(xyz, rgb_spec, white, obs, ret_matrix=True)
     if ret_matrix:
         return rgb, matrix
     return rgb
