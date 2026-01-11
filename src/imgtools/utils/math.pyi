@@ -3,6 +3,7 @@ __all__ = [
     'filter2d',
     'atan2',
     'p_norm',
+    'pca',
 ]
 
 from typing import Literal
@@ -29,3 +30,6 @@ def atan2(
 
 #
 def p_norm(img: torch.Tensor, p: float | str) -> torch.Tensor: ...
+
+#
+def pca(img: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]: ...

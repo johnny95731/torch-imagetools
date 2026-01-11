@@ -2,14 +2,13 @@ __all__ = [
     'Tensorlike',
     'pairing',
     'is_indexable',
-    'check_valid_image_ndim',
     'align_device_type',
     'to_channel_coeff',
     'arrayize',
     'tensorize',
 ]
 
-from typing import Any, overload, TypeVar
+from typing import Any, TypeVar, overload
 
 import numpy as np
 import torch

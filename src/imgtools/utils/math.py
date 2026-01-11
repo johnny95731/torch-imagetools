@@ -3,11 +3,12 @@ __all__ = [
     'filter2d',
     'atan2',
     'p_norm',
+    'pca',
 ]
 
 import torch
 
-from ..utils.helpers import align_device_type
+from ..utils.helpers import align_device_type, check_valid_image_ndim
 
 
 def matrix_transform(
@@ -146,3 +147,35 @@ def p_norm(
         res = (img**p).sum(dim=(-3, -2, -1))
         res = res ** (1 / p)
     return res
+
+
+def pca(img: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
+    """Image PCA.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        Image with shape (*, C, H, W)
+
+    Returns
+    -------
+    L : torch.Tensor
+        Eigenvalues in ascending order.
+    Vt : torch.Tensor
+        Corresponding eigenvectors.
+    """
+    check_valid_image_ndim(img)
+    flatted = img.flatten(-2)
+    is_float16 = img.dtype == torch.float16
+    if is_float16:
+        img = img.type(torch.float32)
+    # Covariance
+    mean = flatted.mean(dim=-1, keepdim=True)
+    data = flatted - mean
+    cov = data @ data.movedim(-1, -2)
+    cov = cov / cov.size(-1)
+
+    L, Vt = torch.linalg.eigh(cov)  # noqa: N806
+    if is_float16:
+        Vt = Vt.type(torch.float16)  # noqa: N806
+    return L, Vt

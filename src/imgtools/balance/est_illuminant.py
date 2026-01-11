@@ -5,6 +5,7 @@ __all__ = [
 import torch
 
 from ..utils.helpers import check_valid_image_ndim
+from ..utils.math import pca
 
 
 def estimate_illuminant_cheng(
@@ -24,7 +25,7 @@ def estimate_illuminant_cheng(
     Returns
     -------
     torch.Tensor
-        The illuminant of the image. An RGB value with shape=(3,).
+        The illuminant of the image. An RGB value with shape=(*, C).
 
     References
     ----------
@@ -65,21 +66,7 @@ def estimate_illuminant_cheng(
             flatted[i, :, selected_keys[i]] for i in range(shape[0])
         ])
     # Find the illuminant by pca.
-    is_float16 = selected.dtype == torch.float16
-    if is_float16:
-        selected = selected.type(torch.float32)
-    mean_ = selected.mean(dim=-1)
-    data = selected @ selected.movedim(-1, -2)
-    data = data - 2 * selected_num * (mean_.unsqueeze(-1) * mean_.unsqueeze(-2))
-    data = data / (2 * selected_num - 1)
-    L, V = torch.linalg.eig(data)  # noqa: N806
-    V = V.real.movedim(-1, -2)  # noqa: N806
-    max_eigen = torch.argmax(L.real, dim=-1)
-    if is_not_batch:
-        illuminant = V[max_eigen]
-    else:
-        illuminant = torch.stack([V[i, max_eigen[i]] for i in range(shape[0])])
+    _, Vt = pca(selected.unsqueeze(-1))  # noqa: N806
+    illuminant = Vt[..., 0]
     illuminant = illuminant.contiguous().abs()
-    if is_float16:
-        illuminant = illuminant.type(torch.float16)
     return illuminant

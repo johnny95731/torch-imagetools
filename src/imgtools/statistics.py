@@ -6,6 +6,54 @@ __all__ = [
 
 import torch
 
+from .utils.helpers import check_valid_image_ndim
+
+
+def histogram(
+    img: torch.Tensor,
+    bins: int = 256,
+    density: bool = False,
+) -> torch.Tensor:
+    """Compute the histogram of an image.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image in the range of [0, 1] with 2 <= img.ndim <= 4.
+    bins : int, default=256
+        The number of groups in data range.
+    density : bool, default=False
+        If true, return the pdf of each channel.
+
+    Returns
+    -------
+    torch.Tensor
+        The histogram or density.
+
+    Raises
+    ------
+    TypeError
+        If bins is not int type.
+    """
+    if not isinstance(bins, int):
+        raise TypeError(f'`bins` must be an integer: {type(bins)}.')
+    check_valid_image_ndim(img)
+    img = (img * (bins - 1)).type(torch.uint8)
+
+    flat_image = img.flatten(start_dim=-2).long()
+    hist = torch.zeros(
+        img.shape[:-2] + (bins,),
+        dtype=torch.int32,
+        device=img.device,
+    )
+    hist.scatter_add_(
+        dim=-1, index=flat_image, src=hist.new_ones(1).expand_as(flat_image)
+    )
+    if density:
+        num_el = flat_image.size(-1)
+        hist = hist.float() / num_el
+    return hist
+
 
 def combine_mean_std(
     *stats: tuple[torch.Tensor, torch.Tensor, int],

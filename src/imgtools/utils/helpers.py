@@ -2,7 +2,6 @@ __all__ = [
     'Tensorlike',
     'pairing',
     'is_indexable',
-    'check_valid_image_ndim',
     'align_device_type',
     'to_channel_coeff',
     'arrayize',
@@ -41,13 +40,15 @@ def is_indexable(item: Any) -> bool:
     return hasattr(item, '__getitem__')
 
 
-def check_valid_image_ndim(img: torch.Tensor) -> bool:
+def check_valid_image_ndim(img: torch.Tensor, min_dim: int = 3) -> bool:
     """Check whether 2 <= img.ndim <= 4.
 
     Parameters
     ----------
     img : torch.Tensor
         A tensor.
+    min_dim : int, default=3
+        Minimum of the ndim.
 
     Returns
     -------
@@ -57,12 +58,12 @@ def check_valid_image_ndim(img: torch.Tensor) -> bool:
     Raises
     ------
     ValueError
-        When img.ndim < 2 or img.ndim > 4.
+        When img.ndim < min_dim or img.ndim > 4.
     """
     ndim = img.ndim
-    if not (2 <= ndim <= 4):
+    if not (min_dim <= ndim <= 4):
         raise ValueError(
-            f'Dimention of the image should be in [2, 4], but found {ndim}.'
+            f'Dimention of the image should be in [{min_dim}, 4], but found {ndim}.'
         )
     is_not_batch = ndim <= 3
     return is_not_batch
