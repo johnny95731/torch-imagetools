@@ -33,16 +33,18 @@ def light_compensation_htchen(
     in [2] and [3].
 
     Enhance the luminance channel by
-    ```
+
+    .. code-block:: python
+        :linenos:
+
         lum_brighter = scaler * lum * (1 + log(2 - lum))
         lum_dark = (blurred_sat + 1) / (2 * (1 + blurred_lum) ** power)
         new_lum = lum_brighter * lum_dark
-    ```
 
     Parameters
     ----------
     rgb : torch.Tensor
-        An RGB image in range of [0, 1] with shape (*, C, H, W).
+        An RGB image in range of [0, 1] with shape `(*, C, H, W)`.
     scaler : int | float, default=1.0
         The strength of the enhancement.
     power : int | float, default=0.1
@@ -56,7 +58,7 @@ def light_compensation_htchen(
     Returns
     -------
     torch.Tensor
-        Balanced RGB image in range of [0, 1] with shape (*, C, H, W).
+        Balanced RGB image in range of [0, 1] with shape `(*, C, H, W)`.
 
     Raises
     ------

@@ -20,7 +20,7 @@ def sobel(
     Parameters
     ----------
     img : torch.Tensor
-        An image with shape (*, C, H, W).
+        An image with shape `(*, C, H, W)`.
     magnitude : {'stack', 'inf', '-inf'} | int | float, default=2
         Stratge for computing gradient's magnitude.
     ret_angle : bool, default=False
@@ -36,7 +36,7 @@ def sobel(
         is 'stack'.\\
         For details, check `torch_imagetools.filters.gradient_magnitude`.
     angle : torch.Tensor
-        Image gradient's direction with shape (*, C, H, W).
+        Image gradient's direction with shape `(*, C, H, W)`.
         `angle` is returned only if `ret_angle` is true.
     """
     kernel_y = torch.tensor((

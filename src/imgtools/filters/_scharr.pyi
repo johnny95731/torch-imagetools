@@ -18,7 +18,7 @@ def scharr(
     Parameters
     ----------
     img : torch.Tensor
-        An image with shape (*, C, H, W).
+        An image with shape `(*, C, H, W)`.
     magnitude : {'stack', 'inf', '-inf'} | int | float, default=2
         Norm for computing gradient's magnitude.
     ret_angle : {False}, default=False
@@ -47,7 +47,7 @@ def scharr(
     Parameters
     ----------
     img : torch.Tensor
-        An image with shape (*, C, H, W).
+        An image with shape `(*, C, H, W)`.
     magnitude : {'stack', 'inf', '-inf'} | int | float, default=2
         Norm for computing gradient's magnitude.
     ret_angle : {True}
@@ -63,5 +63,5 @@ def scharr(
         is 'stack'.\\
         For details, check `torch_imagetools.filters.gradient_magnitude`.
     torch.Tensor
-        Image gradient's direction with shape (*, C, H, W).
+        Image gradient's direction with shape `(*, C, H, W)`.
     """

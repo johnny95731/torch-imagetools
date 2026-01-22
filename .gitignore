@@ -4,6 +4,7 @@ __pycache__/
 # Distribution / packaging
 dist/
 run_module.py
+docs/build
 
 # Unit test / coverage reports
 img_test/

@@ -16,12 +16,12 @@ def rgb_to_yuv(rgb: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     rgb : torch.Tensor
-        An RGB imag in the range of [0, 1] with shape (*, 3, H, W).
+        An RGB imag in the range of [0, 1] with shape `(*, 3, H, W)`.
 
     Returns
     -------
     torch.Tensor
-        An image in YUV space with shape (*, 3, H, W). The range of Y is [0, 1]
+        An image in YUV space with shape `(*, 3, H, W)`. The range of Y is [0, 1]
         and the range of U and V are [-0.5, 0.5].
     """
     # fmt: off
@@ -47,12 +47,12 @@ def yuv_to_rgb(yuv: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     yuv : torch.Tensor
-        An image in YUV space with shape (*, 3, H, W).
+        An image in YUV space with shape `(*, 3, H, W)`.
 
     Returns
     -------
     torch.Tensor
-        An RGB image in the range of [0, 1] with the shape (*, 3, H, W).
+        An RGB image in the range of [0, 1] with the shape `(*, 3, H, W)`.
     """
     dtype = yuv.dtype if torch.is_floating_point(yuv) else torch.float32
     # fmt: off

@@ -37,7 +37,7 @@ def rgb_to_hed(rgb: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     rgb : torch.Tensor
-        An image in RGB space with shape (*, 3, H, W).
+        An image in RGB space with shape `(*, 3, H, W)`.
 
     Returns
     -------
@@ -68,12 +68,12 @@ def hed_to_rgb(hed: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     hex : torch.Tensor
-        An image in HED space with shape (*, 3, H, W).
+        An image in HED space with shape `(*, 3, H, W)`.
 
     Returns
     -------
     torch.Tensor
-        An image in RGB space in the range of [0, 1] with shape (*, 3, H, W).
+        An image in RGB space in the range of [0, 1] with shape `(*, 3, H, W)`.
 
     References
     ----------

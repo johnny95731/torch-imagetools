@@ -17,7 +17,7 @@ def estimate_illuminant_cheng(
     Parameters
     ----------
     img : torch.Tensor
-        An RGB image in the range of [0, 1] with shape (*, C, H, W).
+        An RGB image in the range of [0, 1] with shape `(*, C, H, W)`.
     n_selected : int | float, default=3.5
         Percentage for selecting top-n and bottom-n points.
         Select (2 * n_selected)%  points in total.
@@ -25,7 +25,7 @@ def estimate_illuminant_cheng(
     Returns
     -------
     torch.Tensor
-        The illuminant of the image. An RGB value with shape=(*, C).
+        The illuminant of the image. An RGB value with shape `(*, C)`.
 
     References
     ----------

@@ -33,7 +33,7 @@ def robinson(
     Parameters
     ----------
     img : torch.Tensor
-        An image with shape (*, C, H, W).
+        An image with shape `(*, C, H, W)`.
     ret_angle : {False}, default=False
         Returns the direction of gradient or not.
 
@@ -54,7 +54,7 @@ def robinson(
     Parameters
     ----------
     img : torch.Tensor
-        An image with shape (*, C, H, W).
+        An image with shape `(*, C, H, W)`.
     ret_angle : {True}, default=True
         Returns the direction of gradient or not.
 
@@ -64,7 +64,7 @@ def robinson(
         Image gradient's magnitude. The value is the maximum along all compass
         kernel.
     torch.Tensor
-        Image gradient's direction with shape (*, C, H, W).
+        Image gradient's direction with shape `(*, C, H, W)`.
     """
 
 #
@@ -78,7 +78,7 @@ def kirsch(
     Parameters
     ----------
     img : torch.Tensor
-        An image with shape (*, C, H, W).
+        An image with shape `(*, C, H, W)`.
     ret_angle : {False}, default=False
         Returns the direction of gradient or not.
 
@@ -99,7 +99,7 @@ def kirsch(
     Parameters
     ----------
     img : torch.Tensor
-        An image with shape (*, C, H, W).
+        An image with shape `(*, C, H, W)`.
     ret_angle : {True}, default=True
         Returns the direction of gradient or not.
 
@@ -109,5 +109,5 @@ def kirsch(
         Image gradient's magnitude. The value is the maximum along all compass
         kernel.
     torch.Tensor
-        Image gradient's direction with shape (*, C, H, W).
+        Image gradient's direction with shape `(*, C, H, W)`.
     """

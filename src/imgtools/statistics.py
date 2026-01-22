@@ -117,7 +117,7 @@ def estimate_noise_from_wavelet(hh: torch.Tensor) -> float:
     Parameters
     ----------
     hh : torch.Tensor
-        The highpass-highpass filtered image with shape (*, 1, H, W)..
+        The highpass-highpass filtered image with shape `(*, 1, H, W)`.
 
     Returns
     -------
@@ -126,8 +126,8 @@ def estimate_noise_from_wavelet(hh: torch.Tensor) -> float:
 
     References
     ----------
-    [1] D. L. Donoho and I. M. Johnstone, “Ideal spatial adaptation by wavelet
-        shrinkage,” Biometrika, vol. 81, no. 3, pp. 425-455, Sep. 1994
+    [1] D. L. Donoho and I. M. Johnstone, "Ideal spatial adaptation by wavelet
+        shrinkage," Biometrika, vol. 81, no. 3, pp. 425-455, Sep. 1994
     """
     hh = torch.abs(hh)
     if hh.ndim <= 3:
@@ -155,7 +155,7 @@ def estimate_noise_from_wavelet_2(
     ----------
     hh : torch.Tensor
         The highpass-highpass filtered image in the range of [0, 1] with shape
-        (*, 1, H, W).
+        `(*, 1, H, W)`.
     maximum : float | int, default=1.0
         The maximum of the image.
 
@@ -166,8 +166,8 @@ def estimate_noise_from_wavelet_2(
 
     References
     ----------
-    [1] V. M. Kamble and K. Bhurchandi, “Noise Estimation and Quality
-        Assessment of Gaussian Noise Corrupted Images,” IOP Conference
+    [1] V. M. Kamble and K. Bhurchandi, "Noise Estimation and Quality
+        Assessment of Gaussian Noise Corrupted Images," IOP Conference
         Series Materials Science and Engineering, vol. 331, p. 012019,
         Mar. 2018, doi: 10.1088/1757-899x/331/1/012019.
     """

@@ -27,29 +27,25 @@ def adjust_linear(
     center: int | float | torch.Tensor = 0.5,
 ) -> torch.Tensor:
     """Intensity linear enhancement with a specified center point:
-    > `result = (img - center) * slope + center.`
+
+    `result = (img - center) * slope + center`
 
     Parameters
     ----------
     img : torch.Tensor
-        Image with shape (*, C, H, W).
+        Image with shape `(*, C, H, W)`.
     slope : int | float | torch.Tensor
         Slope of the linear function.
-        The tensor must have shape (1 or C,) or (B, 1 or C).
+        The tensor must have shape `(1 or C,)` or `(B, 1 or C)`.
     center : int | float | torch.Tensor, default=0.5
         The center of the image.
-        The tensor must have shape (1 or C,) or (B, 1 or C).
+        The tensor must have shape `(1 or C,)` or `(B, 1 or C)`.
 
     Returns
     -------
     torch.Tensor
-        Enhanced image. The shape equals
-        - (C, H, W) if `img` has shape (C, H, W) and both `slope` and `center`
-          have shape (1 or C,).
-        - (B, C, H, W) if
-            1. `img` has shape (B, C, H, W).
-            2. `img` has shape (C, H, W) and one of `slope` and `center`
-                have shape (B, 1 or C,).
+        Enhanced image. Shape is broadcasting according to the shape of the
+        arguments.
     """
     check_valid_image_ndim(img)
 
@@ -72,31 +68,25 @@ def adjust_gamma(
     scale: int | float | torch.Tensor | None = None,
 ) -> torch.Tensor:
     """Intensity enhencement by gamma correction:
-    > `result = scale * (img ** gamma)`
+
+    `result = scale * (img ** gamma)`
 
     Parameters
     ----------
     img : torch.Tensor
-        Image with shape (*, C, H, W).
+        Image with shape `(*, C, H, W)`.
     gamma : int | float | torch.Tensor
         The exponent.
-        The tensor must have shape (1 or C,) or (B, 1 or C) (only if
-        img.shape = (B, C, H, W)).
+        The tensor must have shape `(1 or C,)` or `(B, 1 or C)`
     scale : int | float | torch.Tensor | None, default=None
         Linear scale coefficients.
-        The tensor must have shape (1 or C,) or (B, 1 or C) (only if
-        img.shape = (B, C, H, W)).
+        The tensor must have shape `(1 or C,)` or `(B, 1 or C)`
 
     Returns
     -------
     torch.Tensor
-        Enhanced image. The shape equals
-        - (C, H, W) if `img` has shape (C, H, W) and both `gamma` and `scale`
-          have shape (1 or C,).
-        - (B, C, H, W) if
-            1. `img` has shape (B, C, H, W).
-            2. `img` has shape (C, H, W) and one of `gamma` and `scale`
-                have shape (B, 1 or C,).
+        Enhanced image. Shape is broadcasting according to the shape of the
+        arguments.
     """
     check_valid_image_ndim(img)
 
@@ -117,26 +107,22 @@ def adjust_log(
     scale: int | float | torch.Tensor | None = log1p(1.0),
 ) -> torch.Tensor:
     """Intensity enhencement by log transformation:
-    > `result = scale * log(base, 1 + img)`
+
+    `result = scale * log(base, 1 + img)`
 
     Parameters
     ----------
     img : torch.Tensor
-        Image with shape (*, C, H, W).
+        Image with shape `(*, C, H, W)`.
     scale : int | float | torch.Tensor | None, default=log1p(1.0)
         Linear scale coefficients.
-        The tensor must have shape (1 or C,) or (B, 1 or C) (only if
-        img.shape = (B, C, H, W)).
+        The tensor must have shape `(1 or C,)` or `(B, 1 or C)`
 
     Returns
     -------
     torch.Tensor
-        Enhanced image. The shape equals
-        - (C, H, W) if `img` has shape (C, H, W) and `scale` has shape
-          (1 or C,).
-        - (B, C, H, W) if
-            1. `img` has shape (B, C, H, W).
-            2. `img` has shape (C, H, W) and `scale` has shape (B, 1 or C,).
+        Enhanced image. Shape is broadcasting according to the shape of the
+        arguments.
     """
     check_valid_image_ndim(img)
 
@@ -155,31 +141,25 @@ def adjust_sigmoid(
     gain: int | float | torch.Tensor = 10.0,
 ) -> torch.Tensor:
     """Intensity enhencement by sigmoid function:
-    > `result = sigmoid(gain * (img - cutoff))`
+
+    `result = sigmoid(gain * (img - cutoff))`
 
     Parameters
     ----------
     img : torch.Tensor
-        Image with shape (*, C, H, W).
+        Image with shape `(*, C, H, W)`.
     shift : int | float | torch.Tensor | None, default=0.5
         Shift of the image intensity.
-        The tensor must have shape (1 or C,) or (B, 1 or C) (only if
-        img.shape = (B, C, H, W)).
+        The tensor must have shape `(1 or C,)` or `(B, 1 or C)`
     gain : int | float | torch.Tensor | None, default=10.0
         Multipler of the derivative of the sigmoid function
-        The tensor must have shape (1 or C,) or (B, 1 or C) (only if
-        img.shape = (B, C, H, W)).
+        The tensor must have shape `(1 or C,)` or `(B, 1 or C)`
 
     Returns
     -------
     torch.Tensor
-        Enhanced image. The shape equals
-        - (C, H, W) if `img` has shape (C, H, W) and both `shift` and `gain`
-          have shape (1 or C,).
-        - (B, C, H, W) if
-            1. `img` has shape (B, C, H, W).
-            2. `img` has shape (C, H, W) and one of `shift` and `gain`
-                have shape (B, 1 or C,).
+        Enhanced image. Shape is broadcasting according to the shape of the
+        arguments.
     """
     check_valid_image_ndim(img)
 
@@ -197,27 +177,23 @@ def adjust_inverse(
     img: torch.Tensor,
     maxi: int | float | torch.Tensor = 1.0,
 ) -> torch.Tensor:
-    """Invert the intensity of the image:
-    > `result = maxi - img`
+    """Invert the intensity of the image::
+
+        result = maxi - img
 
     Parameters
     ----------
     img : torch.Tensor
-        Image with shape (*, C, H, W).
+        Image with shape `(*, C, H, W)`.
     maxi : int | float | torch.Tensor | None, default=1.0
         The maximum of the range of the image.
-        The tensor must have shape (1 or C,) or (B, 1 or C) (only if
-        img.shape = (B, C, H, W)).
+        The tensor must have shape `(1 or C,)` or `(B, 1 or C)`
 
     Returns
     -------
     torch.Tensor
-        Enhanced image. The shape equals
-        - (C, H, W) if `img` has shape (C, H, W) and `maxi` has shape
-          (1 or C,).
-        - (B, C, H, W) if
-            1. `img` has shape (B, C, H, W).
-            2. `img` has shape (C, H, W) and `maxi` has shape (B, 1 or C,).
+        Enhanced image. Shape is broadcasting according to the shape of the
+        arguments.
     """
     check_valid_image_ndim(img)
 

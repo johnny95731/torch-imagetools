@@ -15,7 +15,7 @@ def hsv_helper(
     Parameters
     ----------
     rgb : torch.Tensor
-        An RGB image in the range of [0, 1] with shape (*, 3, H, W).
+        An RGB image in the range of [0, 1] with shape `(*, 3, H, W)`.
 
     Returns
     -------
@@ -54,12 +54,12 @@ def rgb_to_hsv(rgb: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     rgb : torch.Tensor
-        An RGB image in the range of [0, 1] with shape (*, 3, H, W).
+        An RGB image in the range of [0, 1] with shape `(*, 3, H, W)`.
 
     Returns
     -------
     torch.Tensor
-        An image in HSV space with shape (*, 3, H, W). The H channel values
+        An image in HSV space with shape `(*, 3, H, W)`. The H channel values
         are in the range [0, 360), S and V are in the range of [0, 1].
     """
     hue, amax, _, delta = hsv_helper(rgb)
@@ -76,12 +76,12 @@ def hsv_to_rgb(hsv: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     hsv : torch.Tensor
-        An image in HSV space with shape (*, 3, H, W).
+        An image in HSV space with shape `(*, 3, H, W)`.
 
     Returns
     -------
     torch.Tensor
-        An RGB image in the range of [0, 1] with the shape (*, 3, H, W).
+        An RGB image in the range of [0, 1] with the shape `(*, 3, H, W)`.
     """
 
     def fn(n):

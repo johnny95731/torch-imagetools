@@ -14,13 +14,12 @@ def rgb_to_gray(rgb: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     rgb : torch.Tensor
-        An RGB image. For a ndarray, the shape should be (*, H, W, 3). For a
-        Tensor, the shape should be (*, 3, H, W).
+        An RGB image with shape `(*, 3, H, W)`.
 
     Returns
     -------
     torch.Tensor
-        An grayscale image with shape (*, 1, H, W). The maximum is the same as
+        An grayscale image with shape `(*, 1, H, W)`. The maximum is the same as
         the input.
     """
     matrix = torch.tensor(
@@ -37,12 +36,12 @@ def gray_to_rgb(gray: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     gray : torch.Tensor
-        An grayscale image with shape (*, 1, H, W).
+        An grayscale image with shape `(*, 1, H, W)`.
 
     Returns
     -------
     torch.Tensor
-        An RGB image with shape (*, 3, H, W).
+        An RGB image with shape `(*, 3, H, W)`.
     """
     matrix = torch.tensor(((1.0,), (1.0,), (1.0,)), device=gray.device)
     rgb = matrix_transform(gray, matrix)

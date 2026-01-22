@@ -177,7 +177,7 @@ class Wavelet:
         """Returns filters tuple for the current wavelet in the following
         order:
 
-        ``` (rec_lo[::-1], rec_hi[::-1], dec_lo[::-1], dec_hi[::-1])
+        `(rec_lo, rec_hi, dec_lo, dec_hi)`
         """
         bank = (self.dec_low, self.dec_high, self.rec_low, self.rec_high)
         return bank
@@ -215,13 +215,14 @@ class Wavelet:
         Parameters
         ----------
         img : torch.Tensor
-            An image with shape (*, C, H, W).
+            An image with shape `(*, C, H, W)`.
 
         Returns
         -------
         list[torch.Tensor]
             The wavelet decomposition components with the following order:
-            ```[LL, LH, HL, HH]
+
+            `[LL, LH, HL, HH]`
 
         Raises
         ------
@@ -238,13 +239,12 @@ class Wavelet:
         Parameters
         ----------
         img : torch.Tensor
-            An image with shape (*, C, H, W).
+            An image with shape `(*, C, H, W)`.
 
         Returns
         -------
         torch.Tensor
-            The wavelet decomposition components with the following order:
-            ```[LL, LH, HL, HH]
+            The lowpass-lowpass component of image.
 
         Raises
         ------
@@ -261,13 +261,12 @@ class Wavelet:
         Parameters
         ----------
         img : torch.Tensor
-            An image with shape (*, C, H, W).
+            An image with shape `(*, C, H, W)`.
 
         Returns
         -------
         torch.Tensor
-            The wavelet decomposition components with the following order:
-            ```[LL, LH, HL, HH]
+            The highpass-highpass component of image.
 
         Raises
         ------

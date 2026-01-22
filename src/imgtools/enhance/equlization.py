@@ -14,14 +14,14 @@ def hist_equalize(img: torch.Tensor, bins: int = 256) -> torch.Tensor:
     Parameters
     ----------
     img : torch.Tensor
-        An image in the range of [0, 1] with shape 2 <= img.ndim <= 4.
+        An image in the range of [0, 1] with shape `(*, *, H, W)`.
     bins : int, default=256
         The number of groups in data range.
 
     Returns
     -------
     torch.Tensor
-        Enhanced image in the range of [0, 1]. Shape=img.shape.
+        Enhanced image in the range of [0, 1]. Shape `img.shape`.
     """
     if not isinstance(bins, int):
         raise TypeError(f'`bins` must be an integer: {type(bins)}.')
@@ -69,14 +69,14 @@ def match_mean_std(src: torch.Tensor, tar: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     src : torch.Tensor
-        Source image with shape (*, C, H, W).
+        Source image with shape `(*, *, H, W)`.
     tar : torch.Tensor
-        Target image with shape (*, C, H, W).
+        Target image with shape `(*, *, H, W)`.
 
     Returns
     -------
     torch.Tensor
-        Enhanced image. Shape=max(src.shape, tar.dtype).
+        Enhanced image. Shape=`max(src.shape, tar.dtype)`.
     """
     tar = align_device_type(tar, src)
 

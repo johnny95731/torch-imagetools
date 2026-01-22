@@ -17,7 +17,7 @@ def mccamy_approximation(
     Parameters
     ----------
     xy : torch.Tensor
-        Chromaticity coordinates, a tensor with shape (2, *).
+        Chromaticity coordinates, a tensor with shape `(2, *)`.
 
     Returns
     -------
@@ -41,7 +41,7 @@ def hernandez_andre_approximation(
     Parameters
     ----------
     xy : torch.Tensor
-        Chromaticity coordinates, a tensor with shape (2, *).
+        Chromaticity coordinates, a tensor with shape `(2, *)`.
 
     Returns
     -------

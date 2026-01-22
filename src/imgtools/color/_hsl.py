@@ -16,12 +16,12 @@ def rgb_to_hsl(rgb: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     rgb : np.ndarray | torch.Tensor
-        An RGB image in the range of [0, 1] with shape (*, 3, H, W).
+        An RGB image in the range of [0, 1] with shape `(*, 3, H, W)`.
 
     Returns
     -------
     torch.Tensor
-        An image in HSL space with shape (*, 3, H, W). The H channel values
+        An image in HSL space with shape `(*, 3, H, W)`. The H channel values
         are in the range [0, 360), S and L are in the range of [0, 1].
     """
     hue, amax, amin, delta = hsv_helper(rgb)
@@ -40,12 +40,12 @@ def hsl_to_rgb(hsl: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     sv : np.ndarray | torch.Tensor
-        An image in HSL space with shape (*, 3, H, W).
+        An image in HSL space with shape `(*, 3, H, W)`.
 
     Returns
     -------
     torch.Tensor
-        An RGB image in the range of [0, 1] with the shape (*, 3, H, W).
+        An RGB image in the range of [0, 1] with the shape `(*, 3, H, W)`.
     """
 
     def fn(n):

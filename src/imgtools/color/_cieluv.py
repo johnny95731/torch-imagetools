@@ -41,7 +41,7 @@ def xyz_to_luv(
     Parameters
     ----------
     xyz : torch.Tensor
-        An image in CIE XYZ space with shape (*, 3, H, W).
+        An image in CIE XYZ space with shape `(*, 3, H, W)`.
     rgb_spec : RGBSpec, default='srgb'
         The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
@@ -56,7 +56,7 @@ def xyz_to_luv(
     Returns
     -------
     luv : torch.Tensor
-        An image in CIE LUV space with the shape (*, 3, H, W).
+        An image in CIE LUV space with the shape `(*, 3, H, W)`.
     mat : torch.Tensor
         A transformation matrix used to convert RGB to CIE XYZ.
         `mat` is returned only if `ret_matrix` is true.
@@ -99,7 +99,7 @@ def luv_to_xyz(
     Parameters
     ----------
     luv : torch.Tensor
-        An image in CIE LUV space with shape (*, 3, H, W).
+        An image in CIE LUV space with shape `(*, 3, H, W)`.
     rgb_spec : RGBSpec, default='srgb'
         The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
@@ -114,7 +114,7 @@ def luv_to_xyz(
     Returns
     -------
     xyz : torch.Tensor
-        An image in CIE XYZ space with the shape (*, 3, H, W).
+        An image in CIE XYZ space with the shape `(*, 3, H, W)`.
     mat : torch.Tensor
         A transformation matrix used to convert RGB to CIE XYZ.
         `mat` is returned only if `ret_matrix` is true.
@@ -165,7 +165,7 @@ def rgb_to_luv(
     Parameters
     ----------
     rgb : torch.Tensor
-        An RGB image in the range of [0, 1] with shape (*, 3, H, W).
+        An RGB image in the range of [0, 1] with shape `(*, 3, H, W)`.
     rgb_spec : RGBSpec, default='srgb'
         The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
@@ -180,7 +180,7 @@ def rgb_to_luv(
     Returns
     -------
     luv : torch.Tensor
-        An image in CIE LUV space with the shape (*, 3, H, W).
+        An image in CIE LUV space with the shape `(*, 3, H, W)`.
     mat : torch.Tensor
         A transformation matrix used to convert RGB to CIE XYZ.
         `mat` is returned only if `ret_matrix` is true.
@@ -204,7 +204,7 @@ def luv_to_rgb(
     Parameters
     ----------
     luv : torch.Tensor
-        An image in CIE LUV space with shape (*, 3, H, W).
+        An image in CIE LUV space with shape `(*, 3, H, W)`.
     rgb_spec : RGBSpec, default='srgb'
         The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
@@ -219,7 +219,7 @@ def luv_to_rgb(
     Returns
     -------
     rgb : torch.Tensor
-        An RGB image in [0, 1] with the shape (*, 3, H, W).
+        An RGB image in [0, 1] with the shape `(*, 3, H, W)`.
     mat : torch.Tensor
         A transformation matrix used to convert CIE XYZ to RGB.
         `mat` is returned only if `ret_matrix` is true.

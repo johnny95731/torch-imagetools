@@ -18,12 +18,12 @@ def rgb_to_hwb(rgb: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     rgb : torch.Tensor
-        An RGB image in the range of [0, 1] with shape (*, 3, H, W).
+        An RGB image in the range of [0, 1] with shape `(*, 3, H, W)`.
 
     Returns
     -------
     torch.Tensor
-        An image in HWB space with shape (*, 3, H, W). The H channel values
+        An image in HWB space with shape `(*, 3, H, W)`. The H channel values
         are in the range [0, 360), W and B are in the range of [0, 1].
     """
     hue, amax, amin, _ = hsv_helper(rgb)
@@ -40,12 +40,12 @@ def hwb_to_rgb(hwb: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     hwb : torch.Tensor
-        An image in HWB space with shape (*, 3, H, W).
+        An image in HWB space with shape `(*, 3, H, W)`.
 
     Returns
     -------
     torch.Tensor
-        An RGB image in the range of [0, 1] with the shape (*, 3, H, W).
+        An RGB image in the range of [0, 1] with the shape `(*, 3, H, W)`.
     """
     h, w, b = hwb.unbind(-3)
 

@@ -52,7 +52,7 @@ def get_xyz_to_lms_matrix(
     Returns
     -------
     torch.Tensor
-        The transformation matrix with shape (3, 3).
+        The transformation matrix with shape `(3, 3)`.
 
     Raises
     ------
@@ -125,7 +125,7 @@ def get_lms_to_xyz_matrix(
     Returns
     -------
     torch.Tensor
-        The transformation matrix with shape (3, 3).
+        The transformation matrix with shape `(3, 3)`.
 
     Raises
     ------
@@ -152,7 +152,7 @@ def xyz_to_lms(
     Parameters
     ----------
     xyz : torch.Tensor
-        An image in CIE XYZ space with shape (*, 3, H, W).
+        An image in CIE XYZ space with shape `(*, 3, H, W)`.
     method : CATMethod, default='bradford'
         The method of conversion. The argument is case-insensitive.
     ret_matrix : bool, default=False
@@ -162,7 +162,7 @@ def xyz_to_lms(
     Returns
     -------
     lms : torch.Tensor
-        An image in LMS space with the shape (*, 3, H, W).
+        An image in LMS space with the shape `(*, 3, H, W)`.
     mat : torch.Tensor
         A transformation matrix used to convert CIE XYZ to LMS.
         `mat` is returned only if `ret_matrix` is true.
@@ -184,7 +184,7 @@ def lms_to_xyz(
     Parameters
     ----------
     xyz : torch.Tensor
-        An image in LMS space with shape (*, 3, H, W).
+        An image in LMS space with shape `(*, 3, H, W)`.
     method : CATMethod, default='bradford'
         The method of conversion. The argument is case-insensitive.
     ret_matrix : bool, default=False
@@ -194,7 +194,7 @@ def lms_to_xyz(
     Returns
     -------
     xyz : torch.Tensor
-        An image in CIE XYZ space with the shape (*, 3, H, W).
+        An image in CIE XYZ space with the shape `(*, 3, H, W)`.
     mat : torch.Tensor
         A transformation matrix used to convert LMS to CIE XYZ.
         `mat` is returned only if `ret_matrix` is true.

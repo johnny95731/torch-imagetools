@@ -18,11 +18,11 @@ def dwt(
     Parameters
     ----------
     img : torch.Tensor
-        An image with shape (*, C, H, W).
+        An image with shape `(*, C, H, W)`.
     scaling : torch.Tensor
-        The scaling filter (father wavelet) with shape (K,).
+        The scaling filter (father wavelet) with shape `(K,)`.
     wavelet : torch.Tensor
-        The wavelet filter (mother wavelet) with shape (K,).
+        The wavelet filter (mother wavelet) with shape `(K,)`.
 
     Returns
     -------
@@ -81,11 +81,11 @@ def dwt_partial(
     Parameters
     ----------
     img : torch.Tensor
-        An image with shape (*, C, H, W).
+        An image with shape `(*, C, H, W)`.
     scaling : torch.Tensor | None
-        The scaling filter (father wavelet) with shape (K,).
+        The scaling filter (father wavelet) with shape `(K,)`.
     wavelet : torch.Tensor | None
-        The wavelet filter (mother wavelet) with shape (K,).
+        The wavelet filter (mother wavelet) with shape `(K,)`.
     target : {'LL', 'LH', 'HL', 'HH'}
         The component of discrete wavelet transform. The argument is case
         insensitive. The first letter represents the filter (lowpass/highpass)
@@ -94,7 +94,7 @@ def dwt_partial(
     Returns
     -------
     torch.Tensor
-        The component of the DWT with shape (*, C, H // 2, W // 2).
+        The component of the DWT with shape `(*, C, H // 2, W // 2)`.
 
     Raises
     ------

@@ -21,23 +21,23 @@ def gradient_magnitude(
     Parameters
     ----------
     grad_y
-        The derivatives with respect to y of an image. Shape=(*, C, H, W).
+        The derivatives with respect to y of an image. Shape `(*, C, H, W)`.
     grad_x
-        The derivatives with respect to x of an image. Shape=(*, C, H, W).
+        The derivatives with respect to x of an image. Shape `(*, C, H, W)`.
     magnitude : {'stack', 'inf', '-inf'} | int | float, default=2
         The strategy of magnitude computation.
-        'stack' : Stack derivatives with fusion.
-        'inf' : Taking Supremum norm. Preserves the maximum alone all
-                derivatives.
-        '-inf' : Taking the minimum alone all derivatives.
-        int or float : Applying p-norm to the derivatives if p > 0.
+
+        - 'stack' : Stack derivatives.
+        - 'inf' : Take the maximum alone all derivatives.
+        - '-inf' : Take the minimum alone all derivatives.
+        - int or float : Apply p-norm to the derivatives if p > 0.
 
     Returns
     -------
     torch.Tensor
-        The magnitude of gradient.\\
-        The tensor has shape (*, C, H, W) if `magnitude` is *NOT* 'stack'.
-        Shape=(2, *, C, H, W) if `magnitude` is 'stack'.
+        The magnitude of gradient.
+        The shape is `(*, C, H, W)` if `magnitude` is *NOT* 'stack';
+        and is `(2, *, C, H, W)` if `magnitude` is 'stack'.
 
     Raises
     ------
@@ -106,7 +106,7 @@ def laplacian(
     Parameters
     ----------
     img : torch.Tensor
-        Image with shape (*, C, H, W).
+        Image with shape `(*, C, H, W)`.
     diagonal : bool, default=False
         The kernel detects 45 degree and 135 degree.
     inflection_only : bool, default=False
@@ -117,7 +117,7 @@ def laplacian(
     Returns
     -------
     torch.Tensor
-        The laplacian of an image with shape (*, C, H, W).
+        The laplacian of an image with shape `(*, C, H, W)`.
 
     Examples
     --------
@@ -161,7 +161,7 @@ def robinson(
     Parameters
     ----------
     img : torch.Tensor
-        An image with shape (*, C, H, W).
+        An image with shape `(*, C, H, W)`.
     ret_angle : bool, default=False
         Returns the direction of gradient or not.
     angle_unit : {'rad', 'deg'}, default='deg'
@@ -173,7 +173,7 @@ def robinson(
         Image gradient's magnitude. The value is the maximum along all compass
         kernel.
     angle : torch.Tensor
-        Image gradient's direction with shape (*, C, H, W).
+        Image gradient's direction with shape `(*, C, H, W)`.
         `angle` is returned only if `ret_angle` is true.
     """
     kernel_y = torch.tensor((
@@ -212,7 +212,7 @@ def kirsch(
     Parameters
     ----------
     img : torch.Tensor
-        An image with shape (*, C, H, W).
+        An image with shape `(*, C, H, W)`.
     ret_angle : bool, default=False
         Returns the direction of gradient or not.
     angle_unit : {'rad', 'deg'}, default='deg'
@@ -224,7 +224,7 @@ def kirsch(
         Image gradient's magnitude. The value is the maximum along all compass
         kernel.
     angle : torch.Tensor
-        Image gradient's direction with shape (*, C, H, W).
+        Image gradient's direction with shape `(*, C, H, W)`.
         `angle` is returned only if `ret_angle` is true.
     """
     kernel_y = torch.tensor((

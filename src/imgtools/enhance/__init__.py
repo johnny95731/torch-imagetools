@@ -4,6 +4,9 @@ __all__ = [
     'adjust_linear',
     'adjust_log',
     'adjust_sigmoid',
+    'hist_equalize',
+    'match_mean_std',
+    'transfer_reinhard',
 ]
 
 from .basic import (
@@ -12,4 +15,11 @@ from .basic import (
     adjust_linear,
     adjust_log,
     adjust_sigmoid,
+)
+from .equlization import (
+    hist_equalize,
+    match_mean_std,
+)
+from .transfer import (
+    transfer_reinhard,
 )

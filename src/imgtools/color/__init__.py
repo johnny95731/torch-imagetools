@@ -1,4 +1,6 @@
-"""Operations about color models.
+"""Transformations about color models.
+
+.. currentmodule:: imgtools.color
 
 Color Space Transformations
 ---------------------------
@@ -46,25 +48,6 @@ all the color spaces can be converted from/to RGB color space.
 - Other color spaces: HED
     * HED : Haematoxylin Eosin DAB
             Haematoxylin-Eosin-DAB. See [Ruifrok] for details.
-
-Color Balance
--------------
-
-- von Kries transform :
-    Chromatic adaptation by scaling the LMS channels from a source white
-    point to a target white point.
-- Balance by scaling :
-    Multiplies each channel of an image by
-        ``coeff_channel = maximum / maximum_of_channel.``
-- Gray-world balance :
-    Multiplies each channel of an image by
-        ``coeff_channel = mean / mean_of_channel.``
-- White patch balance :
-    A generalized version of white patch balance for specified percentiles
-    instead of maximums. Multiplies each channel of an RGB image by
-        ``coeff_channel = 1 / qtile_of_channel.``
-    When q = 1.0, it is the standard white patch balance and equivalent to
-    balance by scaling for maximum = 1.
 
 Reference
 ---------

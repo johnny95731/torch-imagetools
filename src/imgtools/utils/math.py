@@ -20,14 +20,14 @@ def matrix_transform(
     Parameters
     ----------
     img : torch.Tensor
-        Image, a tensor with shape (*, C, H, W).
+        Image, a tensor with shape `(*, C, H, W)`.
     matrix : torch.Tensor
-        The transformation matrix with shape (C_out, C).
+        The transformation matrix with shape `(C_out, C)`.
 
     Returns
     -------
     torch.Tensor
-        The image with shape (*, C_out, H, W).
+        The image with shape `(*, C_out, H, W)`.
     """
     matrix = align_device_type(matrix, img)
     output = torch.einsum('oc,...chw->...ohw', matrix, img)
@@ -43,16 +43,16 @@ def filter2d(
     Parameters
     ----------
     img : torch.Tensor
-        Image, a tensor with shape (*, C, H, W).
+        Image, a tensor with shape `(*, C, H, W)`.
     kernel : torch.Tensor
-        A convolution kernel with shape (k_x,), (k_y, k_x),
+        A convolution kernel with shape `(k_x,)`, `(k_y, k_x)`,
         (1 or k * C, k_y, k_x), or (B, k * C, k_y, k_x), where k is a positive
         integer.
 
     Returns
     -------
     torch.Tensor
-        The image with shape (*, C, H, W).
+        The image with shape `(*, C, H, W)`.
     """
     is_single_image = img.ndim == 3
     if is_single_image:
@@ -126,14 +126,14 @@ def p_norm(
     Parameters
     ----------
     img : torch.Tensor
-        Image, a tensor with shape (*, C, H, W).
+        Image, a tensor with shape `(*, C, H, W)`.
     p : float | string of float
         The exponent value.
 
     Returns
     -------
     torch.Tensor
-        The p-norm value with shape (*,).
+        The p-norm value with shape `(*,)`.
     """
     if isinstance(p, str):
         p = float(p)
@@ -155,7 +155,7 @@ def pca(img: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
     Parameters
     ----------
     img : torch.Tensor
-        Image with shape (*, C, H, W)
+        Image with shape `(*, C, H, W)`
 
     Returns
     -------

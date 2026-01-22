@@ -35,9 +35,9 @@ def transfer_reinhard(
     Parameters
     ----------
     src : torch.Tensor
-        Source image in RGB space with shape (*, C, H, W).
+        Source image in RGB space with shape `(*, C, H, W)`.
     tar : torch.Tensor
-        Target image in RGB space with shape (*, C, H, W).
+        Target image in RGB space with shape `(*, C, H, W)`.
     rgb_spec : RGBSpec, default='srgb'
         The name of RGB specification. The argument is case-insensitive.
     white : StandardIlluminants, default='D65'
@@ -50,7 +50,8 @@ def transfer_reinhard(
     Returns
     -------
     torch.Tensor
-        Transferred image in RGB space. Shape=max(src.shape, tar.dtype).
+        Transferred image in RGB space. The shape will broadcast by `src`
+        and `tar`.
 
     References
     ----------

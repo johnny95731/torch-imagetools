@@ -14,12 +14,12 @@ def rgb_to_hsi(rgb: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     rgb : torch.Tensor
-        An RGB image in the range of [0, 1] with shape (*, 3, H, W).
+        An RGB image in the range of [0, 1] with shape `(*, 3, H, W)`.
 
     Returns
     -------
     torch.Tensor
-        An image in HSI space with shape (*, 3, H, W). The H channel values
+        An image in HSI space with shape `(*, 3, H, W)`. The H channel values
         are in the range [0, 360), S and L are in the range of [0, 1].
     """
     r, g, b = torch.unbind(rgb, dim=-3)
@@ -49,12 +49,12 @@ def hsi_to_rgb(hsi: torch.Tensor) -> torch.Tensor:
     Parameters
     ----------
     hsi : torch.Tensor
-        An image in HSI space with shape (*, 3, H, W).
+        An image in HSI space with shape `(*, 3, H, W)`.
 
     Returns
     -------
     torch.Tensor
-        An RGB image in the range of [0, 1] with the shape (*, 3, H, W).
+        An RGB image in the range of [0, 1] with the shape `(*, 3, H, W)`.
     """
     h, s, i = hsi.unbind(-3)
 

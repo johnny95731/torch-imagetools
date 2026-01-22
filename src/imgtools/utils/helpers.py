@@ -83,6 +83,7 @@ def align_device_type(source: torch.Tensor, target: torch.Tensor):
     -------
     torch.Tensor
         Source tensor with
+
         - same device as target tensor
         - same dtype as target tensor if target.dtype is a floating point
         - float32 dtype if target.dtype is not a floating point
@@ -97,7 +98,7 @@ def to_channel_coeff(
     num_ch: int,
 ) -> torch.Tensor:
     """Convert shape of coefficeints such that `coeff (op) img` is valid,
-    where op may be one of arithmetic operations (+-*/) or other operator.
+    where op may be one of arithmetic operations or other operator.
 
     Parameters
     ----------
@@ -105,7 +106,8 @@ def to_channel_coeff(
         The values to be reshape. Must be one of the following:
             1. int or float
             2. Tensor with only one element.
-            3. Tensor with shape (num_ch,) or (batch, num_ch)
+            3. Tensor with shape `(num_ch,)` or `(batch, num_ch)`
+
     num_ch : int
         Number of image channels.
 
@@ -113,8 +115,9 @@ def to_channel_coeff(
     -------
     torch.Tensor
         Coefficeints with shape
-        - (1,) if `coeff` is a number or `coeff.numel() == 1`
-        - (*, C, 1, 1) if `coeff.shape` is (*, C).
+
+        - `(1,)` if `coeff` is a number or `coeff.numel() == 1`
+        - `(*, C, 1, 1)` if `coeff.shape` is `(*, C)`.
 
     Raises
     ------
@@ -148,6 +151,7 @@ def arrayize(img: Tensorlike) -> npt.NDArray:
     If input is a torch.Tensor:
         1. Moves -3-axis to the last for ndim >= 3.
         2. Without any handling for the other cases.
+
     For other types, convert to a ndarray by np.array.
 
     This function is not jit-able.
@@ -160,7 +164,7 @@ def arrayize(img: Tensorlike) -> npt.NDArray:
     if isinstance(img, torch.Tensor):
         img = img.cpu().detach()
         img = (
-            img.movedim(-3, -1)  # (*, C, H, W) -> (*, H, W, C)
+            img.movedim(-3, -1)  # `(*, C, H, W)` -> (*, H, W, C)
             if img.ndim >= 3
             else img
         )
@@ -178,6 +182,7 @@ def tensorize(img: Tensorlike) -> torch.Tensor:
         1. Moves -1-axis to -3-axis if ndim >= 3.
         2. Reshape to (1, H, W) if ndim = 2.
         3. Otherwise, without any handling.
+
     For other types, convert to a tensor by torch.tensor.
 
     This function is not jit-able.

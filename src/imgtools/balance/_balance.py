@@ -40,7 +40,7 @@ def get_von_kries_transform_matrix(
     Returns
     -------
     torch.Tensor
-        Matrix with shape=(3, 3). Same dtype and device as `xyz_white`.
+        Matrix with shape=`(3, 3)`. Same dtype and device as `xyz_white`.
 
     Examples
     --------
@@ -92,7 +92,7 @@ def von_kries_transform(
     Parameters
     ----------
     xyz : torch.Tensor
-        An image in CIE XYZ space with shape (*, 3, H, W).
+        An image in CIE XYZ space with shape `(*, 3, H, W)`.
     xyz_white : torch.Tensor
         The source white point in CIE XYZ space. A tensor with numel = 3.
     xyz_target_white : torch.Tensor
@@ -108,7 +108,7 @@ def von_kries_transform(
     Returns
     -------
     new_xyz : torch.Tensor
-        An image in CIE XYZ space with the shape (*, 3, H, W).
+        An image in CIE XYZ space with the shape `(*, 3, H, W)`.
     mat : torch.Tensor
         A chromatic adaptation matrix.
         `mat` is returned only if `ret_matrix` is true.
@@ -144,25 +144,26 @@ def balance_by_scaling(
     ret_factors: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Wrong von Kries transform. Multiplies an image by
-    > `coeff_channel = scaled_max / maximum_of_channel`.
+
+    `coeff_channel = scaled_max / maximum_of_channel`.
 
     Parameters
     ----------
     img : torch.Tensor
-        Image in RGB space with shape (*, C, H, W).
+        Image in RGB space with shape `(*, C, H, W)`.
     scaled_max : int | float | torch.Tensor
-        The maximum(s) after scaling.
+        The maximum(s) after scaling.\n
         - A single number: A coefficient for all channels.
-        - Tensor with shape (C,): the coefficients of each channels.
+        - Tensor with shape `(C,)`: the coefficients of each channels.
     ret_factors : bool, default=False
         If true, returns image and scaling factors.
 
     Returns
     -------
     balanced : torch.Tensor
-        An image with the shape (*, C, H, W).
+        An image with the shape `(*, C, H, W)`.
     factors : torch.Tensor
-        Scaling factors with shape (C,).
+        Scaling factors with shape `(C,)`.
         `factors` is returned only if `ret_factors` is true.
 
     Examples
@@ -194,21 +195,22 @@ def gray_world_balance(
     ret_factors: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """White balance by the gray-world algorithm. Multiplies each channel by
-    coeff_channel = mean / mean_of_channel.
+
+    `coeff_channel = mean / mean_of_channel`.
 
     Parameters
     ----------
     rgb : torch.Tensor
-        An Image in RGB space with shape (*, 3, H, W).
+        An Image in RGB space with shape `(*, C, H, W)`.
     ret_factors : bool, default=False
         If true, returns image and scaling factors.
 
     Returns
     -------
     balanced : torch.Tensor
-        An image with the shape (*, C, H, W).
+        An image with the shape `(*, C, H, W)`.
     factors : torch.Tensor
-        Scaling factors with shape (C,).
+        Scaling factors with shape `(C,)`.
         `factors` is returned only if `ret_factors` is true.
 
     Examples
@@ -238,23 +240,24 @@ def gray_edge_balance(
     ret_factors: bool = False,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """White balance by the gray-edge algorithm. Multiplies each channel by
-    coeff_channel = mean_of_gradient / mean_of_gradient_of_channel.
+
+    `coeff_channel = mean_of_gradient / mean_of_gradient_of_channel`.
 
     Parameters
     ----------
     rgb : torch.Tensor
-        Image in RGB space with shape (*, 3, H, W).
+        Image in RGB space with shape `(*, C, H, W)`.
     edge : torch.Tensor
-        The edge of the image with shape (*, 3, H, W).
+        The edge of the image with shape `(*, C, H, W)`.
     ret_factors : bool, default=False
         If true, returns image and scaling factors.
 
     Returns
     -------
     balanced : torch.Tensor
-        An image with the shape (*, C, H, W).
+        An image with the shape `(*, C, H, W)`.
     factors : torch.Tensor
-        Scaling factors with shape (C,).
+        Scaling factors with shape `(C,)`.
         `factors` is returned only if `ret_factors` is true.
 
     Examples
@@ -288,7 +291,8 @@ def white_patch_balance(
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """White balance by generalized white patch algorithm. Multiplies each
     channel of an RGB image by
-        coeff_channel = q_quantile_of_image / q_quantile_of_channel.
+
+    `coeff_channel = q_quantile_of_image / q_quantile_of_channel`.
 
     When q = 1.0, it is the standard white patch balance and equivalent to
     balance by scaling for maximum = 1.
@@ -296,13 +300,13 @@ def white_patch_balance(
     Parameters
     ----------
     rgb : torch.Tensor
-        An RGB Image in range of [0, 1] with shape (*, 3, H, W).
+        An RGB Image in range of [0, 1] with shape `(*, C, H, W)`.
         If ndim > 3, the quantile value is calculated across images,
         and images will be scaled by same factors.
     q : int | float | torch.Tensor, default=1.0
         q-quantile. The values will be cliped to [0, 1].
         - A single number: the quantile for all channels.
-        - Tensor with shape (3,): the quantiles of channels.
+        - Tensor with shape `(3,)`: the quantiles of channels.
     ret_factors : bool, default=False
         If false, only the image is returned.
         If true, also return the scaling factors.
@@ -310,9 +314,9 @@ def white_patch_balance(
     Returns
     -------
     balanced : torch.Tensor
-        An image with the shape (*, C, H, W).
+        An image with the shape `(*, C, H, W)`.
     factors : torch.Tensor
-        Scaling factors with shape (C,).
+        Scaling factors with shape `(C,)`.
         `factors` is returned only if `ret_factors` is true.
 
     Examples
@@ -371,7 +375,7 @@ def cheng_pca_balance(
     Parameters
     ----------
     rgb : torch.Tensor
-        An RGB image in the range of [0, 1] with shape (*, C, H, W).
+        An RGB image in the range of [0, 1] with shape `(*, C, H, W)`.
     adaptation : Literal['rgb', 'von kries'], default='von kries'
         Chromatic adaptation method. RGB scaling or von Kries transformation.
         - 'RGB': Scaling the illuminant to 1.
@@ -388,7 +392,7 @@ def cheng_pca_balance(
     Returns
     -------
     torch.Tensor
-        A balanced image with shape (*, C, H, W).
+        A balanced image with shape `(*, C, H, W)`.
 
     Raises
     ------
