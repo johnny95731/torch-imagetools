@@ -5,11 +5,12 @@ description = ""
 authors = [{ name = "johnny95731", email = "johnny95731@yahoo.com" }]
 readme = "README.md"
 requires-python = ">=3.11,<3.15"
-dependencies = [
-    "numpy (>=2.1.0,<2.3.4)",
-    "pywavelets (>=1.9.0,<2.0.0)",
-    "torch (>=2.7.0,<3.0.0)",
-]
+dependencies = []
+
+[project.optional-dependencies]
+torch = ["torch>=2.7.0"]
+wavelet = ["pywavelets>=1.9.0"]
+all = ["torch>=2.7.0", "pywavelets>=1.9.0"]
 
 [tool.poetry]
 packages = [{ include = "imgtools", from = "src" }]
@@ -17,6 +18,9 @@ packages = [{ include = "imgtools", from = "src" }]
 [tool.poetry.group.dev.dependencies]
 kornia = "^0.8.1"
 matplotlib = "^3.10.6"
+sphinx = "^8"
+sphinx-rtd-theme = "^3.1.0"
+numpydoc = "^1.10.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
