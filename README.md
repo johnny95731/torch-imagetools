@@ -8,7 +8,7 @@ An image processing library based on PyTorch that provides
 
 This library aim to provide some non deep learning-based tools for pre-/post-processing, data augmentation, or an alternative option when no data for training network.
 
-The api page is available on github pages.
+Sphinx API page: https://johnny95731.github.io/torch-imagetools/
 
 ### Future plan
 
