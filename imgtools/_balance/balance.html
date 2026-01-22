@@ -1,0 +1,544 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Color Balance &mdash; torch-imagetools 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            torch-imagetools
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../color.html">imgtools.color</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../balance.html">imgtools.balance</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">torch-imagetools</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Color Balance</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/imgtools/_balance/balance.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-imgtools.balance">
+<span id="color-balance"></span><h1>Color Balance<a class="headerlink" href="#module-imgtools.balance" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.balance.balance_by_scaling">
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">balance_by_scaling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaled_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_factors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.balance.balance_by_scaling" title="Link to this definition"></a></dt>
+<dd><p>Wrong von Kries transform. Multiplies an image by
+&gt; <cite>coeff_channel = scaled_max / maximum_of_channel</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Image in RGB space with shape (<a href="#id1"><span class="problematic" id="id2">*</span></a>, C, H, W).</p>
+</dd>
+<dt><strong>scaled_max</strong><span class="classifier">int | float | torch.Tensor</span></dt><dd><p>The maximum(s) after scaling.
+- A single number: A coefficient for all channels.
+- Tensor with shape (C,): the coefficients of each channels.</p>
+</dd>
+<dt><strong>ret_factors</strong><span class="classifier">bool, default=False</span></dt><dd><p>If true, returns image and scaling factors.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>balanced</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with the shape (<a href="#id3"><span class="problematic" id="id4">*</span></a>, C, H, W).</p>
+</dd>
+<dt><strong>factors</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Scaling factors with shape (C,).
+<cite>factors</cite> is returned only if <cite>ret_factors</cite> is true.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">balance_by_scaling</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">maxi</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span><span class="p">,</span> <span class="n">factors</span> <span class="o">=</span> <span class="n">balance_by_scaling</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">maxi</span><span class="p">,</span> <span class="n">ret_factors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">factors</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># tensor([1.0000, 1.0000, 0.9500])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.balance.cheng_pca_balance">
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">cheng_pca_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'von</span> <span class="pre">kries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rgb_spec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'srgb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">white</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'d65'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.cheng_pca_balance" title="Link to this definition"></a></dt>
+<dd><p>White balance by Cheng’s PCA method [1]. Estimate the illuminant and
+applies chromatic adaptation transformation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>rgb</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An RGB image in the range of [0, 1] with shape (<a href="#id5"><span class="problematic" id="id6">*</span></a>, C, H, W).</p>
+</dd>
+<dt><strong>adaptation</strong><span class="classifier">Literal[‘rgb’, ‘von kries’], default=’von kries’</span></dt><dd><p>Chromatic adaptation method. RGB scaling or von Kries transformation.
+- ‘RGB’: Scaling the illuminant to 1.
+- ‘von kries’: von Kries transformation.</p>
+</dd>
+<dt><strong>rgb_spec</strong><span class="classifier">RGBSpec, default=’srgb’</span></dt><dd><p>The name of RGB specification. The argument is case-insensitive.
+Only works for <cite>adaptation=’von kries’</cite>.</p>
+</dd>
+<dt><strong>white</strong><span class="classifier">StandardIlluminants, default=’D65’</span></dt><dd><p>White point. The input is case-insensitive. Only works for
+<cite>adaptation=’von kries’</cite>.</p>
+</dd>
+<dt><strong>obs</strong><span class="classifier">{2, ‘2’, 10, ‘10’}, default=10</span></dt><dd><p>The degree of oberver. Only works for <cite>adaptation=’von kries’</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>A balanced image with shape (<a href="#id7"><span class="problematic" id="id8">*</span></a>, C, H, W).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>When <cite>adaptation</cite> is not in (‘rgb’, ‘von kries’)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>[1] Cheng, Dongliang, Dilip K. Prasad, and Michael S. Brown. “Illuminant</dt><dd><p>estimation for color constancy: why spatial-domain methods work and
+the role of the color distribution.” JOSA A 31.5 (2014): 1049-1058.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">cheng_pca_balance</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span> <span class="o">=</span> <span class="n">cheng_pca_balance</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.balance.estimate_illuminant_cheng">
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">estimate_illuminant_cheng</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_selected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.estimate_illuminant_cheng" title="Link to this definition"></a></dt>
+<dd><p>Estimate the illuminant in the image by Cheng’s PCA method [1].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An RGB image in the range of [0, 1] with shape (<a href="#id9"><span class="problematic" id="id10">*</span></a>, C, H, W).</p>
+</dd>
+<dt><strong>n_selected</strong><span class="classifier">int | float, default=3.5</span></dt><dd><p>Percentage for selecting top-n and bottom-n points.
+Select (2 * n_selected)%  points in total.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The illuminant of the image. An RGB value with shape=(<a href="#id11"><span class="problematic" id="id12">*</span></a>, C).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>[1] Cheng, Dongliang, Dilip K. Prasad, and Michael S. Brown. “Illuminant</dt><dd><p>estimation for color constancy: why spatial-domain methods work and
+the role of the color distribution.”
+JOSA A 31.5 (2014): 1049-1058.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.balance.get_von_kries_transform_matrix">
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">get_von_kries_transform_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xyz_white</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xyz_target_white</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'bradford'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.get_von_kries_transform_matrix" title="Link to this definition"></a></dt>
+<dd><p>Returns a transformation matrix for von Kries adaptation, which
+converts colors from a illuminant to another illuminant.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>xyz_white</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The source white point in CIE XYZ space. A tensor with numel = 3.</p>
+</dd>
+<dt><strong>xyz_target_white</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The target white point in CIE XYZ space. A tensor with numel = 3.</p>
+</dd>
+<dt><strong>method</strong><span class="classifier">CATMethod, default=’bradford’</span></dt><dd><p>Chromatic adaptation method.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Matrix with shape=(3, 3). Same dtype and device as <cite>xyz_white</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_von_kries_transform_matrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.color</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_rgb_to_xyz_matrix</span><span class="p">,</span> <span class="n">rgb_to_xyz</span><span class="p">,</span> <span class="n">xyz_to_rgb</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">matrix_transform</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.23</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xyz</span><span class="p">,</span> <span class="n">mat</span> <span class="o">=</span> <span class="n">rgb_to_xyz</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="s1">&#39;D65&#39;</span><span class="p">,</span> <span class="n">ret_matrix</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">white_d65</span> <span class="o">=</span> <span class="n">mat</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">white_d50</span> <span class="o">=</span> <span class="n">get_rgb_to_xyz_matrix</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="s1">&#39;D50&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mat_adap</span> <span class="o">=</span> <span class="n">get_von_kries_transform_matrix</span><span class="p">(</span><span class="n">white_d65</span><span class="p">,</span> <span class="n">white_d50</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_xyz</span> <span class="o">=</span> <span class="n">matrix_transform</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">mat_adap</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Equivalent to: new_xyz = von_kries_transform(xyz, white_d65, white_d50)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_rgb</span> <span class="o">=</span> <span class="n">xyz_to_rgb</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="s1">&#39;D50&#39;</span><span class="p">)</span>  <span class="c1"># tensor([0.6935, 0.1019, 0.2713])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.balance.gray_edge_balance">
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">gray_edge_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_factors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.balance.gray_edge_balance" title="Link to this definition"></a></dt>
+<dd><p>White balance by the gray-edge algorithm. Multiplies each channel by
+coeff_channel = mean_of_gradient / mean_of_gradient_of_channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>rgb</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Image in RGB space with shape (<a href="#id13"><span class="problematic" id="id14">*</span></a>, 3, H, W).</p>
+</dd>
+<dt><strong>edge</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The edge of the image with shape (<a href="#id15"><span class="problematic" id="id16">*</span></a>, 3, H, W).</p>
+</dd>
+<dt><strong>ret_factors</strong><span class="classifier">bool, default=False</span></dt><dd><p>If true, returns image and scaling factors.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>balanced</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with the shape (<a href="#id17"><span class="problematic" id="id18">*</span></a>, C, H, W).</p>
+</dd>
+<dt><strong>factors</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Scaling factors with shape (C,).
+<cite>factors</cite> is returned only if <cite>ret_factors</cite> is true.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">gray_edge_balance</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">laplacian</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edge</span> <span class="o">=</span> <span class="n">laplacian</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span><span class="p">,</span> <span class="n">factors</span> <span class="o">=</span> <span class="n">gray_edge_balance</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">ret_factors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">factors</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># tensor([1.0094, 0.9822, 1.0089])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.balance.gray_world_balance">
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">gray_world_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_factors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.balance.gray_world_balance" title="Link to this definition"></a></dt>
+<dd><p>White balance by the gray-world algorithm. Multiplies each channel by
+coeff_channel = mean / mean_of_channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>rgb</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An Image in RGB space with shape (<a href="#id19"><span class="problematic" id="id20">*</span></a>, 3, H, W).</p>
+</dd>
+<dt><strong>ret_factors</strong><span class="classifier">bool, default=False</span></dt><dd><p>If true, returns image and scaling factors.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>balanced</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with the shape (<a href="#id21"><span class="problematic" id="id22">*</span></a>, C, H, W).</p>
+</dd>
+<dt><strong>factors</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Scaling factors with shape (C,).
+<cite>factors</cite> is returned only if <cite>ret_factors</cite> is true.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">gray_world_balance</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span><span class="p">,</span> <span class="n">factors</span> <span class="o">=</span> <span class="n">gray_world_balance</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">ret_factors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">factors</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># tensor([1.0003, 1.0013, 0.9984])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.balance.hernandez_andre_approximation">
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">hernandez_andre_approximation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.hernandez_andre_approximation" title="Link to this definition"></a></dt>
+<dd><p>Calculates CCT from xy chromaticity coordinates by Hernández-André’s
+approximation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>xy</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Chromaticity coordinates, a tensor with shape (2, <a href="#id23"><span class="problematic" id="id24">*</span></a>).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Correlated color temperature in Kelvin.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.balance.light_compensation_htchen">
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">light_compensation_htchen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'LAB'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overflow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'norm'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.light_compensation_htchen" title="Link to this definition"></a></dt>
+<dd><p>Light compensation by H. T. Chen’s method [1]. This method can be found
+in [2] and [3].</p>
+<p>Enhance the luminance channel by
+<a href="#id25"><span class="problematic" id="id26">``</span></a><a href="#id27"><span class="problematic" id="id28">`</span></a></p>
+<blockquote>
+<div><p>lum_brighter = scaler * lum * (1 + log(2 - lum))
+lum_dark = (blurred_sat + 1) / (2 * (1 + blurred_lum) ** power)
+new_lum = lum_brighter * lum_dark</p>
+</div></blockquote>
+<p><a href="#id29"><span class="problematic" id="id30">``</span></a><a href="#id31"><span class="problematic" id="id32">`</span></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>rgb</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An RGB image in range of [0, 1] with shape (<a href="#id33"><span class="problematic" id="id34">*</span></a>, C, H, W).</p>
+</dd>
+<dt><strong>scaler</strong><span class="classifier">int | float, default=1.0</span></dt><dd><p>The strength of the enhancement.</p>
+</dd>
+<dt><strong>power</strong><span class="classifier">int | float, default=0.1</span></dt><dd><p>The strength of overexpose suppression.</p>
+</dd>
+<dt><strong>space</strong><span class="classifier">{‘LAB’, ‘LUV’, ‘YUV’, ‘HSV’, ‘HSL’, ‘HSI’}, default=’LAB’</span></dt><dd><p>The color space to get luminance and saturation.</p>
+</dd>
+<dt><strong>overflow</strong><span class="classifier">{‘clip’, ‘norm’, ‘both’}, default=’norm’</span></dt><dd><p>Handle the result luminance: clip, normalize (to [0, 1]), or clip
+then normalize. Other value means ignoring.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Balanced RGB image in range of [0, 1] with shape (<a href="#id35"><span class="problematic" id="id36">*</span></a>, C, H, W).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>When argument <cite>sapce</cite> is not valid.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>[1] H. T. Chen, “An Algorithm for Light Compensation,” Master Thesis,</dt><dd><p>Department of Computer Science and Information Engineering,
+National Taiwan University, 2008.</p>
+</dd>
+<dt>[2] C. F. Chang, C. S. Fuh, “Light Compensation,” Proceedings of IPPR</dt><dd><p>Conference on Computer Vision, Graphics, and Image Processing,
+Shitou, Taiwan, B3-9, p. 87, 2009.</p>
+</dd>
+<dt>[3] PDF from C. S. Fuh’s personal webpsite</dt><dd><p><a class="reference external" href="https://www.csie.ntu.edu.tw/~fuh/personal/LightCompensation.pdf">https://www.csie.ntu.edu.tw/~fuh/personal/LightCompensation.pdf</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">light_compensation_htchen</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span> <span class="o">=</span> <span class="n">light_compensation_htchen</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.balance.mccamy_approximation">
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">mccamy_approximation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.mccamy_approximation" title="Link to this definition"></a></dt>
+<dd><p>Calculates CCT from xy chromaticity coordinates by McCamy’s
+approximation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>xy</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Chromaticity coordinates, a tensor with shape (2, <a href="#id37"><span class="problematic" id="id38">*</span></a>).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Correlated color temperature in Kelvin.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.balance.von_kries_transform">
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">von_kries_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xyz</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xyz_white</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xyz_target_white</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'bradford'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.balance.von_kries_transform" title="Link to this definition"></a></dt>
+<dd><p>Applies chromatic adaptation transformation to an image in CIE XYZ
+space with given source and target white points.</p>
+<p>If method is set to be ‘xyz’, the transformation matrix between XYZ and
+LMS is the identity matrix. Thus, the result is a wrong von Kries
+transformation and the</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>xyz</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image in CIE XYZ space with shape (<a href="#id39"><span class="problematic" id="id40">*</span></a>, 3, H, W).</p>
+</dd>
+<dt><strong>xyz_white</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The source white point in CIE XYZ space. A tensor with numel = 3.</p>
+</dd>
+<dt><strong>xyz_target_white</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The target white point in CIE XYZ space. A tensor with numel = 3.</p>
+</dd>
+<dt><strong>method</strong><span class="classifier">CATMethod, default=’bradford’</span></dt><dd><p>Chromatic adaptation method. If method is a
+Tensor, then it will be regarded as the transformation matrix (
+XYZ -&gt; LMS -&gt; scaling LMS -&gt; XYZ).</p>
+</dd>
+<dt><strong>ret_matrix</strong><span class="classifier">bool, default=False</span></dt><dd><p>If false, only the image is returned.
+If true, also returns the transformation matrix.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>new_xyz</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image in CIE XYZ space with the shape (<a href="#id41"><span class="problematic" id="id42">*</span></a>, 3, H, W).</p>
+</dd>
+<dt><strong>mat</strong><span class="classifier">torch.Tensor</span></dt><dd><p>A chromatic adaptation matrix.
+<cite>mat</cite> is returned only if <cite>ret_matrix</cite> is true.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">von_kries_transform</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.color</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_rgb_to_xyz_matrix</span><span class="p">,</span> <span class="n">rgb_to_xyz</span><span class="p">,</span> <span class="n">xyz_to_rgb</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">matrix_transform</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">0.75</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.23</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">xyz</span><span class="p">,</span> <span class="n">mat</span> <span class="o">=</span> <span class="n">rgb_to_xyz</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="s1">&#39;D65&#39;</span><span class="p">,</span> <span class="n">ret_matrix</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">white_d65</span> <span class="o">=</span> <span class="n">mat</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">white_d50</span> <span class="o">=</span> <span class="n">get_rgb_to_xyz_matrix</span><span class="p">(</span><span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="s1">&#39;D50&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_xyz</span> <span class="o">=</span> <span class="n">von_kries_transform</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">white_d65</span><span class="p">,</span> <span class="n">white_d50</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Equivalent to:</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># mat_adap = get_von_kries_transform_matrix(white_d65, white_d50)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># new_xyz = matrix_transform(xyz, mat_adap)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_rgb</span> <span class="o">=</span> <span class="n">xyz_to_rgb</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="s1">&#39;srgb&#39;</span><span class="p">,</span> <span class="s1">&#39;D50&#39;</span><span class="p">)</span>  <span class="c1"># tensor([0.6935, 0.1019, 0.2713])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.balance.white_patch_balance">
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">white_patch_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_factors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.balance.white_patch_balance" title="Link to this definition"></a></dt>
+<dd><p>White balance by generalized white patch algorithm. Multiplies each
+channel of an RGB image by</p>
+<blockquote>
+<div><p>coeff_channel = q_quantile_of_image / q_quantile_of_channel.</p>
+</div></blockquote>
+<p>When q = 1.0, it is the standard white patch balance and equivalent to
+balance by scaling for maximum = 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>rgb</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An RGB Image in range of [0, 1] with shape (<a href="#id43"><span class="problematic" id="id44">*</span></a>, 3, H, W).
+If ndim &gt; 3, the quantile value is calculated across images,
+and images will be scaled by same factors.</p>
+</dd>
+<dt><strong>q</strong><span class="classifier">int | float | torch.Tensor, default=1.0</span></dt><dd><p>q-quantile. The values will be cliped to [0, 1].
+- A single number: the quantile for all channels.
+- Tensor with shape (3,): the quantiles of channels.</p>
+</dd>
+<dt><strong>ret_factors</strong><span class="classifier">bool, default=False</span></dt><dd><p>If false, only the image is returned.
+If true, also return the scaling factors.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>balanced</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with the shape (<a href="#id45"><span class="problematic" id="id46">*</span></a>, C, H, W).</p>
+</dd>
+<dt><strong>factors</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Scaling factors with shape (C,).
+<cite>factors</cite> is returned only if <cite>ret_factors</cite> is true.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">white_patch_balance</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">laplacian</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span><span class="p">,</span> <span class="n">factors</span> <span class="o">=</span> <span class="n">white_patch_balance</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">ret_factors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">factors</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># tensor([1.0008, 0.9999, 1.0005])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Tsai BoYuan.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

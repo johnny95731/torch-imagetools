@@ -1,0 +1,7 @@
+Color Balance
+=============
+
+.. automodule:: imgtools.balance
+   :members:
+   :undoc-members:
+   :show-inheritance:
