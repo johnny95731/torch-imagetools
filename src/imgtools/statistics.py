@@ -37,7 +37,7 @@ def histogram(
     """
     if not isinstance(bins, int):
         raise TypeError(f'`bins` must be an integer: {type(bins)}.')
-    check_valid_image_ndim(img)
+    check_valid_image_ndim(img, 2)
     img = (img * (bins - 1)).type(torch.uint8)
 
     flat_image = img.flatten(start_dim=-2).long()
