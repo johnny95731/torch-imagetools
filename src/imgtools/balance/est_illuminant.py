@@ -67,6 +67,6 @@ def estimate_illuminant_cheng(
         ])
     # Find the illuminant by pca.
     _, Vt = pca(selected.unsqueeze(-1))  # noqa: N806
-    illuminant = Vt[..., 0]
+    illuminant = Vt[..., -1]
     illuminant = illuminant.contiguous().abs()
     return illuminant
