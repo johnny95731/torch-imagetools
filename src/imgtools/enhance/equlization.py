@@ -91,6 +91,7 @@ def match_historgram(
     tar_cdf = tar_cdf.div(tar_cdf[..., -1].unsqueeze(-1))
     tar_cdf = tar_cdf.to(cdf.device)
     table = torch.searchsorted(tar_cdf, cdf).float() / tar_cdf.shape[-1]
+    table = align_device_type(table, img)
 
     img_indices = (img * (bins - 1)).clip_(0, bins - 1).long()
     img_indices = img_indices.flatten(start_dim=-2)
