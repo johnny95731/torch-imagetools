@@ -35,6 +35,21 @@ class Equalization(BasicTest):
         for inps, res in cases:
             self._assert_result(inps, res)
 
+    def test_hist_equalize(self):
+        self.print_name()
+
+        _bins = (255, 300)
+        for bins in _bins:
+            hist = torch.randn(bins)
+            hist = hist / hist.sum()
+            cases = run_over_all_dtype_device(
+                equlization.match_historgram,
+                hist,
+                bins,
+            )
+            for inps, res in cases:
+                self._assert_result(inps, res)
+
     def test_match_mean_std(self):
         self.print_name()
 

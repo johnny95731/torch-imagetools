@@ -5,7 +5,7 @@ from tests.basic import BasicTest, run_over_all_dtype_device
 
 
 class Sobel(BasicTest):
-    def test_scharr(self):
+    def test_sobel(self):
         self.print_name()
 
         magnitudes = (1, 1.0, 'inf', '-inf', 'stack')
