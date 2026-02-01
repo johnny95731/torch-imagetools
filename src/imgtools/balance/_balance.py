@@ -271,6 +271,7 @@ def gray_edge_balance(
     >>> balanced, factors = gray_edge_balance(rgb, edge, ret_factors=True)
     >>> factors.reshape(3)  # tensor([1.0094, 0.9822, 1.0089])
     """
+    edge = edge.abs()
     # Get mean values of gradients
     ch_grad_mean = edge.mean((-1, -2), keepdim=True)
     img_grad_mean = ch_grad_mean.mean()
