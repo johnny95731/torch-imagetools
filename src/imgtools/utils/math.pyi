@@ -1,5 +1,7 @@
 __all__ = [
     'matrix_transform',
+    '_check_ksize',
+    'calc_padding',
     'filter2d',
     'atan2',
     'p_norm',
@@ -16,9 +18,16 @@ def matrix_transform(
 ) -> torch.Tensor: ...
 
 #
+def _check_ksize(
+    ksize: int | tuple[int, int],
+    positive: bool = True,
+) -> tuple[int, int]: ...
+def calc_padding(ksize: tuple[int, int]) -> tuple[int, int, int, int]: ...
 def filter2d(
     img: torch.Tensor,
     kernel: torch.Tensor,
+    padding: list[int] | Literal['same'] | None = 'same',
+    mode: Literal['constant', 'reflect', 'replicate', 'circular'] = 'reflect',
 ) -> torch.Tensor: ...
 
 #

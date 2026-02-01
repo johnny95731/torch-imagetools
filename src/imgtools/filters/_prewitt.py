@@ -3,8 +3,9 @@ __all__ = [
 ]
 
 import torch
+from torch.nn.functional import pad
 
-from ..utils.math import atan2, filter2d
+from ..utils.math import atan2, calc_padding, filter2d
 from ..utils.helpers import align_device_type
 from ._edges import gradient_magnitude
 
@@ -47,8 +48,10 @@ def prewitt(
     kernel_y = align_device_type(kernel_y, img)
     # Note: Filtering twice with 2 directional kernel is faster than
     # filtering by a kernel that stacked 2 kernels
-    grad_y = filter2d(img, kernel_y)
-    grad_x = filter2d(img, kernel_y.T)
+    padding = calc_padding((3, 3))
+    _img = pad(img, padding, 'reflect')
+    grad_y = filter2d(_img, kernel_y, None)
+    grad_x = filter2d(_img, kernel_y.T, None)
 
     mag = gradient_magnitude(grad_y, grad_x, magnitude=magnitude)
     if ret_angle:

@@ -1,10 +1,12 @@
 __all__ = [
     'hist_equalize',
+    'match_historgram',
     'match_mean_std',
 ]
 
 import torch
 
+from ..statistics import histogram
 from ..utils.helpers import align_device_type, check_valid_image_ndim
 
 
@@ -60,6 +62,40 @@ def hist_equalize(img: torch.Tensor, bins: int = 256) -> torch.Tensor:
 
     res = torch.gather(table, -1, index=flat_image).reshape(img.shape)
     res = res.contiguous()
+    return res
+
+
+def match_historgram(
+    img: torch.Tensor, tar_hist: torch.Tensor, bins: int = 256
+):
+    """Applies histogram matching to the image with a given histogram.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        Source image in the range of [0, 1] with shape `(*, C or *, H, W)`.
+    tar_hist : torch.Tensor
+        Target histogram with shape `(*, 1 or C or *, N)`.
+    bins : int, default=256
+        The number of groups in data range.
+
+    Returns
+    -------
+    torch.Tensor
+        Transferred image in RGB space.
+    """
+    hist = histogram(img, bins)
+    cdf = torch.cumsum(hist, -1)
+    cdf = cdf.div(cdf[..., -1].unsqueeze(-1))
+    tar_cdf = torch.cumsum(tar_hist, -1)
+    tar_cdf = tar_cdf.div(tar_cdf[..., -1].unsqueeze(-1))
+    tar_cdf = tar_cdf.to(cdf.device)
+    table = torch.searchsorted(tar_cdf, cdf).float() / tar_cdf.shape[-1]
+
+    img_indices = (img * (bins - 1)).clip_(0, bins - 1).long()
+    img_indices = img_indices.flatten(start_dim=-2)
+    res = table.gather(-1, img_indices)
+    res = res.reshape(img.shape).contiguous()
     return res
 
 

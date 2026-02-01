@@ -6,9 +6,10 @@ __all__ = [
 ]
 
 import torch
+from torch.nn.functional import pad
 
 from ..utils.helpers import align_device_type
-from ..utils.math import atan2, filter2d
+from ..utils.math import atan2, calc_padding, filter2d
 
 
 def gradient_magnitude(
@@ -189,10 +190,12 @@ def robinson(
     kernel_y = align_device_type(kernel_y, img)
     kernel_45 = align_device_type(kernel_45, img)
 
-    grad_y = filter2d(img, kernel_y)
-    grad_x = filter2d(img, kernel_y.T)
-    grad_45 = filter2d(img, kernel_45)
-    grad_135 = filter2d(img, kernel_45.flip(0))
+    padding = calc_padding((3, 3))
+    _img = pad(img, padding, 'reflect')
+    grad_y = filter2d(_img, kernel_y, None)
+    grad_x = filter2d(_img, kernel_y.T, None)
+    grad_45 = filter2d(_img, kernel_45, None)
+    grad_135 = filter2d(_img, kernel_45.flip(0), None)
 
     mag = torch.stack((grad_y, grad_x, grad_45, grad_135))
     mag = mag.abs().amax(dim=0)
@@ -244,15 +247,17 @@ def kirsch(
     kernel_y2 = kernel_y.flip(0)
     kernel_135 = kernel_y.flip(1)
 
-    grad_south = filter2d(img, kernel_y)
-    grad_north = filter2d(img, kernel_y2)
-    grad_east = filter2d(img, kernel_y.T)
-    grad_west = filter2d(img, kernel_y2.T)
+    padding = calc_padding((3, 3))
+    _img = pad(img, padding, 'reflect')
+    grad_south = filter2d(_img, kernel_y, None)
+    grad_north = filter2d(_img, kernel_y2, None)
+    grad_east = filter2d(_img, kernel_y.T, None)
+    grad_west = filter2d(_img, kernel_y2.T, None)
 
-    grad_se = filter2d(img, kernel_45)
-    grad_sw = filter2d(img, kernel_135)
-    grad_ne = filter2d(img, kernel_45.flip(0))
-    grad_nw = filter2d(img, kernel_135.flip(0))
+    grad_se = filter2d(_img, kernel_45, None)
+    grad_sw = filter2d(_img, kernel_135, None)
+    grad_ne = filter2d(_img, kernel_45.flip(0), None)
+    grad_nw = filter2d(_img, kernel_135.flip(0), None)
 
     mag = torch.stack((
         grad_south,

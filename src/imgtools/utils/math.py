@@ -1,12 +1,17 @@
 __all__ = [
     'matrix_transform',
+    '_check_ksize',
+    'calc_padding',
     'filter2d',
     'atan2',
     'p_norm',
     'pca',
 ]
 
+from math import ceil, floor
+
 import torch
+from torch.nn.functional import conv2d, pad
 
 from ..utils.helpers import align_device_type, check_valid_image_ndim
 
@@ -34,9 +39,73 @@ def matrix_transform(
     return output
 
 
+def _check_ksize(
+    ksize: int | tuple[int, int],
+    positive: bool = True,
+) -> tuple[int, int]:
+    """_summary_
+
+    Parameters
+    ----------
+    ksize : int | tuple[int, int]
+        _description_
+    positive : bool, optional
+        _description_, by default True
+
+    Returns
+    -------
+    tuple[int, int]
+        _description_
+    """
+    if isinstance(ksize, int):
+        _ksize = (ksize, ksize)
+    elif isinstance(ksize, (tuple, list)):
+        if len(ksize) == 0:
+            raise ValueError('len(ksize) can not be 0.')
+        elif len(ksize) == 1:
+            _ksize = (ksize[0], ksize[0])
+        else:
+            _ksize = (ksize[0], ksize[1])
+        if not isinstance(_ksize[0], int) or not isinstance(_ksize[1], int):
+            raise TypeError('ksize must be int type.')
+    else:
+        raise TypeError(f'Invalid type of ksize: {type(ksize)}')
+    if positive and (_ksize[0] <= 0 or _ksize[1] <= 0):
+        raise ValueError('ksize must be positive integers.')
+    return _ksize
+
+
+def calc_padding(ksize: tuple[int, int]) -> tuple[int, int, int, int]:
+    """Calculate padding by a given ksize.
+
+    Parameters
+    ----------
+    ksize : tuple[int, int]
+        Kernel shape `(y_direction, x_direction)`.
+
+    Returns
+    -------
+    tuple[int, int, int, int]
+        `(padding_left, padding_right, padding_top, padding_bottom)`.
+    """
+    if (
+        ksize[0] <= 0
+        or not isinstance(ksize[0], int)
+        or ksize[1] <= 0
+        or not isinstance(ksize[1], int)
+    ):
+        raise ValueError('ksize must be postive integers.')
+    pad_y = (ksize[0] - 1) / 2
+    pad_x = (ksize[1] - 1) / 2
+    padding = (floor(pad_x), ceil(pad_x), floor(pad_y), ceil(pad_y))
+    return padding
+
+
 def filter2d(
     img: torch.Tensor,
     kernel: torch.Tensor,
+    padding: list[int] | str | None = 'same',
+    mode: str = 'reflect',
 ) -> torch.Tensor:
     """Image convolution with a 2D kernel.
 
@@ -48,16 +117,23 @@ def filter2d(
         A convolution kernel with shape `(k_x,)`, `(k_y, k_x)`,
         (1 or k * C, k_y, k_x), or (B, k * C, k_y, k_x), where k is a positive
         integer.
+    padding : list[int] | 'same' | None, default='same'
+        The padding size. Same as the argument `pad` in
+        `torch.nn.functional.pad`.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode.
 
     Returns
     -------
     torch.Tensor
-        The image with shape `(*, C, H, W)`.
+        The image with shape `(*, C, H0, W0)`.
     """
     is_single_image = img.ndim == 3
     if is_single_image:
         img = img.unsqueeze(0)
     num_ch = img.size(-3)
+    if not torch.is_floating_point(img):
+        img = img.float()
 
     kernel = align_device_type(kernel, img)
     if kernel.ndim == 1:
@@ -70,15 +146,12 @@ def filter2d(
         kernel = kernel.repeat(num_ch, 1, 1).unsqueeze_(1)
     kernel = kernel.contiguous()
 
-    y, x = kernel.shape[2:]
-    padding = ((y - 1) // 2, (x - 1) // 2)
-    res = torch.nn.functional.conv2d(
-        img,
-        weight=kernel,
-        padding=padding,
-        groups=num_ch,
-    )
-    return res[0] if is_single_image else res
+    if padding == 'same':
+        padding = calc_padding(kernel.shape[2:])
+    if padding is not None:
+        img = pad(img, padding, mode)
+    res = conv2d(img, weight=kernel, groups=num_ch).squeeze(0)
+    return res
 
 
 def atan2(
@@ -165,17 +238,17 @@ def pca(img: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         Corresponding eigenvectors.
     """
     check_valid_image_ndim(img)
-    flatted = img.flatten(-2)
     is_float16 = img.dtype == torch.float16
-    if is_float16:
-        img = img.type(torch.float32)
+    if is_float16 or not torch.is_floating_point(img):
+        img = img.float()
+    flatted = img.flatten(-2)
     # Covariance
     mean = flatted.mean(dim=-1, keepdim=True)
     data = flatted - mean
-    cov = data @ data.movedim(-1, -2)
-    cov = cov / cov.size(-1)
+    cov = torch.cov(data)
 
     L, Vt = torch.linalg.eigh(cov)  # noqa: N806
     if is_float16:
+        L = L.type(torch.float16)  # noqa: N806
         Vt = Vt.type(torch.float16)  # noqa: N806
     return L, Vt
