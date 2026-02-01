@@ -1,8 +1,10 @@
 __all__ = [
     'Tensorlike',
+    '_check_ksize',
     'align_device_type',
     'arrayize',
     'atan2',
+    'calc_padding',
     'filter2d',
     'is_indexable',
     'matrix_transform',
@@ -23,7 +25,9 @@ from .helpers import (
     to_channel_coeff,
 )
 from .math import (
+    _check_ksize,
     atan2,
+    calc_padding,
     filter2d,
     matrix_transform,
     p_norm,

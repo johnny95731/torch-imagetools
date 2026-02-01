@@ -1,5 +1,9 @@
 __all__ = [
+    'box_blur',
+    'gaussian_blur',
+    'get_gaussian_kernel',
     'gradient_magnitude',
+    'guided_filter',
     'kirsch',
     'laplacian',
     'prewitt',
@@ -22,4 +26,10 @@ from ._scharr import (
 )
 from ._sobel import (
     sobel,
+)
+from .blur import (
+    box_blur,
+    gaussian_blur,
+    get_gaussian_kernel,
+    guided_filter,
 )
