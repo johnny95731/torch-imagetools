@@ -14,7 +14,13 @@ __all__ = [
 
 import torch
 
-from ..color import rgb_to_xyz, xyz_to_lms, xyz_to_rgb
+from ..color import (
+    gammaize_rgb,
+    linearize_rgb,
+    rgb_to_gray,
+    rgb_to_xyz,
+    xyz_to_lms,
+)
 from ..utils.helpers import align_device_type, to_channel_coeff
 from ..utils.math import matrix_transform
 from .est_illuminant import estimate_illuminant_cheng
@@ -423,14 +429,17 @@ def cheng_pca_balance(
     illuminant = estimate_illuminant_cheng(rgb)
     illuminant = to_channel_coeff(illuminant, 3)
     if adaptation == 'rgb':
-        coeff = 1.0 / illuminant
+        coeff = rgb_to_gray(illuminant) / illuminant
         balanced = (coeff * rgb).clip(0.0, 1.0)
     elif adaptation == 'von kries':
         xyz, xyz_mat = rgb_to_xyz(rgb, rgb_spec, white, obs, ret_matrix=True)
 
+        illuminant = linearize_rgb(illuminant, rgb_spec)
         white_img = matrix_transform(illuminant, xyz_mat)
+        white_img = white_img / white_img[1]
         white_xyz = xyz_mat.sum(dim=1)
         balanced_xyz = von_kries_transform(xyz, white_img, white_xyz)  # type: torch.Tensor
 
-        balanced = xyz_to_rgb(balanced_xyz, 'widegamut')
+        balanced = matrix_transform(balanced_xyz, xyz_mat.inverse())
+        balanced = gammaize_rgb(balanced, rgb_spec).clip(0.0, 1.0)
     return balanced
