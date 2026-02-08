@@ -4,9 +4,11 @@ __all__ = [
     'adjust_linear',
     'adjust_log',
     'adjust_sigmoid',
+    'bilateral_hdr',
     'hist_equalize',
     'match_historgram',
     'match_mean_std',
+    'reinhard2002',
     'transfer_reinhard',
 ]
 
@@ -21,6 +23,10 @@ from .equlization import (
     hist_equalize,
     match_historgram,
     match_mean_std,
+)
+from .hdr import (
+    bilateral_hdr,
+    reinhard2002,
 )
 from .transfer import (
     transfer_reinhard,

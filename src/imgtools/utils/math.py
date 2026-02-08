@@ -118,10 +118,13 @@ def filter2d(
         (1 or k * C, k_y, k_x), or (B, k * C, k_y, k_x), where k is a positive
         integer.
     padding : list[int] | 'same' | None, default='same'
-        The padding size. Same as the argument `pad` in
-        `torch.nn.functional.pad`.
+        The padding size.
+
+        - list[int]: padding size: `(left, right, top, bottom)`. See `torch.nn.functional.pad`.
+        - 'same': computes from kernel size.
+        - None: filter without pad.
     mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
-        Padding mode.
+        Padding mode. Same as the argument `mode` in `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -150,7 +153,9 @@ def filter2d(
         padding = calc_padding(kernel.shape[2:])
     if padding is not None:
         img = pad(img, padding, mode)
-    res = conv2d(img, weight=kernel, groups=num_ch).squeeze(0)
+    res = conv2d(img, weight=kernel, groups=num_ch)
+    if is_single_image:
+        res = res.squeeze(0)
     return res
 
 

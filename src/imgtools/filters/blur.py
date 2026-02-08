@@ -6,7 +6,7 @@ __all__ = [
 ]
 
 import torch
-from torch.nn.functional import avg_pool2d, pad
+from torch.nn.functional import avg_pool2d, max_pool2d, pad
 
 from ..utils.helpers import align_device_type, check_valid_image_ndim
 from ..utils.math import _check_ksize, calc_padding, filter2d
@@ -58,8 +58,8 @@ def get_gaussian_kernel(
     ----------
     ksize : int | tuple[int, int], default=5
         Kernel size. If ksize is non-positive, the value will be computed
-        from sigma: `ksize = odd(6 * sigma + 1)`, where odd() returns the
-        closest odd integer.
+        from `sigma_s`: `ksize = odd(max(6 * sigma_s / downsample + 1, 3))`,
+        where `odd(x)` returns the smallest odd integer such that `odd(x) >= x`.
     sigma : float | tuple[float, float], default=0.0
         The width of gaussian function. If sigma is non-positive, the
         value will be computed from ksize:
@@ -90,7 +90,7 @@ def get_gaussian_kernel(
         if ks <= 0 and std <= 0:
             raise ValueError(f'ksize and sigma can not be both non-positive.')
         elif ks <= 0:
-            ks = int(6 * std + 1) | 1
+            ks = max(int(6 * std + 1), 3) | 1
         elif std <= 0:
             std = 0.3 * ((ks - 1) * 0.5 - 1) + 0.8
         half = ks // 2
@@ -141,6 +141,32 @@ def guided_filter(
     ksize: int | tuple[int, int] = 5,
     eps: float = 0.01,
 ):
+    """Guided image filter, an edge-preserving smoothing filter [1].
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape `(*, C, H, W)`.
+    guidance : torch.Tensor | None, default=None
+        Guidance image with shape `(*, C, H, W)`. If `guidance` is None, then
+        `img` will be regard as guidance.
+    ksize : int | tuple[int, int], default=5
+        Kernel size.
+    eps : float, optional
+        Regularization parameter. A larger value means the output is more
+        smoothing.
+
+    Returns
+    -------
+    torch.Tensor
+        Smooth image with shape `(*, C, H, W)`.
+
+    References
+    ----------
+    [1] He, Kaiming; Sun, Jian; Tang, Xiaoou (2013).
+        "Guided Image Filtering". IEEE Transactions on Pattern Analysis and
+        Machine Intelligence. 35 (6): 1397-1409. doi:10.1109/TPAMI.2012.213.
+    """
     check_valid_image_ndim(img, 3)
     if not torch.is_floating_point(img):
         img = img.float()
@@ -171,4 +197,82 @@ def guided_filter(
     mean_a = avg_pool2d(a, _ksize, stride=1)
     mean_b = avg_pool2d(b, _ksize, stride=1)
     res = mean_a * guidance + mean_b
+    return res
+
+
+def max_filter(
+    img: torch.Tensor,
+    ksize: int | tuple[int, int] = 3,
+    stride: int | tuple[int, int] = 1,
+    padding: list[int] | str | None = 'same',
+    mode: str = 'reflect',
+) -> torch.Tensor:
+    """Computes the local maximum for each pixel.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        Image with shape `(*, C, H, W)`.
+    ksize : int | tuple[int, int], default=3
+        Kernel size.
+    stride : int | tuple[int, int], default=1
+        The stride of the sliding window.
+    padding : list[int] | 'same' | None, default='same'
+        The padding size. Same as the argument `pad` in
+        `torch.nn.functional.pad`.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
+
+    Returns
+    -------
+    torch.Tensor
+        Local maximum of `img`.
+    """
+    is_not_batch = check_valid_image_ndim(img, 3)
+    if is_not_batch:
+        img = img.unsqueeze(0)
+
+    _ksize = _check_ksize(ksize)
+    if padding == 'same':
+        padding = calc_padding(_ksize)
+    if padding is not None:
+        _img = pad(img, padding, mode)
+
+    res = max_pool2d(_img, _ksize, stride=stride)
+    if is_not_batch:
+        res = res.squeeze(0)
+    return res
+
+
+def min_filter(
+    img: torch.Tensor,
+    ksize: int | tuple[int, int] = 3,
+    stride: int | tuple[int, int] = 1,
+    padding: list[int] | str | None = 'same',
+    mode: str = 'reflect',
+) -> torch.Tensor:
+    """Computes the local minimum for each pixel.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        Image with shape `(*, C, H, W)`.
+    ksize : int | tuple[int, int], default=3
+        Kernel size.
+    stride : int | tuple[int, int], default=1
+        The stride of the sliding window.
+    padding : list[int] | 'same' | None, default='same'
+        The padding size. Same as the argument `pad` in
+        `torch.nn.functional.pad`.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
+
+    Returns
+    -------
+    torch.Tensor
+        Local minimum of `img`.
+    """
+    res = -max_filter(-img, ksize, stride, padding, mode)
     return res
