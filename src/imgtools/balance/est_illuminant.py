@@ -65,7 +65,7 @@ def estimate_illuminant_cheng(
         selected = torch.stack([
             flatted[i, :, selected_keys[i]] for i in range(shape[0])
         ])
-    # Find the illuminant by pca.
+    # Estimate the illuminant by PCA.
     _, Vt = pca(selected.unsqueeze(-1))  # noqa: N806
     illuminant = Vt[..., -1]
     illuminant = illuminant.contiguous().abs()

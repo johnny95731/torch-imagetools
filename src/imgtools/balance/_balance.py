@@ -14,13 +14,7 @@ __all__ = [
 
 import torch
 
-from ..color import (
-    gammaize_rgb,
-    linearize_rgb,
-    rgb_to_gray,
-    rgb_to_xyz,
-    xyz_to_lms,
-)
+from ..color import gammaize_rgb, rgb_to_xyz, xyz_to_lms
 from ..utils.helpers import align_device_type, to_channel_coeff
 from ..utils.math import matrix_transform
 from .est_illuminant import estimate_illuminant_cheng
@@ -37,16 +31,16 @@ def get_von_kries_transform_matrix(
     Parameters
     ----------
     xyz_white : torch.Tensor
-        The source white point in CIE XYZ space. A tensor with numel = 3.
+        The source white point in CIE XYZ space. Shape `(*, 3)`.
     xyz_target_white : torch.Tensor
-        The target white point in CIE XYZ space. A tensor with numel = 3.
+        The target white point in CIE XYZ space. Shape `(*, 3)`.
     method : CATMethod, default='bradford'
         Chromatic adaptation method.
 
     Returns
     -------
     torch.Tensor
-        Matrix with shape=`(3, 3)`. Same dtype and device as `xyz_white`.
+        Matrix with shape=`(*, 3, 3)`. Same dtype and device as `xyz_white`.
 
     Examples
     --------
@@ -67,17 +61,17 @@ def get_von_kries_transform_matrix(
     """
     xyz_target_white = align_device_type(xyz_target_white, xyz_white)
 
-    xyz_white = xyz_white.reshape(3, 1, 1)
-    xyz_target_white = xyz_target_white.view(3, 1, 1)
+    xyz_white = xyz_white.view(-1, 3, 1, 1)
+    xyz_target_white = xyz_target_white.view(-1, 3, 1, 1)
     lms_white, lms_matrix = xyz_to_lms(xyz_white, method, ret_matrix=True)
     lms_target_white = matrix_transform(xyz_target_white, lms_matrix)
     lms_target_white = align_device_type(lms_target_white, lms_white)
-    ratio = (lms_target_white / lms_white).view(3)
+    ratio = (lms_target_white / lms_white).view(-1, 3, 1)
 
     # Chromatic apaptation transformation matrix
-    diag = torch.diag(ratio)
-    lms_matrix = align_device_type(lms_matrix, diag)
-    cat_matrix = lms_matrix.inverse() @ diag @ lms_matrix
+    lms_matrix = align_device_type(lms_matrix, ratio)
+    cat_matrix = lms_matrix.inverse() @ (ratio * lms_matrix)
+    cat_matrix.squeeze_(0)
     return cat_matrix
 
 
@@ -373,7 +367,7 @@ def cheng_pca_balance(
     rgb: torch.Tensor,
     adaptation: str = 'von kries',
     rgb_spec: str = 'srgb',
-    white: str = 'd65',
+    white: str = 'D65',
     obs: str | int = 10,
 ) -> torch.Tensor:
     """White balance by Cheng's PCA method [1]. Estimate the illuminant and
@@ -429,16 +423,19 @@ def cheng_pca_balance(
     illuminant = estimate_illuminant_cheng(rgb)
     illuminant = to_channel_coeff(illuminant, 3)
     if adaptation == 'rgb':
-        coeff = rgb_to_gray(illuminant) / illuminant
+        coeff = illuminant.mean(-3, keepdim=True) / illuminant
         balanced = (coeff * rgb).clip(0.0, 1.0)
-    elif adaptation == 'von kries':
+    else:  # 'von kries'
+        # Do rgb->xyz under different white point makes result more close to
+        # the chosen white point.
+        # When both conversion under the same white point, the result always
+        # looks similar.
         xyz, xyz_mat = rgb_to_xyz(rgb, rgb_spec, white, obs, ret_matrix=True)
+        white_est = rgb_to_xyz(illuminant, rgb_spec, 'D65', obs)
 
-        illuminant = linearize_rgb(illuminant, rgb_spec)
-        white_img = matrix_transform(illuminant, xyz_mat)
-        white_img = white_img / white_img[1]
-        white_xyz = xyz_mat.sum(dim=1)
-        balanced_xyz = von_kries_transform(xyz, white_img, white_xyz)  # type: torch.Tensor
+        white_est = white_est / white_est[1]  # normalize
+        white_std = xyz_mat.sum(1)
+        balanced_xyz = von_kries_transform(xyz, white_est, white_std)  # type: torch.Tensor
 
         balanced = matrix_transform(balanced_xyz, xyz_mat.inverse())
         balanced = gammaize_rgb(balanced, rgb_spec).clip(0.0, 1.0)
