@@ -120,7 +120,7 @@ def dwt2_partial(
     col_vector = scaling if target[1] == 'L' else wavelet
     row_vector = align_device_type(row_vector, img)
     col_vector = align_device_type(col_vector, img)
-    kernel_2d = torch.outer(scaling, scaling)
+    kernel_2d = torch.outer(col_vector, row_vector)
     kernel_2d = kernel_2d.view(1, 1, length, length).repeat(num_ch, 1, 1, 1)
     #
     p = (length - 1) // 2
@@ -201,7 +201,7 @@ def idwt2(
         conv2d(
             pad(c.squeeze_(-3), padding, mode),
             weight=wavelet if i % 2 else scaling,
-            groups=3,
+            groups=num_ch,
         )
         for i, c in enumerate(torch.split(new_x, 1, -3))
     ]
