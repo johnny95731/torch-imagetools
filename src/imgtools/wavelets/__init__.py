@@ -1,9 +1,10 @@
 __all__ = [
     'Wavelet',
-    'dwt',
-    'dwt_partial',
+    'dwt2',
+    'dwt2_partial',
     'get_families',
     'get_wavelets',
+    'idwt2',
     'scaling_coeffs_to_wavelet_coeffs',
 ]
 
@@ -16,6 +17,7 @@ from ._utils import (
     scaling_coeffs_to_wavelet_coeffs,
 )
 from .wavelets import (
-    dwt,
-    dwt_partial,
+    dwt2,
+    dwt2_partial,
+    idwt2,
 )

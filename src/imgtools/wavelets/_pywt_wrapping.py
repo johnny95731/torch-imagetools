@@ -40,7 +40,7 @@ from pywt import (
 )
 from pywt import wavelist
 
-from .wavelets import dwt, dwt_partial
+from .wavelets import dwt2, dwt2_partial, idwt2
 
 
 def get_families(short: bool = False) -> list[str]:
@@ -101,9 +101,9 @@ class Wavelet:
     """Wavelet name."""
 
     orthogonal: bool
-    """Set if wavelet is orthogonal."""
+    """Whether the wavelet is orthogonal."""
     biorthogonal: bool
-    """Set if wavelet is biorthogonal."""
+    """Whether the wavelet is biorthogonal."""
     symmetry: Literal['asymmetric', 'near symmetric', 'symmetric']
     """`asymmetric`, `near symmetric`, `symmetric`"""
 
@@ -121,7 +121,23 @@ class Wavelet:
         wavelet_name: str,
         device: torch.device | str | None = None,
         dtype: torch.dtype | None = None,
+        normalize: bool = True,
     ):
+        """An wavelet object, containing informations of the wavelet.
+
+        Parameters
+        ----------
+        wavelet_name : str
+            Name of the wavelet, e.g., 'haar', 'sym4', 'db8'.
+        device : torch.device | str | None, default=None
+            The device of the coefficients.
+        dtype : torch.dtype | None, default=None
+            The dtype of the coefficients. Must be floating point type.
+            By default float32.
+        normalize : bool, default=True
+            Normalize the coefficients by dividing the absolute sum
+            of `dec_lo`.
+        """
         pywavelet = PyWavelet(wavelet_name)
         attrs = (
             'family_name',
@@ -138,12 +154,20 @@ class Wavelet:
         for attr in value_attrs:
             _filter = getattr(pywavelet, attr[:6])
             _filter = torch.tensor(_filter, dtype=dtype, device=device)
+            if attr == 'dec_low':
+                s = _filter.sum().item()
+            if normalize and attr.startswith('dec'):
+                _filter /= s
+            elif normalize and attr.startswith('rec'):
+                _filter *= s
             setattr(self, attr, _filter)
+
+        self._s = s
 
         self._verify_dtype()
 
-        self._device = device
-        self._dtype = dtype
+        self._device = self.dec_low.device
+        self._dtype = self.dec_low.dtype
 
     def _verify_dtype(self):
         value_attrs = ('dec_low', 'dec_high', 'rec_low', 'rec_high')
@@ -155,7 +179,7 @@ class Wavelet:
                     '`torch.float16`/`torch.half`, '
                     '`torch.float32`/`torch.float`,'
                     '`torch.float64`/`torch.double`.'
-                    f'Not {tensor.dtype}'
+                    f'Received {tensor.dtype}.'
                 )
 
     @property
@@ -177,7 +201,7 @@ class Wavelet:
         """Returns filters tuple for the current wavelet in the following
         order:
 
-        `(rec_lo, rec_hi, dec_lo, dec_hi)`
+        `(dec_lo, dec_hi, rec_lo, rec_hi)`
         """
         bank = (self.dec_low, self.dec_high, self.rec_low, self.rec_high)
         return bank
@@ -209,69 +233,113 @@ class Wavelet:
         """The data type of filters."""
         return self._dtype
 
-    def dwt(self, img: torch.Tensor) -> list[torch.Tensor]:
+    @property
+    def s(self) -> float:
+        """The normalization factor."""
+        return self._s
+
+    def dwt2(
+        self,
+        img: torch.Tensor,
+        mode: Literal[
+            'constant', 'reflect', 'replicate', 'circular'
+        ] = 'reflect',
+    ) -> torch.Tensor:
         """Discrete wavelet transform of an image.
 
         Parameters
         ----------
         img : torch.Tensor
             An image with shape `(*, C, H, W)`.
+        mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+            Padding mode. Same as the argument `mode` in
+            `torch.nn.functional.pad`.
 
         Returns
         -------
-        list[torch.Tensor]
+        torch.Tensor
+            Shape `(*, C, 4, Ho, Wo)`, where `Ho = (H + 1) // 2` and `Wo = (W + 1) // 2`.
             The wavelet decomposition components with the following order:
 
             `[LL, LH, HL, HH]`
-
-        Raises
-        ------
-        ValueError
-            When img.ndim is neither 3 nor 4.
         """
-        res = dwt(img, self.dec_low, self.dec_high)
+        res = dwt2(img, self.dec_low, self.dec_high, mode)
         return res
 
-    def dwt_ll(self, img: torch.Tensor) -> torch.Tensor:
-        """Return the lowpass-lowpass component of the discrete wavelet
-        transform.
+    def idwt2(
+        self,
+        img: torch.Tensor,
+        mode: Literal[
+            'constant', 'reflect', 'replicate', 'circular'
+        ] = 'reflect',
+    ) -> torch.Tensor:
+        """Discrete wavelet transform of an image.
 
         Parameters
         ----------
         img : torch.Tensor
             An image with shape `(*, C, H, W)`.
+        mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+            Padding mode. Same as the argument `mode` in
+            `torch.nn.functional.pad`.
 
         Returns
         -------
         torch.Tensor
-            The lowpass-lowpass component of image.
-
-        Raises
-        ------
-        ValueError
-            When img.ndim is neither 3 nor 4.
+            The reconstructed image. Shape `(*, C, 2*H, 2*W)`. Note that the
+            val
         """
-        res = dwt_partial(img, self.dec_low, self.dec_high, 'HH')
+        res = idwt2(img, self.rec_low, self.rec_high, mode)
         return res
 
-    def dwt_hh(self, img: torch.Tensor) -> torch.Tensor:
-        """Return the highpass-highoass component of the discrete wavelet
-        transform.
+    def dwt2_ll(
+        self,
+        img: torch.Tensor,
+        mode: Literal[
+            'constant', 'reflect', 'replicate', 'circular'
+        ] = 'reflect',
+    ) -> torch.Tensor:
+        """Return the low-low component of the discrete wavelet transform.
 
         Parameters
         ----------
         img : torch.Tensor
             An image with shape `(*, C, H, W)`.
+        mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+            Padding mode. Same as the argument `mode` in
+            `torch.nn.functional.pad`.
 
         Returns
         -------
         torch.Tensor
-            The highpass-highpass component of image.
-
-        Raises
-        ------
-        ValueError
-            When img.ndim is neither 3 nor 4.
+            The low-low component of image. Shape `(*, C, 4, Ho, Wo)`, where
+            `Ho = (H + 1) // 2` and `Wo = (W + 1) // 2`.
         """
-        res = dwt_partial(img, self.dec_low, self.dec_high, 'HH')
+        res = dwt2_partial(img, self.dec_low, self.dec_high, 'LL', mode)
+        return res
+
+    def dwt2_hh(
+        self,
+        img: torch.Tensor,
+        mode: Literal[
+            'constant', 'reflect', 'replicate', 'circular'
+        ] = 'reflect',
+    ) -> torch.Tensor:
+        """Return the high-high component of the discrete wavelet transform.
+
+        Parameters
+        ----------
+        img : torch.Tensor
+            An image with shape `(*, C, H, W)`.
+        mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+            Padding mode. Same as the argument `mode` in
+            `torch.nn.functional.pad`.
+
+        Returns
+        -------
+        torch.Tensor
+            The high-high component of image. Shape `(*, C, 4, Ho, Wo)`, where
+            `Ho = (H + 1) // 2` and `Wo = (W + 1) // 2`.
+        """
+        res = dwt2_partial(img, self.dec_low, self.dec_high, 'HH', mode)
         return res
