@@ -249,8 +249,8 @@ def pca(img: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
     flatted = img.flatten(-2)
     # Covariance
     mean = flatted.mean(dim=-1, keepdim=True)
-    data = flatted - mean
-    cov = torch.cov(data)
+    cov = (flatted @ flatted.movedim(-1, -2)) / (flatted.size(-1) - 1)
+    cov -= mean * mean.movedim(-1, -2)
 
     L, Vt = torch.linalg.eigh(cov)  # noqa: N806
     if is_float16:
