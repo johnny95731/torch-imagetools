@@ -27,7 +27,7 @@ def matrix_transform(
     img : torch.Tensor
         Image, a tensor with shape `(*, C, H, W)`.
     matrix : torch.Tensor
-        The transformation matrix with shape `(C_out, C)`.
+        The transformation matrix with shape `(*, C_out, C)`.
 
     Returns
     -------
@@ -35,7 +35,7 @@ def matrix_transform(
         The image with shape `(*, C_out, H, W)`.
     """
     matrix = align_device_type(matrix, img)
-    output = torch.einsum('oc,...chw->...ohw', matrix, img)
+    output = torch.einsum('...oc,...chw->...ohw', matrix, img)
     return output
 
 
