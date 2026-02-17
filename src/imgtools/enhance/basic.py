@@ -8,6 +8,7 @@ __all__ = [
     'adjust_log',
     'adjust_sigmoid',
     'adjust_inverse',
+    'unsharp_mask',
     'high_frequency_emphasis_filter',
 ]
 
@@ -15,11 +16,13 @@ from math import log1p
 
 import torch
 
+from ..filters.blur import get_gaussian_kernel
 from ..utils.helpers import (
     align_device_type,
     check_valid_image_ndim,
     to_channel_coeff,
 )
+from ..utils.math import filter2d
 
 
 # Intensity
@@ -205,6 +208,43 @@ def adjust_inverse(
 
     res = maxi - img
     return res
+
+
+# Spatial
+def unsharp_mask(
+    img: torch.Tensor,
+    amount: float = 1,
+    ksize: int | tuple[int, int] = 3,
+    sigma: float | tuple[float, float] = 0.0,
+) -> torch.Tensor:
+    """Applies unsharp masking to an image.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape `(*, C, H, W)`.
+    amount : float, default=1
+        The enhanced amount.
+    ksize : int | tuple[int, int], default=3
+        The Gaussian kernel size. If ksize is non-positive, the value will
+        be computed from sigma: `ksize = odd(6 * sigma + 1)`, where odd()
+        returns the closest odd integer.
+    sigma : float, default=0
+        The width of gaussian function. If sigma is non-positive, the
+        value will be computed from ksize:
+        `sigma = 0.3 * ((ksize - 1) * 0.5 - 1) + 0.8`
+
+    Returns
+    -------
+    torch.Tensor
+        Enhanced image with shape `(*, C, H, W)`.
+    """
+    kernel = get_gaussian_kernel(ksize, sigma)
+    kernel.mul_(-amount)
+    _ksize = kernel.shape
+    kernel[_ksize[0] // 2, _ksize[1] // 2] += amount + 1
+    usm = filter2d(img, kernel)
+    return usm
 
 
 # Frequency

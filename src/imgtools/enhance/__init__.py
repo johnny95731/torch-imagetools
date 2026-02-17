@@ -11,6 +11,7 @@ __all__ = [
     'match_mean_std',
     'reinhard2002',
     'transfer_reinhard',
+    'unsharp_mask',
 ]
 
 from .basic import (
@@ -20,6 +21,7 @@ from .basic import (
     adjust_log,
     adjust_sigmoid,
     high_frequency_emphasis_filter,
+    unsharp_mask,
 )
 from .equlization import (
     hist_equalize,
