@@ -61,7 +61,10 @@ def handle_a_folder(path: str, depth: int):
         submodules = sorted(submodules)
         import_string = ''
         for submod in submodules:
-            suball = submod_attrs[submod]
+            suball = submod_attrs.get(submod, None)
+            if suball is None:
+                print(f'"{submod}" has no "__all__".')
+                continue
             subcontent = ',\n    '.join(suball)
             s = f'from .{submod} import (\n    {subcontent},\n)\n'
             import_string += s
