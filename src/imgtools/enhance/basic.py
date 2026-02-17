@@ -8,6 +8,7 @@ __all__ = [
     'adjust_log',
     'adjust_sigmoid',
     'adjust_inverse',
+    'high_frequency_emphasis_filter',
 ]
 
 from math import log1p
@@ -21,6 +22,7 @@ from ..utils.helpers import (
 )
 
 
+# Intensity
 def adjust_linear(
     img: torch.Tensor,
     slope: int | float | torch.Tensor,
@@ -203,3 +205,61 @@ def adjust_inverse(
 
     res = maxi - img
     return res
+
+
+# Frequency
+def high_frequency_emphasis_filter(
+    lowpass: torch.Tensor,
+    k: float = 1.0,
+    offset: float = 1.0,
+) -> torch.Tensor:
+    """Create a high frequency emphasis filter (HFEF) from a given lowpass filter.
+    `hfef = offset + k * (1 - lowpass)`.
+
+    Parameters
+    ----------
+    lowpass : torch.Tensor
+        An lowpass filter.
+    k : float, default=1.0
+        The scale of the high frequency.
+    offset : float, default=1.0
+        The offset of the filter.
+
+    Returns
+    -------
+    torch.Tensor
+        The high frequency emphasis filter.
+
+    Notes
+    -----
+    When `offset` equals 1, the filter is the same as the unsharp masking.
+    When this filter is applied to the Fourier transform of log(image),
+    the HFEF can be regarded as homomorphic filter
+
+    Examples
+    --------
+
+    >>> img_f = torch.fft.rfft2(img)
+    >>> lowpass = get_gaussian_lowpass(img_f, 2)
+    >>> unsharp_masking = high_frequency_emphasis_filter(lowpass, 1.2)
+    >>> enhanced_f = img_f * unsharp_masking
+    >>> enhanced = torch.fft.irfft2(enhanced_f)
+    >
+    >>> hfef = high_frequency_emphasis_filter(lowpass, 1.2, 1.5)
+    >>> enhanced_f = img_f * hfef
+    >>> enhanced = torch.fft.irfft2(enhanced_f)
+    >
+    >>> log_img = torch.log1p(img)
+    >>> img_f = torch.fft.rfft2(log_img)
+    >>> lowpass = get_gaussian_lowpass(img_f, 2)
+    >>> homomorphic = high_frequency_emphasis_filter(lowpass, 2.6, 3.0)
+    >>> enhanced_f = img_f * homomorphic
+    >>> log_enhanced = torch.fft.irfft2(enhanced_f)
+    >>> enhanced = torch.expm1(log_enhanced)
+    """
+    if not isinstance(k, (int, float)):
+        raise TypeError(f'Invalid type of `k`: {type(k)}')
+    if not isinstance(offset, (int, float)):
+        raise TypeError(f'Invalid type of `offset`: {type(offset)}')
+    hfef = lowpass.mul(-k).add(offset + k)  # = offset + k * (1 - lowpass)
+    return hfef
