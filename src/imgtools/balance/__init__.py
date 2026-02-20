@@ -27,6 +27,7 @@ Color Balance
 __all__ = [
     'balance_by_scaling',
     'cheng_pca_balance',
+    'clipping_balance',
     'estimate_illuminant_cheng',
     'get_von_kries_transform_matrix',
     'gray_edge_balance',
@@ -41,6 +42,7 @@ __all__ = [
 from ._balance import (
     balance_by_scaling,
     cheng_pca_balance,
+    clipping_balance,
     get_von_kries_transform_matrix,
     gray_edge_balance,
     gray_world_balance,

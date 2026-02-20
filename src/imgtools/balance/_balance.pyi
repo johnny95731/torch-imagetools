@@ -6,6 +6,7 @@ __all__ = [
     'gray_edge_balance',
     'white_patch_balance',
     'cheng_pca_balance',
+    'clipping_balance',
 ]
 
 from typing import Literal, overload
@@ -104,4 +105,11 @@ def cheng_pca_balance(
     rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
     obs: Literal[2, '2', 10, '10'] | str | int = 10,
+) -> torch.Tensor: ...
+
+#
+def clipping_balance(
+    img: torch.Tensor,
+    dark_percent: float = 0.0,
+    light_percent: float = 0.0,
 ) -> torch.Tensor: ...

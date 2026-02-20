@@ -10,6 +10,7 @@ __all__ = [
     'gray_edge_balance',
     'white_patch_balance',
     'cheng_pca_balance',
+    'clipping_balance',
 ]
 
 import torch
@@ -439,4 +440,38 @@ def cheng_pca_balance(
 
         balanced = matrix_transform(balanced_xyz, xyz_mat.inverse())
         balanced = gammaize_rgb(balanced, rgb_spec).clip(0.0, 1.0)
+    return balanced
+
+
+def clipping_balance(
+    img: torch.Tensor,
+    dark_percent: float = 0.0,
+    light_percent: float = 0.0,
+):
+    """Clip top-k1 and bottom-k2 percentage values and normalize to `[0, 1]`.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape `(*, C, H, W)`.
+    dark_percent : float, default=0.0
+        The percentage value for clipping the lowest `dark_percent`% values.
+    light_percent : float, default=0.0
+        The percentage value for clipping the highest `light_percent`% values.
+
+    Returns
+    -------
+    torch.Tensor
+        A balanced image with shape `(*, C, H, W)`.
+    """
+    flatted = img.flatten(-2)
+    num_pixel = flatted.shape[-1]
+    thresh_dark = int(dark_percent * num_pixel)
+    thresh_light = num_pixel - 1 - int(light_percent * num_pixel)
+    #
+    sorted = flatted.sort().values
+    mini = sorted[..., thresh_dark].unsqueeze_(-1).unsqueeze_(-1)
+    maxi = sorted[..., thresh_light].unsqueeze_(-1).unsqueeze_(-1)
+    balanced = (img - mini) / (maxi - mini)
+    balanced = balanced.clip(0.0, 1.0)
     return balanced
