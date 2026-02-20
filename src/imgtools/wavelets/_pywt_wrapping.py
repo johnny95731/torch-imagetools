@@ -209,7 +209,7 @@ class Wavelet:
         """The data type of filters."""
         return self._dtype
 
-    def dwt(self, img: torch.Tensor) -> list[torch.Tensor]:
+    def dwt2(self, img: torch.Tensor) -> list[torch.Tensor]:
         """Discrete wavelet transform of an image.
 
         Parameters
@@ -223,16 +223,11 @@ class Wavelet:
             The wavelet decomposition components with the following order:
 
             `[LL, LH, HL, HH]`
-
-        Raises
-        ------
-        ValueError
-            When img.ndim is neither 3 nor 4.
         """
         res = dwt(img, self.dec_low, self.dec_high)
         return res
 
-    def dwt_ll(self, img: torch.Tensor) -> torch.Tensor:
+    def dwt2_ll(self, img: torch.Tensor) -> torch.Tensor:
         """Return the lowpass-lowpass component of the discrete wavelet
         transform.
 
@@ -245,16 +240,11 @@ class Wavelet:
         -------
         torch.Tensor
             The lowpass-lowpass component of image.
-
-        Raises
-        ------
-        ValueError
-            When img.ndim is neither 3 nor 4.
         """
         res = dwt_partial(img, self.dec_low, self.dec_high, 'HH')
         return res
 
-    def dwt_hh(self, img: torch.Tensor) -> torch.Tensor:
+    def dwt2_hh(self, img: torch.Tensor) -> torch.Tensor:
         """Return the highpass-highoass component of the discrete wavelet
         transform.
 
@@ -267,11 +257,6 @@ class Wavelet:
         -------
         torch.Tensor
             The highpass-highpass component of image.
-
-        Raises
-        ------
-        ValueError
-            When img.ndim is neither 3 nor 4.
         """
         res = dwt_partial(img, self.dec_low, self.dec_high, 'HH')
         return res
