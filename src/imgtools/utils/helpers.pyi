@@ -1,14 +1,12 @@
 __all__ = [
     'Tensorlike',
-    'pairing',
-    'is_indexable',
     'align_device_type',
     'to_channel_coeff',
     'arrayize',
     'tensorize',
 ]
 
-from typing import Any, TypeVar, overload
+from typing import TypeVar
 
 import numpy as np
 import torch
@@ -17,14 +15,6 @@ from torch.types import Number
 T = TypeVar('T')
 
 Tensorlike = torch.Tensor | np.ndarray | list[Number] | Number
-
-@overload
-def pairing(item: list[T] | tuple[T, ...]) -> tuple[T, T]: ...
-@overload
-def pairing(item: T) -> tuple[T, T]: ...
-
-#
-def is_indexable(item: Any) -> bool: ...
 
 #
 def check_valid_image_ndim(img: torch.Tensor, min_dim: int = 3) -> bool: ...

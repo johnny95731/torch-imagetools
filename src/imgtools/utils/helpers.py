@@ -1,14 +1,12 @@
 __all__ = [
     'Tensorlike',
-    'pairing',
-    'is_indexable',
     'align_device_type',
     'to_channel_coeff',
     'arrayize',
     'tensorize',
 ]
 
-from typing import Any, TypeVar
+from typing import TypeVar
 
 import numpy as np
 import torch
@@ -17,26 +15,6 @@ from torch.types import Number
 T = TypeVar('T')
 
 Tensorlike = torch.Tensor | np.ndarray | list[Number] | Number
-
-
-def pairing(item: Any):
-    """Converts item to a tuple with two items.
-    If the item is indexble, returns first two items;
-    otherwise, returns (item, item).
-
-    This function is not jit-able.
-    """
-    if is_indexable(item):
-        return (item[0], item[1])
-    return (item, item)
-
-
-def is_indexable(item: Any) -> bool:
-    """Check whether an item contains `__getitem__` method.
-
-    This function is not jit-able.
-    """
-    return hasattr(item, '__getitem__')
 
 
 def check_valid_image_ndim(img: torch.Tensor, min_dim: int = 3) -> bool:
