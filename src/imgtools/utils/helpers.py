@@ -10,14 +10,13 @@ __all__ = [
 
 from typing import Any, TypeVar
 
-import numpy.typing as npt
 import numpy as np
 import torch
 from torch.types import Number
 
 T = TypeVar('T')
 
-Tensorlike = torch.Tensor | npt.NDArray | list[Number] | Number
+Tensorlike = torch.Tensor | np.ndarray | list[Number] | Number
 
 
 def pairing(item: Any):
@@ -145,7 +144,7 @@ def to_channel_coeff(
     return res
 
 
-def arrayize(img: Tensorlike) -> npt.NDArray:
+def arrayize(img: Tensorlike) -> np.ndarray:
     """Converts an item to a np.ndarray.
 
     If input is a torch.Tensor:
@@ -162,7 +161,7 @@ def arrayize(img: Tensorlike) -> npt.NDArray:
         An item to be converted to tensor.
     """
     if isinstance(img, torch.Tensor):
-        img = img.cpu().detach()
+        img = img.detach().cpu()
         img = (
             img.movedim(-3, -1)  # `(*, C, H, W)` -> (*, H, W, C)
             if img.ndim >= 3
