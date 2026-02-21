@@ -1,14 +1,17 @@
 # torch-imagetools
 
-An image processing library based on PyTorch that provides
+An image processing library based on PyTorch that aim to provide some non deep learning-based tools for pre-/post-processing, data augmentation, or an alternative option when no data for training the network.
 
-- Basic: edge filters, wavelet decomposition, color space
-  transformations, etc.
-- Advanced: white balance, color transfer.
+- `imgtools.color`: transformations between color spaces. The spaces including RGB, YUV, HSV, CIEXYZ, LMS, CIELAB, etc.
+- `imgtools.balance`: chromatic adaptations, illuminant estimations, correlate color temperature estimations.
+- `imgtools.enhance`: basic intensity trnasform (linear, log, gamma, ...), sharpening/unsharp masking, high dynamic range, low-light enhance.
+- `imgtools.filters`: spatial domain and frequency domain filters.
+- `imgtools.wavelets`: discrete wavelet transform and its inverse transform.
+- `imgtools.utils`: conversion `np.ndarray` <-> `torch.Tensor` (`arrayize`, `tensorize`), math tools (PCA, filter2d, matrix transform).
 
-This library aim to provide some non deep learning-based tools for pre-/post-processing, data augmentation, or an alternative option when no data for training network.
+This library 
 
-Sphinx API page: https://johnny95731.github.io/torch-imagetools/
+- Docs: https://johnny95731.github.io/torch-imagetools/
 
 ### Future plan
 
@@ -18,8 +21,9 @@ More implementations of the researches. For examples
 - style transfer
 - denoise
 - chromatic adaptation
-- frequency domain method
-- image processing based on differential equations.
+- frequency domain methods
+- gradient domain methods
+- statistics tools.
 
 ## Installation
 
@@ -33,7 +37,7 @@ pip install -e .
 2. Install PyTorch >= 2.7.0. Since the dependency will keep covering the
 torch+cuda, torch is not in the dependencies of `pyproject.toml`. 
 
-### Optional
+### Optional Dependencies
 
 Install PyWavelets if you want to use the submodule `imgtools.wavelets`
 ```shell
@@ -50,16 +54,19 @@ pip install pywavelets
 place. For example, the shape `(*, C, H, W)` allows `(C, H, W)` or `(B, C, H, W)`.
 
 ```python
-import torch
-
 import imgtools
 
-img = torch.rand(3, 512, 512)
+hwc_img = cv2.imread(path)
+chw_img = imgtools.utils.tensorize(hwc_img)
+
 # Hist equalization
-enhanced = imgtools.enhance.hist_equalize(img)
+enhanced = imgtools.enhance.hist_equalize(chw_img)
 # Color transfer
 enhanced = imgtools.enhance.transfer_reinhard(img)
 # Color space transformation
 xyz = imgtools.color.rgb_to_xyz(img)
 ```
 
+## License
+
+See [LICENSE.md](LICENSE.md)

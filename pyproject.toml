@@ -16,11 +16,11 @@ all = ["torch>=2.7.0", "pywavelets>=1.9.0"]
 packages = [{ include = "imgtools", from = "src" }]
 
 [tool.poetry.group.dev.dependencies]
-kornia = "^0.8.1"
 matplotlib = "^3.10.6"
 sphinx = "^8"
 sphinx-rtd-theme = "^3.1.0"
 numpydoc = "^1.10.0"
+myst-parser = "^5.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
