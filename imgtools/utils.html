@@ -52,11 +52,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.utils.align_device_type"><code class="docutils literal notranslate"><span class="pre">align_device_type()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.utils.arrayize"><code class="docutils literal notranslate"><span class="pre">arrayize()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.utils.atan2"><code class="docutils literal notranslate"><span class="pre">atan2()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.utils.calc_padding"><code class="docutils literal notranslate"><span class="pre">calc_padding()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.utils.filter2d"><code class="docutils literal notranslate"><span class="pre">filter2d()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#imgtools.utils.is_indexable"><code class="docutils literal notranslate"><span class="pre">is_indexable()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.utils.matrix_transform"><code class="docutils literal notranslate"><span class="pre">matrix_transform()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.utils.p_norm"><code class="docutils literal notranslate"><span class="pre">p_norm()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#imgtools.utils.pairing"><code class="docutils literal notranslate"><span class="pre">pairing()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.utils.pca"><code class="docutils literal notranslate"><span class="pre">pca()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.utils.tensorize"><code class="docutils literal notranslate"><span class="pre">tensorize()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.utils.to_channel_coeff"><code class="docutils literal notranslate"><span class="pre">to_channel_coeff()</span></code></a></li>
@@ -120,7 +119,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="imgtools.utils.arrayize">
-<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">arrayize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarT</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarT</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.utils.arrayize" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">arrayize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#imgtools.utils.arrayize" title="Link to this definition"></a></dt>
 <dd><p>Converts an item to a np.ndarray.</p>
 <dl class="simple">
 <dt>If input is a torch.Tensor:</dt><dd><ol class="arabic simple">
@@ -172,8 +171,28 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="imgtools.utils.calc_padding">
+<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">calc_padding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.utils.calc_padding" title="Link to this definition"></a></dt>
+<dd><p>Calculate padding by a given ksize.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ksize</strong><span class="classifier">tuple[int, int]</span></dt><dd><p>Kernel shape <cite>(y_direction, x_direction)</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[int, int, int, int]</dt><dd><p><cite>(padding_left, padding_right, padding_top, padding_bottom)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="imgtools.utils.filter2d">
-<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">filter2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.utils.filter2d" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">filter2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'same'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'reflect'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.utils.filter2d" title="Link to this definition"></a></dt>
 <dd><p>Image convolution with a 2D kernel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -184,22 +203,24 @@
 (1 or k * C, k_y, k_x), or (B, k * C, k_y, k_x), where k is a positive
 integer.</p>
 </dd>
+<dt><strong>padding</strong><span class="classifier">list[int] | ‘same’ | None, default=’same’</span></dt><dd><p>The padding size.</p>
+<ul class="simple">
+<li><p>list[int]: padding size: <cite>(left, right, top, bottom)</cite>. See <cite>torch.nn.functional.pad</cite>.</p></li>
+<li><p>‘same’: computes from kernel size.</p></li>
+<li><p>None: filter without pad.</p></li>
+</ul>
+</dd>
+<dt><strong>mode</strong><span class="classifier">{‘constant’, ‘reflect’, ‘replicate’, ‘circular’}, default=’reflect’</span></dt><dd><p>Padding mode. Same as the argument <cite>mode</cite> in <cite>torch.nn.functional.pad</cite>.</p>
+</dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>The image with shape <cite>(*, C, H, W)</cite>.</p>
+<dt>torch.Tensor</dt><dd><p>The image with shape <cite>(*, C, H0, W0)</cite>.</p>
 </dd>
 </dl>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="imgtools.utils.is_indexable">
-<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">is_indexable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#imgtools.utils.is_indexable" title="Link to this definition"></a></dt>
-<dd><p>Check whether an item contains <cite>__getitem__</cite> method.</p>
-<p>This function is not jit-able.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -211,7 +232,7 @@ integer.</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Image, a tensor with shape <cite>(*, C, H, W)</cite>.</p>
 </dd>
-<dt><strong>matrix</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The transformation matrix with shape <cite>(C_out, C)</cite>.</p>
+<dt><strong>matrix</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The transformation matrix with shape <cite>(*, C_out, C)</cite>.</p>
 </dd>
 </dl>
 </dd>
@@ -247,15 +268,6 @@ integer.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="imgtools.utils.pairing">
-<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">pairing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.utils.pairing" title="Link to this definition"></a></dt>
-<dd><p>Converts item to a tuple with two items.
-If the item is indexble, returns first two items;
-otherwise, returns (item, item).</p>
-<p>This function is not jit-able.</p>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="imgtools.utils.pca">
 <span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">pca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.utils.pca" title="Link to this definition"></a></dt>
 <dd><p>Image PCA.</p>
@@ -279,7 +291,7 @@ otherwise, returns (item, item).</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="imgtools.utils.tensorize">
-<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">tensorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">dtype</span><span class="p"><span class="pre">[</span></span><span class="pre">_ScalarT</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.utils.tensorize" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">tensorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.utils.tensorize" title="Link to this definition"></a></dt>
 <dd><p>Converts an item to a contiguous torch.Tensor.</p>
 <dl class="simple">
 <dt>If input is a np.ndarray:</dt><dd><ol class="arabic simple">

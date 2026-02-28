@@ -47,7 +47,16 @@
 <li class="toctree-l1"><a class="reference internal" href="balance.html">imgtools.balance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="enhance.html">imgtools.enhance</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">imgtools.filters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.filters.box_blur"><code class="docutils literal notranslate"><span class="pre">box_blur()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.filters.gaussian_blur"><code class="docutils literal notranslate"><span class="pre">gaussian_blur()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.filters.get_butterworth_highpass"><code class="docutils literal notranslate"><span class="pre">get_butterworth_highpass()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.filters.get_butterworth_lowpass"><code class="docutils literal notranslate"><span class="pre">get_butterworth_lowpass()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.filters.get_freq_laplacian"><code class="docutils literal notranslate"><span class="pre">get_freq_laplacian()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.filters.get_gaussian_highpass"><code class="docutils literal notranslate"><span class="pre">get_gaussian_highpass()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.filters.get_gaussian_kernel"><code class="docutils literal notranslate"><span class="pre">get_gaussian_kernel()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.filters.get_gaussian_lowpass"><code class="docutils literal notranslate"><span class="pre">get_gaussian_lowpass()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.filters.gradient_magnitude"><code class="docutils literal notranslate"><span class="pre">gradient_magnitude()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.filters.guided_filter"><code class="docutils literal notranslate"><span class="pre">guided_filter()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.filters.kirsch"><code class="docutils literal notranslate"><span class="pre">kirsch()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.filters.laplacian"><code class="docutils literal notranslate"><span class="pre">laplacian()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.filters.prewitt"><code class="docutils literal notranslate"><span class="pre">prewitt()</span></code></a></li>
@@ -87,6 +96,294 @@
              
   <section id="module-imgtools.filters">
 <span id="filters"></span><h1>Filters<a class="headerlink" href="#module-imgtools.filters" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.filters.box_blur">
+<span class="sig-prename descclassname"><span class="pre">imgtools.filters.</span></span><span class="sig-name descname"><span class="pre">box_blur</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.filters.box_blur" title="Link to this definition"></a></dt>
+<dd><p>Blurs an image with box kernel (filled with the same value).
+Computes local mean if normalize is True; local sum if normalize
+is False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>ksize</strong><span class="classifier">int | tuple[int, int], default=3</span></dt><dd><p>Kernel size. Must be a positive integer or a sequence of positive
+integers.</p>
+</dd>
+<dt><strong>normalize</strong><span class="classifier">bool, default=True</span></dt><dd><p>Normalize the kernel to <cite>sum(kernel) == 1</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Blurred image with the same shape as input.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.filters.gaussian_blur">
+<span class="sig-prename descclassname"><span class="pre">imgtools.filters.</span></span><span class="sig-name descname"><span class="pre">gaussian_blur</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.filters.gaussian_blur" title="Link to this definition"></a></dt>
+<dd><p>Blurs an image with a gaussian kernel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>ksize</strong><span class="classifier">int | tuple[int, int], default=5</span></dt><dd><p>Kernel size. If ksize is non-positive, the value will be computed
+from sigma: <cite>ksize = odd(6 * sigma + 1)</cite>, where odd() returns the
+closest odd integer.</p>
+</dd>
+<dt><strong>sigma</strong><span class="classifier">float | tuple[float, float], default=0.0</span></dt><dd><p>The width of gaussian function. If sigma is non-positive, the
+value will be computed from ksize:
+<cite>sigma = 0.3 * ((ksize - 1) * 0.5 - 1) + 0.8</cite></p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Blurred image with the same shape as input.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.filters.get_butterworth_highpass">
+<span class="sig-prename descclassname"><span class="pre">imgtools.filters.</span></span><span class="sig-name descname"><span class="pre">get_butterworth_highpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dtype</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.filters.get_butterworth_highpass" title="Link to this definition"></a></dt>
+<dd><p>Create a 2D Butterworth highpass filter for rfft image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img_size</strong><span class="classifier">int | tuple[int, int] | torch.Tensor</span></dt><dd><p>The size of rfft image. Shape <cite>(size_y, size_x)</cite>. Or, the rfft image
+with shape <cite>(…, H, W)</cite>.</p>
+</dd>
+<dt><strong>cutoff</strong><span class="classifier">float</span></dt><dd><p>The cutoff frequency of Butterworth filter.</p>
+</dd>
+<dt><strong>order</strong><span class="classifier">float, default=1.0</span></dt><dd><p>The order of Butterworth filter.</p>
+</dd>
+<dt><strong>d</strong><span class="classifier">float | None, default=None</span></dt><dd><p>The sampling length scale. If None, uses 1 / img_size. For details,
+see <cite>torch.fft.fftfreq</cite> and <cite>torch.fft.rfftfreq</cite>.</p>
+</dd>
+<dt><strong>dtype</strong><span class="classifier">torch.dtype, default=None</span></dt><dd><p>The Data type of the filter.</p>
+</dd>
+<dt><strong>device</strong><span class="classifier">torch.device, default=None</span></dt><dd><p>The Device of the returned filter.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>2D Butterworth highpass filter.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">img_f</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft2</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">highpass</span> <span class="o">=</span> <span class="n">get_butterworth_highpass</span><span class="p">(</span><span class="n">img_f</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edge_f</span> <span class="o">=</span> <span class="n">img_f</span> <span class="o">*</span> <span class="n">highpass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edge</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft2</span><span class="p">(</span><span class="n">edge_f</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.filters.get_butterworth_lowpass">
+<span class="sig-prename descclassname"><span class="pre">imgtools.filters.</span></span><span class="sig-name descname"><span class="pre">get_butterworth_lowpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cutoff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dtype</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.filters.get_butterworth_lowpass" title="Link to this definition"></a></dt>
+<dd><p>Create a 2D Butterworth lowpass filter for rfft image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img_size</strong><span class="classifier">int | tuple[int, int] | torch.Tensor</span></dt><dd><p>The size of rfft image. Shape <cite>(size_y, size_x)</cite>. Or, the rfft image
+with shape <cite>(…, H, W)</cite>.</p>
+</dd>
+<dt><strong>cutoff</strong><span class="classifier">float</span></dt><dd><p>The cutoff frequency of Butterworth filter.</p>
+</dd>
+<dt><strong>order</strong><span class="classifier">float, default=1.0</span></dt><dd><p>The order of Butterworth filter.</p>
+</dd>
+<dt><strong>d</strong><span class="classifier">float | None, default=None</span></dt><dd><p>The sampling length scale. If None, uses 1 / img_size. For details,
+see <cite>torch.fft.fftfreq</cite> and <cite>torch.fft.rfftfreq</cite>.</p>
+</dd>
+<dt><strong>dtype</strong><span class="classifier">torch.dtype, default=None</span></dt><dd><p>The Data type of the filter.</p>
+</dd>
+<dt><strong>device</strong><span class="classifier">torch.device, default=None</span></dt><dd><p>The Device of the returned filter.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>2D Butterworth lowpass filter.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">img_f</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft2</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lowpass</span> <span class="o">=</span> <span class="n">get_butterworth_lowpass</span><span class="p">(</span><span class="n">img_f</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blurred_f</span> <span class="o">=</span> <span class="n">img_f</span> <span class="o">*</span> <span class="n">lowpass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blurred</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft2</span><span class="p">(</span><span class="n">blurred_f</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.filters.get_freq_laplacian">
+<span class="sig-prename descclassname"><span class="pre">imgtools.filters.</span></span><span class="sig-name descname"><span class="pre">get_freq_laplacian</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">form</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'continuous'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'4-neighbor'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'8-neighbor'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'continuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dtype</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.filters.get_freq_laplacian" title="Link to this definition"></a></dt>
+<dd><p>Create a frequency domain Laplacian filter for rfft image.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>img_size</strong><span class="classifier">int | tuple[int, int] | torch.Tensor</span></dt><dd><p>The size of rfft image. Shape <cite>[size_y, size_x]</cite>.</p>
+</dd>
+<dt><strong>form</strong><span class="classifier">{‘continuous’, ‘4-neighbor’}, default=’continuous’</span></dt><dd><p>The form of approximation of discrete Laplacian filter in frequency
+domain.</p>
+<ul class="simple">
+<li><p><cite>‘continuous’</cite>: Discretize the Fourier transform of the continuous</p></li>
+</ul>
+<p>Laplacian operator. Better
+- <cite>‘4-neighbor’</cite>: Computes the Fourier transform of the discrete
+4-neighbor Laplacian operator. This can be used to solve the PDE.
+- <cite>‘8-neighbor’</cite>: Computes the Fourier transform of the discrete
+8-neighbor Laplacian operator.</p>
+</dd>
+<dt><strong>d</strong><span class="classifier">float | None, default=1.0</span></dt><dd><p>The sampling length scale. If None, uses 1 / img_size. For details,
+see <cite>torch.fft.fftfreq</cite> and <cite>torch.fft.rfftfreq</cite>.</p>
+</dd>
+<dt><strong>dtype</strong><span class="classifier">torch.dtype, default=None</span></dt><dd><p>The Data type of the filter.</p>
+</dd>
+<dt><strong>device</strong><span class="classifier">torch.device, default=None</span></dt><dd><p>The Device of the returned filter.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>2D Laplacian filter.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The results of 4-neighbor and 8-neighbor (in frequency domain) are similar
+to the result by using the convolution. Theese options are present for
+solving PDE in the frequency domain.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">img_f</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft2</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">highpass</span> <span class="o">=</span> <span class="n">get_freq_laplacian</span><span class="p">(</span><span class="n">img_f</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edge_f</span> <span class="o">=</span> <span class="n">img_f</span> <span class="o">*</span> <span class="n">highpass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edge</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft2</span><span class="p">(</span><span class="n">edge_f</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.filters.get_gaussian_highpass">
+<span class="sig-prename descclassname"><span class="pre">imgtools.filters.</span></span><span class="sig-name descname"><span class="pre">get_gaussian_highpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dtype</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.filters.get_gaussian_highpass" title="Link to this definition"></a></dt>
+<dd><p>Create a 2D Gaussian highpass filter for rfft image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img_size</strong><span class="classifier">int | tuple[int, int] | torch.Tensor</span></dt><dd><p>The size of rfft image. Shape <cite>(size_y, size_x)</cite>. Or, the rfft image
+with shape <cite>(…, H, W)</cite>.</p>
+</dd>
+<dt><strong>sigma</strong><span class="classifier">float | tuple[float, float]</span></dt><dd><p>The width of Gaussian function. Shape <cite>[sigma_y, sigma_x]</cite>.</p>
+</dd>
+<dt><strong>d</strong><span class="classifier">float | None, default=None</span></dt><dd><p>The sampling length scale. If None, uses 1 / img_size. For details,
+see <cite>torch.fft.fftfreq</cite> and <cite>torch.fft.rfftfreq</cite>.</p>
+</dd>
+<dt><strong>scale</strong><span class="classifier">bool, default=False</span></dt><dd><p>Scale the filter by <cite>1 / (2 * torch.pi * )</cite>.</p>
+</dd>
+<dt><strong>dtype</strong><span class="classifier">torch.dtype, default=None</span></dt><dd><p>The Data type of the filter.</p>
+</dd>
+<dt><strong>device</strong><span class="classifier">torch.device, default=None</span></dt><dd><p>The Device of the returned filter.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>2D Gaussian highpass filter.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">img_f</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft2</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">highpass</span> <span class="o">=</span> <span class="n">get_gaussian_highpass</span><span class="p">(</span><span class="n">img_f</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edge_f</span> <span class="o">=</span> <span class="n">img_f</span> <span class="o">*</span> <span class="n">highpass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edge</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft2</span><span class="p">(</span><span class="n">edge_f</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.filters.get_gaussian_kernel">
+<span class="sig-prename descclassname"><span class="pre">imgtools.filters.</span></span><span class="sig-name descname"><span class="pre">get_gaussian_kernel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.filters.get_gaussian_kernel" title="Link to this definition"></a></dt>
+<dd><p>Create a 2D Gaussian kernel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ksize</strong><span class="classifier">int | tuple[int, int], default=5</span></dt><dd><p>Kernel size. If ksize is non-positive, the value will be computed
+from <cite>sigma_s</cite>: <cite>ksize = odd(max(6 * sigma_s / downsample + 1, 3))</cite>,
+where <cite>odd(x)</cite> returns the smallest odd integer such that <cite>odd(x) &gt;= x</cite>.</p>
+</dd>
+<dt><strong>sigma</strong><span class="classifier">float | tuple[float, float], default=0.0</span></dt><dd><p>The width of gaussian function. If sigma is non-positive, the
+value will be computed from ksize:
+<cite>sigma = 0.3 * ((ksize - 1) * 0.5 - 1) + 0.8</cite></p>
+</dd>
+<dt><strong>normalize</strong><span class="classifier">bool, default=True</span></dt><dd><p>Normalize the summation of the kernel to 1.0.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>2D Gaussian kernel with given ksize.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.filters.get_gaussian_lowpass">
+<span class="sig-prename descclassname"><span class="pre">imgtools.filters.</span></span><span class="sig-name descname"><span class="pre">get_gaussian_lowpass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dtype</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.filters.get_gaussian_lowpass" title="Link to this definition"></a></dt>
+<dd><p>Create a 2D Gaussian lowpass filter for rfft image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img_size</strong><span class="classifier">int | tuple[int, int] | torch.Tensor</span></dt><dd><p>The size of rfft image. Shape <cite>(size_y, size_x)</cite>. Or, the rfft image
+with shape <cite>(…, H, W)</cite>.</p>
+</dd>
+<dt><strong>sigma</strong><span class="classifier">float | tuple[float, float]</span></dt><dd><p>The width of Gaussian function. Shape <cite>[sigma_y, sigma_x]</cite>.</p>
+</dd>
+<dt><strong>d</strong><span class="classifier">float | None, default=None</span></dt><dd><p>The sampling length scale. If None, uses 1 / img_size. For details,
+see <cite>torch.fft.fftfreq</cite> and <cite>torch.fft.rfftfreq</cite>.</p>
+</dd>
+<dt><strong>scale</strong><span class="classifier">bool, default=False</span></dt><dd><p>Scale the filter by <cite>1 / (2 * torch.pi * )</cite>.</p>
+</dd>
+<dt><strong>dtype</strong><span class="classifier">torch.dtype, default=None</span></dt><dd><p>The Data type of the filter.</p>
+</dd>
+<dt><strong>device</strong><span class="classifier">torch.device, default=None</span></dt><dd><p>The Device of the returned filter.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>2D Gaussian lowpass filter.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">img_f</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft2</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lowpass</span> <span class="o">=</span> <span class="n">get_gaussian_lowpass</span><span class="p">(</span><span class="n">img_f</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blurred_f</span> <span class="o">=</span> <span class="n">img_f</span> <span class="o">*</span> <span class="n">lowpass</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">blurred</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft2</span><span class="p">(</span><span class="n">blurred_f</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="imgtools.filters.gradient_magnitude">
 <span class="sig-prename descclassname"><span class="pre">imgtools.filters.</span></span><span class="sig-name descname"><span class="pre">gradient_magnitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grad_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.filters.gradient_magnitude" title="Link to this definition"></a></dt>
@@ -139,6 +436,40 @@ number.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">mag</span><span class="o">.</span><span class="n">shape</span>  <span class="c1"># (2, 3, 512, 512)</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.filters.guided_filter">
+<span class="sig-prename descclassname"><span class="pre">imgtools.filters.</span></span><span class="sig-name descname"><span class="pre">guided_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guidance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.filters.guided_filter" title="Link to this definition"></a></dt>
+<dd><p>Guided image filter, an edge-preserving smoothing filter [1].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>guidance</strong><span class="classifier">torch.Tensor | None, default=None</span></dt><dd><p>Guidance image with shape <cite>(*, C, H, W)</cite>. If <cite>guidance</cite> is None, then
+<cite>img</cite> will be regard as guidance.</p>
+</dd>
+<dt><strong>ksize</strong><span class="classifier">int | tuple[int, int], default=5</span></dt><dd><p>Kernel size.</p>
+</dd>
+<dt><strong>eps</strong><span class="classifier">float, optional</span></dt><dd><p>Regularization parameter. A larger value means the output is more
+smoothing.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Smooth image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>[1] He, Kaiming; Sun, Jian; Tang, Xiaoou (2013).</dt><dd><p>“Guided Image Filtering”. IEEE Transactions on Pattern Analysis and
+Machine Intelligence. 35 (6): 1397-1409. doi:10.1109/TPAMI.2012.213.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">

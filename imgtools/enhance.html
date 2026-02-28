@@ -51,9 +51,19 @@
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.adjust_linear"><code class="docutils literal notranslate"><span class="pre">adjust_linear()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.adjust_log"><code class="docutils literal notranslate"><span class="pre">adjust_log()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.adjust_sigmoid"><code class="docutils literal notranslate"><span class="pre">adjust_sigmoid()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.bilateral_hdr"><code class="docutils literal notranslate"><span class="pre">bilateral_hdr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.color_attenuation_dehaze"><code class="docutils literal notranslate"><span class="pre">color_attenuation_dehaze()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.dark_channel_dehaze"><code class="docutils literal notranslate"><span class="pre">dark_channel_dehaze()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.high_frequency_emphasis_filter"><code class="docutils literal notranslate"><span class="pre">high_frequency_emphasis_filter()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.hist_equalize"><code class="docutils literal notranslate"><span class="pre">hist_equalize()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.match_historgram"><code class="docutils literal notranslate"><span class="pre">match_historgram()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.match_mean_std"><code class="docutils literal notranslate"><span class="pre">match_mean_std()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.msrcp"><code class="docutils literal notranslate"><span class="pre">msrcp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.msrcr"><code class="docutils literal notranslate"><span class="pre">msrcr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.reinhard2002"><code class="docutils literal notranslate"><span class="pre">reinhard2002()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.retinex"><code class="docutils literal notranslate"><span class="pre">retinex()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.transfer_reinhard"><code class="docutils literal notranslate"><span class="pre">transfer_reinhard()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.enhance.unsharp_mask"><code class="docutils literal notranslate"><span class="pre">unsharp_mask()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="filters.html">imgtools.filters</a></li>
@@ -225,6 +235,191 @@ arguments.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="imgtools.enhance.bilateral_hdr">
+<span class="sig-prename descclassname"><span class="pre">imgtools.enhance.</span></span><span class="sig-name descname"><span class="pre">bilateral_hdr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_c</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contrast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downsample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_stopping</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'gaussian'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tone</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'soft'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.enhance.bilateral_hdr" title="Link to this definition"></a></dt>
+<dd><p>Applies high dynamic range to an image by using Durand’s work [1]. (
+modified fast bilateral filter).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An RGB image in the range of [0, 1] with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>sigma_c</strong><span class="classifier">float</span></dt><dd><p>Sigma in the color intensity. A larger value means that the
+dissimilar intensity will cause more effect.</p>
+</dd>
+<dt><strong>sigma_s</strong><span class="classifier">float | None, default=1.0</span></dt><dd><p>Sigma in the space/coordinate. A larger value means that the
+farther points will cause more effect. If None, <cite>sigma_s</cite> is set
+to be <cite>min(H, W) * 0.02</cite>.</p>
+</dd>
+<dt><strong>contrast: float, default=1.5</strong></dt><dd><p>The contrast factor. When <cite>tone == ‘std’</cite>, the <cite>contrast</cite> will be
+clipped to [1, inf).</p>
+</dd>
+<dt><strong>downsample</strong><span class="classifier">float, default=1</span></dt><dd><p>Downsample rate. A smaller value means small size in iteration.</p>
+</dd>
+<dt><strong>edge_stopping</strong><span class="classifier">{‘huber’, ‘lorentz’, ‘turkey’, ‘gaussian’}, default=’gaussian’</span></dt><dd><p>Edge-stopping function. A function for preventing diffusion between
+dissimilar intensity. The value <cite>‘huber’</cite> is only recommended
+with <cite>tone == ‘std’</cite>.</p>
+</dd>
+<dt><strong>tone</strong><span class="classifier">{‘soft’, ‘lighter’, ‘linear’, ‘std’}, default=’soft’</span></dt><dd><p>Tone mapping strategy. The <cite>‘std’</cite> is closed to the standard strategy.
+See notes section for details.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>High dynamic image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The argument <cite>tone</cite> mainly affects the interpolation of weights when
+computing fast bilateral filter.
+The options of <cite>tone</cite> other than <cite>‘std’</cite> give larger weights, thus, is
+brighter. And, theese options are faster since the computation of
+tone mapping is simpler.</p>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>[1] F. Durand and J. Dorsey, “Fast bilateral filtering for the display of</dt><dd><p>high-dynamic-range images,” SIGGRAPH ‘02’, pp. 257-266, Jul. 2002
+doi: 10.1145/566570.566574.</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.enhance</span><span class="w"> </span><span class="kn">import</span> <span class="n">bilateral_hdr</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hdr</span> <span class="o">=</span> <span class="n">bilateral_hdr</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hdr2</span> <span class="o">=</span> <span class="n">bilateral_hdr</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">tone</span><span class="o">=</span><span class="s1">&#39;std&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hdr3</span> <span class="o">=</span> <span class="n">bilateral_hdr</span><span class="p">(</span><span class="n">dark_rgb</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">contrast</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.enhance.color_attenuation_dehaze">
+<span class="sig-prename descclassname"><span class="pre">imgtools.enhance.</span></span><span class="sig-name descname"><span class="pre">color_attenuation_dehaze</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guide_ksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">43</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guide_eps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.enhance.color_attenuation_dehaze" title="Link to this definition"></a></dt>
+<dd><p>Image dehazing by using color attenuation prior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>rgb</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An RGB image with shape <cite>(*, C, H, W)</cite></p>
+</dd>
+<dt><strong>patch_size</strong><span class="classifier">int, default=3</span></dt><dd><p>The neighborhood size for estimating the depth.</p>
+</dd>
+<dt><strong>beta</strong><span class="classifier">float, default=1.0</span></dt><dd><p>_description_, by default 1.0</p>
+</dd>
+<dt><strong>t_min</strong><span class="classifier">float, default=0.05</span></dt><dd><p>The minimum of the transmission.</p>
+</dd>
+<dt><strong>t_max</strong><span class="classifier">float, default=1.0</span></dt><dd><p>The maximum of the transmission.</p>
+</dd>
+<dt><strong>percent</strong><span class="classifier">float, default=0.1</span></dt><dd><p>The percentage for selecting data to estimate the atmospheric light.</p>
+</dd>
+<dt><strong>guide_ksize</strong><span class="classifier">int, default=43</span></dt><dd><p>Kernel size for guided filetr to refine transmission.</p>
+</dd>
+<dt><strong>guide_eps</strong><span class="classifier">float, default=0.1</span></dt><dd><p>Epsilon for guided filetr to refine transmission.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Dehazed RGB image with shape <cite>(*, 3, H, W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools</span><span class="w"> </span><span class="kn">import</span> <span class="n">enhance</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">enhance</span><span class="o">.</span><span class="n">dark_channel_dehaze</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.enhance.dark_channel_dehaze">
+<span class="sig-prename descclassname"><span class="pre">imgtools.enhance.</span></span><span class="sig-name descname"><span class="pre">dark_channel_dehaze</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_min</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guide_ksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">43</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guide_eps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.enhance.dark_channel_dehaze" title="Link to this definition"></a></dt>
+<dd><p>Image dehazing by dark channel prior.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>rgb</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An RGB image in the range of <cite>[0, 1]</cite> with shape <cite>(*, 3, H, W)</cite>.</p>
+</dd>
+<dt><strong>patch_size</strong><span class="classifier">int, default=3</span></dt><dd><p>Kernel size for computing dark channel.</p>
+</dd>
+<dt><strong>percent</strong><span class="classifier">float, default=0.1</span></dt><dd><p>The percentage for selecting data to estimate the atmospheric light.</p>
+</dd>
+<dt><strong>omega</strong><span class="classifier">float, default=0.95</span></dt><dd><p>Coefficient for preserving the haze. An lower value means more haze.</p>
+</dd>
+<dt><strong>t_min</strong><span class="classifier">float, default=0.4</span></dt><dd><p>Minimum of the transmission.</p>
+</dd>
+<dt><strong>guide_ksize</strong><span class="classifier">int, default=43</span></dt><dd><p>Kernel size for guided filetr to refine transmission.</p>
+</dd>
+<dt><strong>guide_eps</strong><span class="classifier">float, default=0.1</span></dt><dd><p>Epsilon for guided filetr to refine transmission.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Dehazed RGB image with shape <cite>(*, 3, H, W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools</span><span class="w"> </span><span class="kn">import</span> <span class="n">enhance</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">enhance</span><span class="o">.</span><span class="n">dark_channel_dehaze</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.enhance.high_frequency_emphasis_filter">
+<span class="sig-prename descclassname"><span class="pre">imgtools.enhance.</span></span><span class="sig-name descname"><span class="pre">high_frequency_emphasis_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lowpass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.enhance.high_frequency_emphasis_filter" title="Link to this definition"></a></dt>
+<dd><p>Create a high frequency emphasis filter (HFEF) from a given lowpass filter.
+<cite>hfef = offset + k * (1 - lowpass)</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>lowpass</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An lowpass filter.</p>
+</dd>
+<dt><strong>k</strong><span class="classifier">float, default=1.0</span></dt><dd><p>The scale of the high frequency.</p>
+</dd>
+<dt><strong>offset</strong><span class="classifier">float, default=1.0</span></dt><dd><p>The offset of the filter.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The high frequency emphasis filter.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>When <cite>offset</cite> equals 1, the filter is the same as the unsharp masking.
+When this filter is applied to the Fourier transform of log(image),
+the HFEF can be regarded as homomorphic filter</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">img_f</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft2</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lowpass</span> <span class="o">=</span> <span class="n">get_gaussian_lowpass</span><span class="p">(</span><span class="n">img_f</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">unsharp_masking</span> <span class="o">=</span> <span class="n">high_frequency_emphasis_filter</span><span class="p">(</span><span class="n">lowpass</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enhanced_f</span> <span class="o">=</span> <span class="n">img_f</span> <span class="o">*</span> <span class="n">unsharp_masking</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enhanced</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft2</span><span class="p">(</span><span class="n">enhanced_f</span><span class="p">)</span>
+<span class="go">&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hfef</span> <span class="o">=</span> <span class="n">high_frequency_emphasis_filter</span><span class="p">(</span><span class="n">lowpass</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enhanced_f</span> <span class="o">=</span> <span class="n">img_f</span> <span class="o">*</span> <span class="n">hfef</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enhanced</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft2</span><span class="p">(</span><span class="n">enhanced_f</span><span class="p">)</span>
+<span class="go">&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">log_img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img_f</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft2</span><span class="p">(</span><span class="n">log_img</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lowpass</span> <span class="o">=</span> <span class="n">get_gaussian_lowpass</span><span class="p">(</span><span class="n">img_f</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">homomorphic</span> <span class="o">=</span> <span class="n">high_frequency_emphasis_filter</span><span class="p">(</span><span class="n">lowpass</span><span class="p">,</span> <span class="mf">2.6</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enhanced_f</span> <span class="o">=</span> <span class="n">img_f</span> <span class="o">*</span> <span class="n">homomorphic</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">log_enhanced</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft2</span><span class="p">(</span><span class="n">enhanced_f</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">enhanced</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">log_enhanced</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="imgtools.enhance.hist_equalize">
 <span class="sig-prename descclassname"><span class="pre">imgtools.enhance.</span></span><span class="sig-name descname"><span class="pre">hist_equalize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">256</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.enhance.hist_equalize" title="Link to this definition"></a></dt>
 <dd><p>Apply histogram equalization to the image.</p>
@@ -240,6 +435,30 @@ arguments.</p>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
 <dt>torch.Tensor</dt><dd><p>Enhanced image in the range of [0, 1]. Shape <cite>img.shape</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.enhance.match_historgram">
+<span class="sig-prename descclassname"><span class="pre">imgtools.enhance.</span></span><span class="sig-name descname"><span class="pre">match_historgram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tar_hist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">256</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.enhance.match_historgram" title="Link to this definition"></a></dt>
+<dd><p>Applies histogram matching to the image with a given histogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Source image in the range of [0, 1] with shape <cite>(*, C or *, H, W)</cite>.</p>
+</dd>
+<dt><strong>tar_hist</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Target histogram with shape <cite>(*, 1 or C or *, N)</cite>.</p>
+</dd>
+<dt><strong>bins</strong><span class="classifier">int, default=256</span></dt><dd><p>The number of groups in data range.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Transferred image in RGB space.</p>
 </dd>
 </dl>
 </dd>
@@ -266,6 +485,194 @@ arguments.</p>
 </dl>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.enhance.msrcp">
+<span class="sig-prename descclassname"><span class="pre">imgtools.enhance.</span></span><span class="sig-name descname"><span class="pre">msrcp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scales</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[100,</span> <span class="pre">500,</span> <span class="pre">1000]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.04</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">light_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.04</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.enhance.msrcp" title="Link to this definition"></a></dt>
+<dd><p>Low-light enhance by using multi-scale retinex with color
+preservation [1].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>rgb</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An RGB image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>scales</strong><span class="classifier">list[float], default=[100, 500, 1000]</span></dt><dd><p>The strength of the blurriness. The sigma of the Gaussian filter is
+<cite>1 / scale</cite>.</p>
+</dd>
+<dt><strong>weights</strong><span class="classifier">list[float] | None, default=None</span></dt><dd><p>Weights of the scales. If None, the weight is <cite>1 / len(scales)</cite> for
+each scale.</p>
+</dd>
+<dt><strong>dark_percent</strong><span class="classifier">float, default=0.02</span></dt><dd><p>The percentage of clipped darkest intensities.</p>
+</dd>
+<dt><strong>light_percent</strong><span class="classifier">float, default=0.02</span></dt><dd><p>The percentage of clipped brightest intensities.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Low-light enhanced image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The blurring is performed on frequency domain. And the relation of the
+sigma for a Gaussian filter between spatial domain and frequency domain
+is <cite>sigma_s * sigma_f = 1 / 2 * pi</cite>.</p>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>[1] Ana Belén Petro, Catalina Sbert, and Jean-Michel Morel,</dt><dd><p>Multiscale Retinex, Image Processing On Line, (2014), pp. 71-88.
+<a class="reference external" href="https://doi.org/10.5201/ipol.2014.107">https://doi.org/10.5201/ipol.2014.107</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools</span><span class="w"> </span><span class="kn">import</span> <span class="n">enhance</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">enhance</span><span class="o">.</span><span class="n">msrcp</span><span class="p">(</span><span class="n">img_rgb</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.enhance.msrcr">
+<span class="sig-prename descclassname"><span class="pre">imgtools.enhance.</span></span><span class="sig-name descname"><span class="pre">msrcr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scales</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[100,</span> <span class="pre">500,</span> <span class="pre">1000]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">light_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.02</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.enhance.msrcr" title="Link to this definition"></a></dt>
+<dd><p>Low-light enhance by using multi-scale retinex with color restoration [1].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>scales</strong><span class="classifier">list[float], default=[100, 500, 1000]</span></dt><dd><p>The strength of the blurriness. The sigma of the Gaussian filter is
+<cite>1 / scale</cite>.</p>
+</dd>
+<dt><strong>weights</strong><span class="classifier">list[float] | None, default=None</span></dt><dd><p>Weights of the scales. If None, the weight is <cite>1 / len(scales)</cite> for
+each scale.</p>
+</dd>
+<dt><strong>dark_percent</strong><span class="classifier">float, default=0.02</span></dt><dd><p>The percentage of clipped darkest intensities.</p>
+</dd>
+<dt><strong>light_percent</strong><span class="classifier">float, default=0.02</span></dt><dd><p>The percentage of clipped brightest intensities.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Low-light enhanced image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The blurring is performed on frequency domain. And the relation of the
+sigma for a Gaussian filter between spatial domain and frequency domain
+is <cite>sigma_s * sigma_f = 1 / 2 * pi</cite>.</p>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>[1] Ana Belén Petro, Catalina Sbert, and Jean-Michel Morel,</dt><dd><p>Multiscale Retinex, Image Processing On Line, (2014), pp. 71-88.
+<a class="reference external" href="https://doi.org/10.5201/ipol.2014.107">https://doi.org/10.5201/ipol.2014.107</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools</span><span class="w"> </span><span class="kn">import</span> <span class="n">enhance</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">enhance</span><span class="o">.</span><span class="n">msrcr</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.enhance.reinhard2002">
+<span class="sig-prename descclassname"><span class="pre">imgtools.enhance.</span></span><span class="sig-name descname"><span class="pre">reinhard2002</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exposure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_white</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.35355</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratio</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thresh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tone</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'local'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.enhance.reinhard2002" title="Link to this definition"></a></dt>
+<dd><p>Applies high dynamic range to an image by using the modified
+version of E. Reinhard’s work [1].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An RGB or grayscale image in the range of [0, 1] with
+shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>exposure</strong><span class="classifier">float, default=1.7</span></dt><dd><p>An mutiplier for scaling the luminance. Affects significantly
+the luminance of output. The relation between exposure and mid
+gray (<cite>a</cite> in equation (2) of [1]) is
+<cite>exposure = a / geometric_mean(lum)</cite></p>
+</dd>
+<dt><strong>l_white</strong><span class="classifier">float | None, default=None</span></dt><dd><p>Maximum luminance. If None, the value will be set to the mean
+of luminance.</p>
+</dd>
+<dt><strong>num_scale</strong><span class="classifier">int, default=4</span></dt><dd><p>The number of scales.</p>
+</dd>
+<dt><strong>alpha</strong><span class="classifier">float, default=0.35355</span></dt><dd><p>Basic blurring strength.</p>
+</dd>
+<dt><strong>ratio</strong><span class="classifier">float, default=1.6</span></dt><dd><p>The ratio between two blurring strength.</p>
+</dd>
+<dt><strong>phi</strong><span class="classifier">float, default=8.0</span></dt><dd><p>Sharpening parameter</p>
+</dd>
+<dt><strong>thresh</strong><span class="classifier">float, default=0.05</span></dt><dd><p>Threshold value for scale selection.</p>
+</dd>
+<dt><strong>tone</strong><span class="classifier">{‘local’, ‘global’}, default=’local’</span></dt><dd><p>Tone mapping strategy.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>High dynamic image in the range of [0, 1] with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>When <cite>tone == ‘global’</cite>, only the arguments <cite>exposure</cite> and <cite>l_white</cite>.
+When <cite>tone == ‘local’</cite>, all arguments affect the result.</p>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>[1] Erik Reinhard, Michael Stark, Peter Shirley, and James Ferwerda. 2002.</dt><dd><p>Photographic tone reproduction for digital images.
+ACM Trans. Graph. 21, 3 (July 2002), 267-276.
+<a class="reference external" href="https://doi.org/10.1145/566654.566575">https://doi.org/10.1145/566654.566575</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.enhance</span><span class="w"> </span><span class="kn">import</span> <span class="n">reinhard2002</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hdr</span> <span class="o">=</span> <span class="n">reinhard2002</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hdr2</span> <span class="o">=</span> <span class="n">reinhard2002</span><span class="p">(</span><span class="n">dark_rgb</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hdr3</span> <span class="o">=</span> <span class="n">reinhard2002</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">tone</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.enhance.retinex">
+<span class="sig-prename descclassname"><span class="pre">imgtools.enhance.</span></span><span class="sig-name descname"><span class="pre">retinex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scales</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[100,</span> <span class="pre">500,</span> <span class="pre">1000]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.enhance.retinex" title="Link to this definition"></a></dt>
+<dd><p>Low-light enhance by using multi-scale retinex.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>scales</strong><span class="classifier">list[float], default=[100, 500, 1000]</span></dt><dd><p>The strength of the blurriness. The sigma of the Gaussian filter is
+<cite>1 / scale</cite>.</p>
+</dd>
+<dt><strong>weights</strong><span class="classifier">list[float] | None, default=None</span></dt><dd><p>Weights of the scales. If None, the weight is <cite>1 / len(scales)</cite> for
+each scale.</p>
+</dd>
+<dt><strong>normalize</strong><span class="classifier">bool, default=True</span></dt><dd><p>Normalize the result to <cite>[0, 1]</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Low-light enhanced image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The blurring is performed on frequency domain. And the relation of the
+sigma for a Gaussian filter between spatial domain and frequency domain
+is <cite>sigma_s * sigma_f = 1 / 2 * pi</cite>.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools</span><span class="w"> </span><span class="kn">import</span> <span class="n">enhance</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res</span> <span class="o">=</span> <span class="n">enhance</span><span class="o">.</span><span class="n">msr</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -302,6 +709,36 @@ and <cite>tar</cite>.</p>
 <dl class="simple">
 <dt>[1] E. Reinhard, M. Adhikhmin, B. Gooch and P. Shirley, “Color</dt><dd><p>transfer between images,” in IEEE Computer Graphics and Applications,
 vol. 21, no. 5, pp. 34-41, July-Aug. 2001, doi: 10.1109/38.946629</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.enhance.unsharp_mask">
+<span class="sig-prename descclassname"><span class="pre">imgtools.enhance.</span></span><span class="sig-name descname"><span class="pre">unsharp_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amount</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.enhance.unsharp_mask" title="Link to this definition"></a></dt>
+<dd><p>Applies unsharp masking to an image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>amount</strong><span class="classifier">float, default=1</span></dt><dd><p>The enhanced amount.</p>
+</dd>
+<dt><strong>ksize</strong><span class="classifier">int | tuple[int, int], default=3</span></dt><dd><p>The Gaussian kernel size. If ksize is non-positive, the value will
+be computed from sigma: <cite>ksize = odd(6 * sigma + 1)</cite>, where odd()
+returns the closest odd integer.</p>
+</dd>
+<dt><strong>sigma</strong><span class="classifier">float, default=0</span></dt><dd><p>The width of gaussian function. If sigma is non-positive, the
+value will be computed from ksize:
+<cite>sigma = 0.3 * ((ksize - 1) * 0.5 - 1) + 0.8</cite></p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Enhanced image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>

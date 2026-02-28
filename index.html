@@ -77,6 +77,86 @@
              
   <section id="torch-imagetools-documentation">
 <h1>torch-imagetools documentation<a class="headerlink" href="#torch-imagetools-documentation" title="Link to this heading"></a></h1>
+<section id="torch-imagetools">
+<h2>torch-imagetools<a class="headerlink" href="#torch-imagetools" title="Link to this heading"></a></h2>
+<p>An image processing library based on PyTorch that aim to provide some non deep learning-based tools for pre-/post-processing, data augmentation, or an alternative option when no data for training the network.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">imgtools.color</span></code>: transformations between color spaces. The spaces including RGB, YUV, HSV, CIEXYZ, LMS, CIELAB, etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imgtools.balance</span></code>: chromatic adaptations, illuminant estimations, correlate color temperature estimations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imgtools.enhance</span></code>: basic intensity trnasform (linear, log, gamma, …), sharpening/unsharp masking, high dynamic range, low-light enhance.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imgtools.filters</span></code>: spatial domain and frequency domain filters.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imgtools.wavelets</span></code>: discrete wavelet transform and its inverse transform.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imgtools.utils</span></code>: conversion <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code> &lt;-&gt; <code class="docutils literal notranslate"><span class="pre">torch.Tensor</span></code> (<code class="docutils literal notranslate"><span class="pre">arrayize</span></code>, <code class="docutils literal notranslate"><span class="pre">tensorize</span></code>), math tools (PCA, filter2d, matrix transform).</p></li>
+</ul>
+<p>This library</p>
+<ul class="simple">
+<li><p>Docs: https://johnny95731.github.io/torch-imagetools/</p></li>
+</ul>
+<section id="future-plan">
+<h3>Future plan<a class="headerlink" href="#future-plan" title="Link to this heading"></a></h3>
+<p>More implementations of the researches. For examples</p>
+<ul class="simple">
+<li><p>low-light image enhance</p></li>
+<li><p>highlight removal and shadow removal</p></li>
+<li><p>style transfer</p></li>
+<li><p>denoise</p></li>
+<li><p>chromatic adaptation</p></li>
+<li><p>frequency domain methods</p></li>
+<li><p>gradient domain methods</p></li>
+<li><p>statistics tools.</p></li>
+</ul>
+</section>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Clone this repository</p></li>
+</ol>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>clone<span class="w"> </span>https://github.com/johnny95731/torch-imagetools.git
+<span class="nb">cd</span><span class="w"> </span>torch-imagetools
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Install PyTorch &gt;= 2.7.0. Since the dependency will keep covering the
+torch+cuda, torch is not in the dependencies of <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>.</p></li>
+</ol>
+<section id="optional-dependencies">
+<h4>Optional Dependencies<a class="headerlink" href="#optional-dependencies" title="Link to this heading"></a></h4>
+<p>Install PyWavelets if you want to use the submodule <code class="docutils literal notranslate"><span class="pre">imgtools.wavelets</span></code></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pywavelets
+</pre></div>
+</div>
+</section>
+</section>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>The library assume that the RGB image is in the range of [0, 1].</p></li>
+<li><p>The functions will try to convert dtype and device to fit the first argument.</p></li>
+<li><p>The tests only test float32 and float64 dtypes. Some features in <code class="docutils literal notranslate"><span class="pre">torch.linalg</span></code> does not support float16.</p></li>
+<li><p>The image format should be <code class="docutils literal notranslate"><span class="pre">CHW</span></code>.</p></li>
+<li><p>The docstring indicate the tensor shape and the asterisk <code class="docutils literal notranslate"><span class="pre">*</span></code> means an optional
+place. For example, the shape <code class="docutils literal notranslate"><span class="pre">(*,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W)</span></code> allows <code class="docutils literal notranslate"><span class="pre">(C,</span> <span class="pre">H,</span> <span class="pre">W)</span></code> or <code class="docutils literal notranslate"><span class="pre">(B,</span> <span class="pre">C,</span> <span class="pre">H,</span> <span class="pre">W)</span></code>.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">imgtools</span>
+
+<span class="n">hwc_img</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="n">chw_img</span> <span class="o">=</span> <span class="n">imgtools</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">tensorize</span><span class="p">(</span><span class="n">hwc_img</span><span class="p">)</span>
+
+<span class="c1"># Hist equalization</span>
+<span class="n">enhanced</span> <span class="o">=</span> <span class="n">imgtools</span><span class="o">.</span><span class="n">enhance</span><span class="o">.</span><span class="n">hist_equalize</span><span class="p">(</span><span class="n">chw_img</span><span class="p">)</span>
+<span class="c1"># Color transfer</span>
+<span class="n">enhanced</span> <span class="o">=</span> <span class="n">imgtools</span><span class="o">.</span><span class="n">enhance</span><span class="o">.</span><span class="n">transfer_reinhard</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="c1"># Color space transformation</span>
+<span class="n">xyz</span> <span class="o">=</span> <span class="n">imgtools</span><span class="o">.</span><span class="n">color</span><span class="o">.</span><span class="n">rgb_to_xyz</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="license">
+<h3>License<a class="headerlink" href="#license" title="Link to this heading"></a></h3>
+<p>See <a class="reference internal" href="#LICENSE.md"><span class="xref myst">LICENSE.md</span></a></p>
+</section>
+</section>
 <div class="toctree-wrapper compound">
 </div>
 </section>

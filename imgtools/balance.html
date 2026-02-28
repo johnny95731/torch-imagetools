@@ -48,6 +48,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#color-balance">Color Balance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.balance.balance_by_scaling"><code class="docutils literal notranslate"><span class="pre">balance_by_scaling()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.balance.cheng_pca_balance"><code class="docutils literal notranslate"><span class="pre">cheng_pca_balance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imgtools.balance.clipping_balance"><code class="docutils literal notranslate"><span class="pre">clipping_balance()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.balance.estimate_illuminant_cheng"><code class="docutils literal notranslate"><span class="pre">estimate_illuminant_cheng()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.balance.get_von_kries_transform_matrix"><code class="docutils literal notranslate"><span class="pre">get_von_kries_transform_matrix()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#imgtools.balance.gray_edge_balance"><code class="docutils literal notranslate"><span class="pre">gray_edge_balance()</span></code></a></li>
@@ -176,7 +177,7 @@ balance by scaling for maximum = 1.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="imgtools.balance.cheng_pca_balance">
-<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">cheng_pca_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'von</span> <span class="pre">kries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rgb_spec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'srgb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">white</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'d65'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.cheng_pca_balance" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">cheng_pca_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'von</span> <span class="pre">kries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rgb_spec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'srgb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">white</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'D65'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.cheng_pca_balance" title="Link to this definition"></a></dt>
 <dd><p>White balance by Cheng’s PCA method [1]. Estimate the illuminant and
 applies chromatic adaptation transformation.</p>
 <dl class="field-list simple">
@@ -227,6 +228,30 @@ the role of the color distribution.” JOSA A 31.5 (2014): 1049-1058.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="imgtools.balance.clipping_balance">
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">clipping_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">light_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.balance.clipping_balance" title="Link to this definition"></a></dt>
+<dd><p>Clip top-k1 and bottom-k2 percentage values and normalize to <cite>[0, 1]</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>dark_percent</strong><span class="classifier">float, default=0.0</span></dt><dd><p>The percentage value for clipping the lowest <a href="#id1"><span class="problematic" id="id2">`</span></a>dark_percent`% values.</p>
+</dd>
+<dt><strong>light_percent</strong><span class="classifier">float, default=0.0</span></dt><dd><p>The percentage value for clipping the highest <a href="#id3"><span class="problematic" id="id4">`</span></a>light_percent`% values.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>A balanced image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="imgtools.balance.estimate_illuminant_cheng">
 <span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">estimate_illuminant_cheng</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_selected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.estimate_illuminant_cheng" title="Link to this definition"></a></dt>
 <dd><p>Estimate the illuminant in the image by Cheng’s PCA method [1].</p>
@@ -264,9 +289,9 @@ converts colors from a illuminant to another illuminant.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>xyz_white</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The source white point in CIE XYZ space. A tensor with numel = 3.</p>
+<dt><strong>xyz_white</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The source white point in CIE XYZ space. Shape <cite>(*, 3)</cite>.</p>
 </dd>
-<dt><strong>xyz_target_white</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The target white point in CIE XYZ space. A tensor with numel = 3.</p>
+<dt><strong>xyz_target_white</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The target white point in CIE XYZ space. Shape <cite>(*, 3)</cite>.</p>
 </dd>
 <dt><strong>method</strong><span class="classifier">CATMethod, default=’bradford’</span></dt><dd><p>Chromatic adaptation method.</p>
 </dd>
@@ -274,7 +299,7 @@ converts colors from a illuminant to another illuminant.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>Matrix with shape=`(3, 3)`. Same dtype and device as <cite>xyz_white</cite>.</p>
+<dt>torch.Tensor</dt><dd><p>Matrix with shape=`(<a href="#id5"><span class="problematic" id="id6">*</span></a>, 3, 3)`. Same dtype and device as <cite>xyz_white</cite>.</p>
 </dd>
 </dl>
 </dd>
