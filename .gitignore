@@ -10,6 +10,7 @@ docs/build
 img_test/
 .coverage
 .coverage.*
+tests/
 
 # Environments
 .env
