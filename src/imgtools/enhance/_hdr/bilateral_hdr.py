@@ -253,7 +253,7 @@ def bilateral_hdr(
         res = (img * tone_mapping.div_(maxi_tone)).clip_(0.0, 1.0)
     elif is_color:
         tone_mapping = base
-        yuv[..., 0, :, :] = tone_mapping.clip_(0.0, 1.0).pow_(contrast)
+        yuv[..., :1, :, :] = tone_mapping.clip_(0.0, 1.0).pow_(contrast)
         res = yuv_to_rgb(yuv)
     else:
         res = base.clip_(0.0, 1.0).pow_(contrast)

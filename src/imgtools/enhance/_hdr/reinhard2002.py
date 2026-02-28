@@ -69,7 +69,7 @@ def global_tone_mapping(
         https://doi.org/10.1145/566654.566575
     """
     tone = lum / (lum + 1.0)
-    if l_white is not None and (l_white < float('inf')):
+    if l_white is not None:
         tone *= 1 + lum / l_white**2
     return tone
 
