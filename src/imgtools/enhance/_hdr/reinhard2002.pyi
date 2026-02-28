@@ -7,7 +7,6 @@ import torch
 def scale_luminance(
     lum: torch.Tensor,
     exposure: float = 1.7,
-    where: torch.Tensor | None = None,
 ) -> torch.Tensor: ...
 
 #
@@ -36,5 +35,4 @@ def reinhard2002(
     phi: float = 8.0,
     thresh: float = 0.05,
     tone: Literal['local', 'global'] = 'local',
-    where: torch.Tensor | None = None,
 ) -> torch.Tensor: ...

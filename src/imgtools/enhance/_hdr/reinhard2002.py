@@ -10,7 +10,6 @@ from ...utils.helpers import align_device_type, check_valid_image_ndim
 def scale_luminance(
     lum: torch.Tensor,
     exposure: float = 1.7,
-    where: torch.Tensor | None = None,
 ):
     """Scales the image by the ratio of the `mid_gray` to the geometric mean
     of `lum`.
@@ -21,8 +20,6 @@ def scale_luminance(
         An image with shape `(*, C, H, W)`
     exposure : float, default=1.0
         Scaling coefficient.
-    where : torch.Tensor | None, default=None
-        Masking the lum when computing geometric mean.
 
     Returns
     -------
@@ -149,7 +146,6 @@ def reinhard2002(
     phi: float = 8.0,
     thresh: float = 0.05,
     tone: str = 'local',
-    where: torch.Tensor | None = None,
 ):
     """Applies high dynamic range to an image by using the modified
     version of E. Reinhard's work [1].
@@ -179,9 +175,6 @@ def reinhard2002(
         Threshold value for scale selection.
     tone : {'local', 'global'}, default='local'
         Tone mapping strategy.
-    where : torch.Tensor | None, default=None
-        Mask to estimate the initial luminance scaling. The argument will
-        NOT mask the output.
 
     Returns
     -------
@@ -224,11 +217,7 @@ def reinhard2002(
         raise TypeError(f'`l_white` must be a positive number: {type(l_white)}')
     elif l_white <= 0:
         raise ValueError(f'`l_white` must be a positive number: {l_white}')
-    if not isinstance(where, torch.Tensor) and where is not None:
-        raise ValueError(
-            f'`where` must be None or a Tensor type: {type(where)}'
-        )
-    scaled_lum, mid_gray = scale_luminance(gray, exposure, where)
+    scaled_lum, mid_gray = scale_luminance(gray, exposure)
     tone = tone.lower()
     if tone == 'local':
         tone_mapping = local_tone_mapping(
