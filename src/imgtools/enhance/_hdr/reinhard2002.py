@@ -190,8 +190,7 @@ def reinhard2002(
 
     Notes
     -----
-    When `tone == 'global'`, only the arguments `exposure`, `l_white`, and
-    `where` affect the result.
+    When `tone == 'global'`, only the arguments `exposure` and `l_white`.
     When `tone == 'local'`, all arguments affect the result.
 
     References
@@ -200,6 +199,15 @@ def reinhard2002(
         Photographic tone reproduction for digital images.
         ACM Trans. Graph. 21, 3 (July 2002), 267-276.
         https://doi.org/10.1145/566654.566575
+
+    Examples
+    --------
+
+    >>> from imgtools.enhance import reinhard2002
+    >>>
+    >>> hdr = reinhard2002(rgb)
+    >>> hdr2 = reinhard2002(dark_rgb, 20)
+    >>> hdr3 = reinhard2002(rgb, tone='global')
     """
     check_valid_image_ndim(img)
     if img.size(-3) == 1:

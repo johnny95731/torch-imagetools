@@ -152,6 +152,15 @@ def bilateral_hdr(
     [1] F. Durand and J. Dorsey, "Fast bilateral filtering for the display of
         high-dynamic-range images," SIGGRAPH '02', pp. 257-266, Jul. 2002
         doi: 10.1145/566570.566574.
+
+    Examples
+    --------
+
+    >>> from imgtools.enhance import bilateral_hdr
+    >>>
+    >>> hdr = bilateral_hdr(rgb, 0.25, 0.1)
+    >>> hdr2 = bilateral_hdr(rgb, 0.25, None, tone='std')
+    >>> hdr3 = bilateral_hdr(dark_rgb, 0.25, None, contrast=0.5)
     """
     is_not_batch = check_valid_image_ndim(img)
     if is_not_batch:
