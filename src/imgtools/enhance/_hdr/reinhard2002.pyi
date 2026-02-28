@@ -6,7 +6,7 @@ import torch
 
 def scale_luminance(
     lum: torch.Tensor,
-    mid_gray: float = 1.0,
+    exposure: float = 1.7,
     where: torch.Tensor | None = None,
 ) -> torch.Tensor: ...
 
@@ -17,7 +17,7 @@ def global_tone_mapping(
 ) -> torch.Tensor: ...
 def local_tone_mapping(
     lum: torch.Tensor,
-    mid_gray: float = 1.0,
+    mid_gray: float = 0.72,
     num_scale: int = 4,
     alpha: float = 0.35355,
     ratio: float = 1.6,
@@ -28,8 +28,8 @@ def local_tone_mapping(
 #
 def reinhard2002(
     img: torch.Tensor,
-    mid_gray: float = 1.0,
-    l_white: float | None = 0.9,
+    exposure: float = 1.7,
+    l_white: float | None = None,
     num_scale: int = 4,
     alpha: float = 0.35355,
     ratio: float = 1.6,
