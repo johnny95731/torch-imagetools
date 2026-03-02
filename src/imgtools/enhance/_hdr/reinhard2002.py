@@ -27,14 +27,7 @@ def scale_luminance(
         Scaled image with shape `(*, C, H, W)`.
     """
     log_lum = lum.add(1e-8).log_()
-    if where is None:
-        geo_mean = log_lum.mean(dim=(-1, -2, -3), keepdim=True).exp_()
-    else:
-        where = align_device_type(where, lum)
-        count_valid = torch.count_nonzero(where.flatten(-2, -1), -1)
-        log = lum.add(1e-7).log()
-        masked_mean = (log * where).sum((-1, -2), keepdim=True) / count_valid
-        geo_mean = masked_mean.exp_()
+    geo_mean = log_lum.mean(dim=(-1, -2, -3), keepdim=True).exp_()
     scaled_lum = exposure * lum
     mid_gray = exposure * geo_mean
     return scaled_lum, mid_gray
