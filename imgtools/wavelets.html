@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wavelets &mdash; torch-imagetools 0.1.0 documentation</title>
+  <title>imgtools.wavelets &mdash; torch-imagetools 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
@@ -19,8 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Utils" href="utils.html" />
-    <link rel="prev" title="Filters" href="filters.html" /> 
+    <link rel="next" title="imgtools.utils" href="utils.html" />
+    <link rel="prev" title="imgtools.filters" href="filters.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -48,36 +48,8 @@
 <li class="toctree-l1"><a class="reference internal" href="enhance.html">imgtools.enhance</a></li>
 <li class="toctree-l1"><a class="reference internal" href="filters.html">imgtools.filters</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">imgtools.wavelets</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#imgtools.wavelets.Wavelet"><code class="docutils literal notranslate"><span class="pre">Wavelet</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.biorthogonal"><code class="docutils literal notranslate"><span class="pre">Wavelet.biorthogonal</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.dec_high"><code class="docutils literal notranslate"><span class="pre">Wavelet.dec_high</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.dec_len"><code class="docutils literal notranslate"><span class="pre">Wavelet.dec_len</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.dec_low"><code class="docutils literal notranslate"><span class="pre">Wavelet.dec_low</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.device"><code class="docutils literal notranslate"><span class="pre">Wavelet.device</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.dtype"><code class="docutils literal notranslate"><span class="pre">Wavelet.dtype</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.dwt2"><code class="docutils literal notranslate"><span class="pre">Wavelet.dwt2()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.dwt2_hh"><code class="docutils literal notranslate"><span class="pre">Wavelet.dwt2_hh()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.dwt2_ll"><code class="docutils literal notranslate"><span class="pre">Wavelet.dwt2_ll()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.family_name"><code class="docutils literal notranslate"><span class="pre">Wavelet.family_name</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.filter_bank"><code class="docutils literal notranslate"><span class="pre">Wavelet.filter_bank</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.idwt2"><code class="docutils literal notranslate"><span class="pre">Wavelet.idwt2()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.name"><code class="docutils literal notranslate"><span class="pre">Wavelet.name</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.orthogonal"><code class="docutils literal notranslate"><span class="pre">Wavelet.orthogonal</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.rec_high"><code class="docutils literal notranslate"><span class="pre">Wavelet.rec_high</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.rec_len"><code class="docutils literal notranslate"><span class="pre">Wavelet.rec_len</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.rec_low"><code class="docutils literal notranslate"><span class="pre">Wavelet.rec_low</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.s"><code class="docutils literal notranslate"><span class="pre">Wavelet.s</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.short_family_name"><code class="docutils literal notranslate"><span class="pre">Wavelet.short_family_name</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.symmetry"><code class="docutils literal notranslate"><span class="pre">Wavelet.symmetry</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#imgtools.wavelets.Wavelet.to"><code class="docutils literal notranslate"><span class="pre">Wavelet.to()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#imgtools.wavelets.dwt2"><code class="docutils literal notranslate"><span class="pre">dwt2()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#imgtools.wavelets.dwt2_partial"><code class="docutils literal notranslate"><span class="pre">dwt2_partial()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#imgtools.wavelets.get_families"><code class="docutils literal notranslate"><span class="pre">get_families()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#imgtools.wavelets.get_wavelets"><code class="docutils literal notranslate"><span class="pre">get_wavelets()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#imgtools.wavelets.idwt2"><code class="docutils literal notranslate"><span class="pre">idwt2()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#imgtools.wavelets.scaling_coeffs_to_wavelet_coeffs"><code class="docutils literal notranslate"><span class="pre">scaling_coeffs_to_wavelet_coeffs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#links">Links</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-imgtools.wavelets">Documents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">imgtools.utils</a></li>
@@ -98,7 +70,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Wavelets</li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">imgtools.wavelets</span></code></li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/imgtools/wavelets.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -108,13 +80,148 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-imgtools.wavelets">
-<span id="wavelets"></span><h1>Wavelets<a class="headerlink" href="#module-imgtools.wavelets" title="Link to this heading"></a></h1>
+  <section id="imgtools-wavelets">
+<h1><a class="reference internal" href="#module-imgtools.wavelets" title="imgtools.wavelets"><code class="xref py py-mod docutils literal notranslate"><span class="pre">imgtools.wavelets</span></code></a><a class="headerlink" href="#imgtools-wavelets" title="Link to this heading"></a></h1>
+<section id="links">
+<h2>Links<a class="headerlink" href="#links" title="Link to this heading"></a></h2>
+<section id="pywt-wrapping">
+<h3>_pywt_wrapping<a class="headerlink" href="#pywt-wrapping" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.wavelets.Wavelet" title="imgtools.wavelets.Wavelet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Wavelet</span></code></a></p></td>
+<td><p>Discrete Wavelet Object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.wavelets.get_families" title="imgtools.wavelets.get_families"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_families</span></code></a></p></td>
+<td><p>Return a list of available discrete wavelet families.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.wavelets.get_wavelets" title="imgtools.wavelets.get_wavelets"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_wavelets</span></code></a></p></td>
+<td><p>Return list of available discrete wavelet names for the given family name.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="utils">
+<h3>_utils<a class="headerlink" href="#utils" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.wavelets.scaling_coeffs_to_wavelet_coeffs" title="imgtools.wavelets.scaling_coeffs_to_wavelet_coeffs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scaling_coeffs_to_wavelet_coeffs</span></code></a></p></td>
+<td><p>Convert the scaling filter (father wavelet) to the wavelet filter (mother wavelet).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="wavelets">
+<h3>Wavelets<a class="headerlink" href="#wavelets" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.wavelets.dwt2" title="imgtools.wavelets.dwt2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dwt2</span></code></a></p></td>
+<td><p>Performs discrete wavelet transform (DWT) of an image.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.wavelets.dwt2_partial" title="imgtools.wavelets.dwt2_partial"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dwt2_partial</span></code></a></p></td>
+<td><p>Returns a component of the discrete wavelet transform (DWT).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.wavelets.idwt2" title="imgtools.wavelets.idwt2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">idwt2</span></code></a></p></td>
+<td><p>Performs inverse discrete wavelet transform (IDWT) of wavelet.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<hr class="docutils" />
+<section id="module-imgtools.wavelets">
+<span id="documents"></span><h2>Documents<a class="headerlink" href="#module-imgtools.wavelets" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.wavelets.dwt2">
+<span class="sig-prename descclassname"><span class="pre">imgtools.wavelets.</span></span><span class="sig-name descname"><span class="pre">dwt2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'reflect'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.wavelets.dwt2" title="Link to this definition"></a></dt>
+<dd><p>Performs discrete wavelet transform (DWT) of an image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>scaling</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The scaling filter (father wavelet) with shape <cite>(K,)</cite>.</p>
+</dd>
+<dt><strong>wavelet</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The wavelet filter (mother wavelet) with shape <cite>(K,)</cite>.</p>
+</dd>
+<dt><strong>mode</strong><span class="classifier">{‘constant’, ‘reflect’, ‘replicate’, ‘circular’}, default=’reflect’</span></dt><dd><p>Padding mode. Same as the argument <cite>mode</cite> in <cite>torch.nn.functional.pad</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The DWT components of the image. Shape <cite>(*, C, 4, Ho, Wo)</cite>, where
+<cite>Ho = (H + 1) // 2</cite> and <cite>Wo = (W + 1) // 2</cite>.
+The components has the following order: <cite>[LL, LH, HL, HH]</cite>, or
+equivalently, <cite>[cA, cV, cH, cD]</cite></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.wavelets.dwt2_partial">
+<span class="sig-prename descclassname"><span class="pre">imgtools.wavelets.</span></span><span class="sig-name descname"><span class="pre">dwt2_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'reflect'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.wavelets.dwt2_partial" title="Link to this definition"></a></dt>
+<dd><p>Returns a component of the discrete wavelet transform (DWT).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>scaling</strong><span class="classifier">torch.Tensor | None</span></dt><dd><p>The scaling filter (father wavelet) with shape <cite>(K,)</cite>.</p>
+</dd>
+<dt><strong>wavelet</strong><span class="classifier">torch.Tensor | None</span></dt><dd><p>The wavelet filter (mother wavelet) with shape <cite>(K,)</cite>.</p>
+</dd>
+<dt><strong>target</strong><span class="classifier">{‘LL’, ‘LH’, ‘HL’, ‘HH’}</span></dt><dd><p>The component of discrete wavelet transform. The argument is case
+insensitive. The first letter represents the filter (lowpass/highpass)
+in x-direction.</p>
+</dd>
+<dt><strong>mode</strong><span class="classifier">{‘constant’, ‘reflect’, ‘replicate’, ‘circular’}, default=’reflect’</span></dt><dd><p>Padding mode. Same as the argument <cite>mode</cite> in <cite>torch.nn.functional.pad</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The component of the DWT with shape <cite>(*, C, Ho, Wo)</cite>, where
+<cite>Ho = (H + 1) // 2</cite> and <cite>Wo = (W + 1) // 2</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.wavelets.idwt2">
+<span class="sig-prename descclassname"><span class="pre">imgtools.wavelets.</span></span><span class="sig-name descname"><span class="pre">idwt2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'reflect'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.wavelets.idwt2" title="Link to this definition"></a></dt>
+<dd><p>Performs inverse discrete wavelet transform (IDWT) of wavelet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, 4, H, W)</cite>.</p>
+</dd>
+<dt><strong>scaling</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The scaling filter (father wavelet) with shape <cite>(K,)</cite>.</p>
+</dd>
+<dt><strong>wavelet</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The wavelet filter (mother wavelet) with shape <cite>(K,)</cite>.</p>
+</dd>
+<dt><strong>mode</strong><span class="classifier">{‘constant’, ‘reflect’, ‘replicate’, ‘circular’}, default=’reflect’</span></dt><dd><p>Padding mode. Same as the argument <cite>mode</cite> in <cite>torch.nn.functional.pad</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The reconstructed image. Shape <cite>(*, C, 2*H, 2*W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The value may not correctly recontructed at the boundary of the image.</p>
+</dd></dl>
+
 <dl class="py class">
 <dt class="sig sig-object py" id="imgtools.wavelets.Wavelet">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">imgtools.wavelets.</span></span><span class="sig-name descname"><span class="pre">Wavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wavelet_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.wavelets.Wavelet" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Discrete Wavelet Object.</p>
+<dd><p>Discrete Wavelet Object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -153,28 +260,10 @@
 </tr>
 </tbody>
 </table>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.biorthogonal">
-<span class="sig-name descname"><span class="pre">biorthogonal</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.biorthogonal" title="Link to this definition"></a></dt>
-<dd><p>Whether the wavelet is biorthogonal.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.dec_high">
-<span class="sig-name descname"><span class="pre">dec_high</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tensor</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.dec_high" title="Link to this definition"></a></dt>
-<dd><p>Wavelet coefficients of the decomposition filter.</p>
-</dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.dec_len">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dec_len</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.dec_len" title="Link to this definition"></a></dt>
 <dd><p>Decomposition filter length.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.dec_low">
-<span class="sig-name descname"><span class="pre">dec_low</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tensor</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.dec_low" title="Link to this definition"></a></dt>
-<dd><p>Scaling coefficients of the decomposition filter.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -262,12 +351,6 @@ The wavelet decomposition components with the following order:</p>
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.family_name">
-<span class="sig-name descname"><span class="pre">family_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.family_name" title="Link to this definition"></a></dt>
-<dd><p>Wavelet family name.</p>
-</dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.filter_bank">
 <em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">filter_bank</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.filter_bank" title="Link to this definition"></a></dt>
@@ -300,6 +383,37 @@ val</p>
 </dl>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.rec_len">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rec_len</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.rec_len" title="Link to this definition"></a></dt>
+<dd><p>Reconstruction filter length.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.s">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">s</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.s" title="Link to this definition"></a></dt>
+<dd><p>The normalization factor.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.to">
+<span class="sig-name descname"><span class="pre">to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.wavelets.Wavelet.to" title="Link to this definition"></a></dt>
+<dd><p>Applies <cite>torch.Tensor.to</cite> to decomposition and reconstruction
+filter valuess. Returns the filter bank.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.family_name">
+<span class="sig-name descname"><span class="pre">family_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.family_name" title="Link to this definition"></a></dt>
+<dd><p>Wavelet family name.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.short_family_name">
+<span class="sig-name descname"><span class="pre">short_family_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.short_family_name" title="Link to this definition"></a></dt>
+<dd><p>Wavelet short family name.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.name">
 <span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.name" title="Link to this definition"></a></dt>
@@ -313,33 +427,9 @@ val</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.rec_high">
-<span class="sig-name descname"><span class="pre">rec_high</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tensor</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.rec_high" title="Link to this definition"></a></dt>
-<dd><p>Wavelet coefficients of the reconstruction filter.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.rec_len">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rec_len</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.rec_len" title="Link to this definition"></a></dt>
-<dd><p>Reconstruction filter length.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.rec_low">
-<span class="sig-name descname"><span class="pre">rec_low</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tensor</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.rec_low" title="Link to this definition"></a></dt>
-<dd><p>Scaling coefficients of the reconstruction filter.</p>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.s">
-<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">s</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">float</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.s" title="Link to this definition"></a></dt>
-<dd><p>The normalization factor.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.short_family_name">
-<span class="sig-name descname"><span class="pre">short_family_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.short_family_name" title="Link to this definition"></a></dt>
-<dd><p>Wavelet short family name.</p>
+<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.biorthogonal">
+<span class="sig-name descname"><span class="pre">biorthogonal</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.biorthogonal" title="Link to this definition"></a></dt>
+<dd><p>Whether the wavelet is biorthogonal.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -348,73 +438,30 @@ val</p>
 <dd><p><cite>asymmetric</cite>, <cite>near symmetric</cite>, <cite>symmetric</cite></p>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.to">
-<span class="sig-name descname"><span class="pre">to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">device</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dtype</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.wavelets.Wavelet.to" title="Link to this definition"></a></dt>
-<dd><p>Applies <cite>torch.Tensor.to</cite> to decomposition and reconstruction
-filter valuess. Returns the filter bank.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.dec_low">
+<span class="sig-name descname"><span class="pre">dec_low</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tensor</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.dec_low" title="Link to this definition"></a></dt>
+<dd><p>Scaling coefficients of the decomposition filter.</p>
 </dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.dec_high">
+<span class="sig-name descname"><span class="pre">dec_high</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tensor</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.dec_high" title="Link to this definition"></a></dt>
+<dd><p>Wavelet coefficients of the decomposition filter.</p>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="imgtools.wavelets.dwt2">
-<span class="sig-prename descclassname"><span class="pre">imgtools.wavelets.</span></span><span class="sig-name descname"><span class="pre">dwt2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'reflect'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.wavelets.dwt2" title="Link to this definition"></a></dt>
-<dd><p>Performs discrete wavelet transform (DWT) of an image.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite>.</p>
-</dd>
-<dt><strong>scaling</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The scaling filter (father wavelet) with shape <cite>(K,)</cite>.</p>
-</dd>
-<dt><strong>wavelet</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The wavelet filter (mother wavelet) with shape <cite>(K,)</cite>.</p>
-</dd>
-<dt><strong>mode</strong><span class="classifier">{‘constant’, ‘reflect’, ‘replicate’, ‘circular’}, default=’reflect’</span></dt><dd><p>Padding mode. Same as the argument <cite>mode</cite> in <cite>torch.nn.functional.pad</cite>.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>The DWT components of the image. Shape <cite>(*, C, 4, Ho, Wo)</cite>, where
-<cite>Ho = (H + 1) // 2</cite> and <cite>Wo = (W + 1) // 2</cite>.
-The components has the following order: <cite>[LL, LH, HL, HH]</cite>, or
-equivalently, <cite>[cA, cV, cH, cD]</cite></p>
-</dd>
-</dl>
-</dd>
-</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.rec_low">
+<span class="sig-name descname"><span class="pre">rec_low</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tensor</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.rec_low" title="Link to this definition"></a></dt>
+<dd><p>Scaling coefficients of the reconstruction filter.</p>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="imgtools.wavelets.dwt2_partial">
-<span class="sig-prename descclassname"><span class="pre">imgtools.wavelets.</span></span><span class="sig-name descname"><span class="pre">dwt2_partial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'reflect'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.wavelets.dwt2_partial" title="Link to this definition"></a></dt>
-<dd><p>Returns a component of the discrete wavelet transform (DWT).</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite>.</p>
-</dd>
-<dt><strong>scaling</strong><span class="classifier">torch.Tensor | None</span></dt><dd><p>The scaling filter (father wavelet) with shape <cite>(K,)</cite>.</p>
-</dd>
-<dt><strong>wavelet</strong><span class="classifier">torch.Tensor | None</span></dt><dd><p>The wavelet filter (mother wavelet) with shape <cite>(K,)</cite>.</p>
-</dd>
-<dt><strong>target</strong><span class="classifier">{‘LL’, ‘LH’, ‘HL’, ‘HH’}</span></dt><dd><p>The component of discrete wavelet transform. The argument is case
-insensitive. The first letter represents the filter (lowpass/highpass)
-in x-direction.</p>
-</dd>
-<dt><strong>mode</strong><span class="classifier">{‘constant’, ‘reflect’, ‘replicate’, ‘circular’}, default=’reflect’</span></dt><dd><p>Padding mode. Same as the argument <cite>mode</cite> in <cite>torch.nn.functional.pad</cite>.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>The component of the DWT with shape <cite>(*, C, Ho, Wo)</cite>, where
-<cite>Ho = (H + 1) // 2</cite> and <cite>Wo = (W + 1) // 2</cite>.</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="imgtools.wavelets.Wavelet.rec_high">
+<span class="sig-name descname"><span class="pre">rec_high</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tensor</span></em><a class="headerlink" href="#imgtools.wavelets.Wavelet.rec_high" title="Link to this definition"></a></dt>
+<dd><p>Wavelet coefficients of the reconstruction filter.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
@@ -460,34 +507,6 @@ support wavelets are returned.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="imgtools.wavelets.idwt2">
-<span class="sig-prename descclassname"><span class="pre">imgtools.wavelets.</span></span><span class="sig-name descname"><span class="pre">idwt2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wavelet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'reflect'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.wavelets.idwt2" title="Link to this definition"></a></dt>
-<dd><p>Performs inverse discrete wavelet transform (IDWT) of wavelet.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, 4, H, W)</cite>.</p>
-</dd>
-<dt><strong>scaling</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The scaling filter (father wavelet) with shape <cite>(K,)</cite>.</p>
-</dd>
-<dt><strong>wavelet</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The wavelet filter (mother wavelet) with shape <cite>(K,)</cite>.</p>
-</dd>
-<dt><strong>mode</strong><span class="classifier">{‘constant’, ‘reflect’, ‘replicate’, ‘circular’}, default=’reflect’</span></dt><dd><p>Padding mode. Same as the argument <cite>mode</cite> in <cite>torch.nn.functional.pad</cite>.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>The reconstructed image. Shape <cite>(*, C, 2*H, 2*W)</cite>.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>The value may not correctly recontructed at the boundary of the image.</p>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="imgtools.wavelets.scaling_coeffs_to_wavelet_coeffs">
 <span class="sig-prename descclassname"><span class="pre">imgtools.wavelets.</span></span><span class="sig-name descname"><span class="pre">scaling_coeffs_to_wavelet_coeffs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scaling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.wavelets.scaling_coeffs_to_wavelet_coeffs" title="Link to this definition"></a></dt>
 <dd><p>Convert the scaling filter (father wavelet) to the wavelet
@@ -511,13 +530,14 @@ i = 0, 1, …, N.</p>
 </dd></dl>
 
 </section>
+</section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="filters.html" class="btn btn-neutral float-left" title="Filters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="utils.html" class="btn btn-neutral float-right" title="Utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="filters.html" class="btn btn-neutral float-left" title="imgtools.filters" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="utils.html" class="btn btn-neutral float-right" title="imgtools.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

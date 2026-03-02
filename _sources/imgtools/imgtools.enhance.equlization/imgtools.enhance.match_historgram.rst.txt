@@ -1,0 +1,6 @@
+﻿imgtools.enhance.match\_historgram
+==================================
+
+.. currentmodule:: imgtools.enhance
+
+.. autofunction:: match_historgram

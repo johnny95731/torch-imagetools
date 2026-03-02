@@ -1,0 +1,6 @@
+﻿imgtools.enhance.adjust\_inverse
+================================
+
+.. currentmodule:: imgtools.enhance
+
+.. autofunction:: adjust_inverse

@@ -1,0 +1,6 @@
+﻿imgtools.enhance.hist\_equalize
+===============================
+
+.. currentmodule:: imgtools.enhance
+
+.. autofunction:: hist_equalize

@@ -1,0 +1,6 @@
+﻿imgtools.enhance.adjust\_gamma
+==============================
+
+.. currentmodule:: imgtools.enhance
+
+.. autofunction:: adjust_gamma

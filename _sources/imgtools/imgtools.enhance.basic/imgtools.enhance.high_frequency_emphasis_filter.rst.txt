@@ -1,0 +1,6 @@
+﻿imgtools.enhance.high\_frequency\_emphasis\_filter
+==================================================
+
+.. currentmodule:: imgtools.enhance
+
+.. autofunction:: high_frequency_emphasis_filter

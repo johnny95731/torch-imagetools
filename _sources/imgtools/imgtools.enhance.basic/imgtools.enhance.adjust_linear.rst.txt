@@ -1,0 +1,6 @@
+﻿imgtools.enhance.adjust\_linear
+===============================
+
+.. currentmodule:: imgtools.enhance
+
+.. autofunction:: adjust_linear

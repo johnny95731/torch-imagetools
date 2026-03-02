@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Statistics &mdash; torch-imagetools 0.1.0 documentation</title>
+  <title>imgtools.statistics &mdash; torch-imagetools 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
@@ -19,7 +19,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="Utils" href="utils.html" /> 
+    <link rel="prev" title="imgtools.utils" href="utils.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -49,9 +49,8 @@
 <li class="toctree-l1"><a class="reference internal" href="wavelets.html">imgtools.wavelets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">imgtools.utils</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">imgtools.statistics</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#imgtools.statistics.combine_mean_std"><code class="docutils literal notranslate"><span class="pre">combine_mean_std()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#imgtools.statistics.estimate_noise_from_wavelet"><code class="docutils literal notranslate"><span class="pre">estimate_noise_from_wavelet()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#imgtools.statistics.estimate_noise_from_wavelet_2"><code class="docutils literal notranslate"><span class="pre">estimate_noise_from_wavelet_2()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#links">Links</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-imgtools.statistics">Documents</a></li>
 </ul>
 </li>
 </ul>
@@ -70,7 +69,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Statistics</li>
+      <li class="breadcrumb-item active"><code class="xref py py-mod docutils literal notranslate"><span class="pre">imgtools.statistics</span></code></li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/imgtools/statistics.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -80,8 +79,24 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-imgtools.statistics">
-<span id="statistics"></span><h1>Statistics<a class="headerlink" href="#module-imgtools.statistics" title="Link to this heading"></a></h1>
+  <section id="imgtools-statistics">
+<h1><a class="reference internal" href="#module-imgtools.statistics" title="imgtools.statistics"><code class="xref py py-mod docutils literal notranslate"><span class="pre">imgtools.statistics</span></code></a><a class="headerlink" href="#imgtools-statistics" title="Link to this heading"></a></h1>
+<section id="links">
+<h2>Links<a class="headerlink" href="#links" title="Link to this heading"></a></h2>
+<section id="basic">
+<h3>Basic<a class="headerlink" href="#basic" title="Link to this heading"></a></h3>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.statistics.combine_mean_std" title="imgtools.statistics.combine_mean_std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine_mean_std</span></code></a></p></td>
+<td><p>Calculate the mean, standard deviation (std), and dataset size of the combination of two datasets.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<hr class="docutils" />
+<section id="module-imgtools.statistics">
+<span id="documents"></span><h2>Documents<a class="headerlink" href="#module-imgtools.statistics" title="Link to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="imgtools.statistics.combine_mean_std">
 <span class="sig-prename descclassname"><span class="pre">imgtools.statistics.</span></span><span class="sig-name descname"><span class="pre">combine_mean_std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">stats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.statistics.combine_mean_std" title="Link to this definition"></a></dt>
@@ -117,71 +132,14 @@ np.ndarray type is also acceptable.</p>
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="imgtools.statistics.estimate_noise_from_wavelet">
-<span class="sig-prename descclassname"><span class="pre">imgtools.statistics.</span></span><span class="sig-name descname"><span class="pre">estimate_noise_from_wavelet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#imgtools.statistics.estimate_noise_from_wavelet" title="Link to this definition"></a></dt>
-<dd><p>Estimates the standard deviation of Gaussian noise from the
-highpass-highpass component of the wavelet decomposition.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>hh</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The highpass-highpass filtered image with shape <cite>(*, 1, H, W)</cite>.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>float</dt><dd><p>The standard deviation of Gaussian noise in the image.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">References</p>
-<dl class="simple">
-<dt>[1] D. L. Donoho and I. M. Johnstone, “Ideal spatial adaptation by wavelet</dt><dd><p>shrinkage,” Biometrika, vol. 81, no. 3, pp. 425-455, Sep. 1994</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="imgtools.statistics.estimate_noise_from_wavelet_2">
-<span class="sig-prename descclassname"><span class="pre">imgtools.statistics.</span></span><span class="sig-name descname"><span class="pre">estimate_noise_from_wavelet_2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#imgtools.statistics.estimate_noise_from_wavelet_2" title="Link to this definition"></a></dt>
-<dd><p>Estimates the standard deviation of Gaussian noise from the
-highpass-highpass component of the wavelet decomposition.</p>
-<p>An advanced method of <cite>estimate_noise_from_wavelet</cite>, for details, see:</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>hh</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The highpass-highpass filtered image in the range of [0, 1] with shape
-<cite>(*, 1, H, W)</cite>.</p>
-</dd>
-<dt><strong>maximum</strong><span class="classifier">float | int, default=1.0</span></dt><dd><p>The maximum of the image.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>float</dt><dd><p>The standard deviation of Gaussian noise in the image.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">References</p>
-<dl class="simple">
-<dt>[1] V. M. Kamble and K. Bhurchandi, “Noise Estimation and Quality</dt><dd><p>Assessment of Gaussian Noise Corrupted Images,” IOP Conference
-Series Materials Science and Engineering, vol. 331, p. 012019,
-Mar. 2018, doi: 10.1088/1757-899x/331/1/012019.</p>
-</dd>
-</dl>
-</dd></dl>
-
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="utils.html" class="btn btn-neutral float-left" title="Utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="utils.html" class="btn btn-neutral float-left" title="imgtools.utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

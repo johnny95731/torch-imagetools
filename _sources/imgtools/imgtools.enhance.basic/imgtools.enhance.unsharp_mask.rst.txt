@@ -1,0 +1,6 @@
+﻿imgtools.enhance.unsharp\_mask
+==============================
+
+.. currentmodule:: imgtools.enhance
+
+.. autofunction:: unsharp_mask

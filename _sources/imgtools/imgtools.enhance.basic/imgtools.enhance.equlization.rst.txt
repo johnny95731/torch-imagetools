@@ -1,0 +1,14 @@
+﻿imgtools.enhance.equlization
+============================
+
+.. automodule:: imgtools.enhance.equlization
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      hist_equalize
+      match_historgram
+      match_mean_std
+   

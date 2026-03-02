@@ -1,0 +1,6 @@
+﻿imgtools.enhance.match\_mean\_std
+=================================
+
+.. currentmodule:: imgtools.enhance
+
+.. autofunction:: match_mean_std

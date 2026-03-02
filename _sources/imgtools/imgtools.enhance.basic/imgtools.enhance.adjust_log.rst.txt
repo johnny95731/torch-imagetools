@@ -1,0 +1,6 @@
+﻿imgtools.enhance.adjust\_log
+============================
+
+.. currentmodule:: imgtools.enhance
+
+.. autofunction:: adjust_log

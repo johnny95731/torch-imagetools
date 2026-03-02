@@ -1,0 +1,6 @@
+﻿imgtools.enhance.adjust\_sigmoid
+================================
+
+.. currentmodule:: imgtools.enhance
+
+.. autofunction:: adjust_sigmoid
