@@ -1,7 +1,5 @@
 """Transformations about color models.
 
-.. currentmodule:: imgtools.color
-
 Color Space Transformations
 ---------------------------
 
