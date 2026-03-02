@@ -25,18 +25,18 @@ Color Balance
 """
 
 __all__ = [
+    'estimate_illuminant_cheng',
+    'light_compensation_htchen',
     'balance_by_scaling',
     'cheng_pca_balance',
     'clipping_balance',
-    'estimate_illuminant_cheng',
     'get_von_kries_transform_matrix',
     'gray_edge_balance',
     'gray_world_balance',
-    'hernandez_andre_approximation',
-    'light_compensation_htchen',
-    'mccamy_approximation',
     'von_kries_transform',
     'white_patch_balance',
+    'hernandez_andre_approximation',
+    'mccamy_approximation',
 ]
 
 from ._balance import (

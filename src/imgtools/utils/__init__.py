@@ -1,16 +1,17 @@
 __all__ = [
     'Tensorlike',
-    '_check_ksize',
     'align_device_type',
     'arrayize',
+    'tensorize',
+    'to_channel_coeff',
+    '_check_ksize',
     'atan2',
     'calc_padding',
     'filter2d',
+    'histogram',
     'matrix_transform',
     'p_norm',
     'pca',
-    'tensorize',
-    'to_channel_coeff',
 ]
 
 from .helpers import (
@@ -25,6 +26,7 @@ from .math import (
     atan2,
     calc_padding,
     filter2d,
+    histogram,
     matrix_transform,
     p_norm,
     pca,

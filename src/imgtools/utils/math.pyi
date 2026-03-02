@@ -6,6 +6,7 @@ __all__ = [
     'atan2',
     'p_norm',
     'pca',
+    'histogram',
 ]
 
 from typing import Literal
@@ -42,3 +43,8 @@ def p_norm(img: torch.Tensor, p: float | str) -> torch.Tensor: ...
 
 #
 def pca(img: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]: ...
+def histogram(
+    img: torch.Tensor,
+    bins: int = 256,
+    density: bool = False,
+) -> torch.Tensor: ...
