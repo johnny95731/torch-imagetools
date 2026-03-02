@@ -14,6 +14,8 @@ def path_to_module_path(file_path: str) -> str:
 
 
 def handle_a_folder(path: str, depth: int):
+    if depth > 1:
+        return
     entries = os.listdir(path)
     entries = [
         file
@@ -25,7 +27,6 @@ def handle_a_folder(path: str, depth: int):
 
     submodules = []
     submod_attrs: dict[str, list[str]] = {}
-    merged_all = []
     print('Start:', path)
     for file in entries:
         full_path = os.path.join(path, file)
@@ -40,45 +41,72 @@ def handle_a_folder(path: str, depth: int):
             if _all is not None:
                 _all = sorted(_all)
                 submod_attrs[root] = _all
-                merged_all += _all
-
-    print('Done:', path)
-
     if depth > 0:
         submodules = sorted(submodules)
         # Load docstring of __init.py
-        full_path = os.path.join(path, '__init__.py')
-        module_path = path_to_module_path(full_path)
-        module = importlib.import_module(module_path)
+        init_path = os.path.join(path, '__init__.py')
+        module_path = path_to_module_path(path).replace('src.', '')
+        module = importlib.import_module(path_to_module_path(init_path))
         docstring = module.__doc__
 
-        # Format `__all__ = [...]`
-        content = "',\n    '".join(merged_all)
-        all_string = f"__all__ = [\n    '{content}',\n]\n"
-
-        # Format `from .{submod} import`
-        import_string = ''
+        # Format submod
+        _summary = []
         for submod in submodules:
             suball = submod_attrs.get(submod, None)
             if suball is None:
                 print(f'"{submod}" has no "__all__".')
                 continue
-            subcontent = ',\n    '.join(suball)
-            s = f'from .{submod} import (\n    {subcontent},\n)\n'
-            import_string += s
+            auto_summary = f"""{'=' * (len(submod))}
+{submod.capitalize()}
+{'=' * (len(submod))}
 
-        pycontent = ''
-        if docstring is not None:
-            pycontent += f'"""{docstring}"""\n\n'
-        pycontent += f'{all_string}\n{import_string}'
-        with open(
-            os.path.join(path, '__init__.py'), 'w', encoding='utf-8'
-        ) as f:
+.. autosummary::
+   :nosignatures:
+
+   {f'\n   '.join(suball)}
+"""
+            _summary.append(auto_summary)
+
+        # Merge
+        title = f':mod:`{module_path}`'
+        if docstring is None:
+            docstring = ''
+        else:
+            docstring = f"""{docstring}
+---------
+"""
+
+        pycontent = f"""{title}
+{'=' * len(title)}
+
+.. currentmodule:: {module_path}
+
+{docstring}
+
+Links
+-----
+
+{'\n\n'.join(_summary)}
+---------
+
+
+Documents
+---------
+
+.. automodule:: {module_path}
+   :members:
+   :no-docstring:
+   :member-order: bysource
+"""
+        docs_path = f'./docs/source/{"/".join(module_path.split("."))}.rst'
+        with open(docs_path, 'w', encoding='utf-8') as f:
             f.write(pycontent)
+
+    print('Done :', path)
 
 
 def main():
-    """Generate __init__.pyi files."""
+    """Generate .rst files"""
     basedir = './src'
     module_path = os.path.join(basedir, os.listdir(basedir)[0])
     handle_a_folder(module_path, 0)
