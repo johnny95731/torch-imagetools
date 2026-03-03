@@ -51,10 +51,11 @@ def retinex(
     """
     log_img = img.log1p()
     img_f = torch.fft.rfft2(img)
+    rec_size = img.shape[-2:]
     retinex: torch.Tensor | None = None
     for i, s in enumerate(scales):
         lowpass = get_gaussian_lowpass(img_f, 1 / s, d=1.0, device=img_f.device)
-        blurred = torch.fft.irfft2(img_f * lowpass)  # type: torch.Tensor
+        blurred = torch.fft.irfft2(img_f * lowpass, s=rec_size)  # type: torch.Tensor
         single = log_img - blurred.log1p()  # single-scale
         if weights is not None:
             single = single * weights[i]
