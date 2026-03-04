@@ -5,12 +5,10 @@ description = ""
 authors = [{ name = "johnny95731", email = "johnny95731@yahoo.com" }]
 readme = "README.md"
 requires-python = ">=3.11,<3.15"
-dependencies = []
+dependencies = ["pywavelets (>=1.7,<2.0)"]
 
 [project.optional-dependencies]
 torch = ["torch>=2.7.0"]
-wavelet = ["pywavelets>=1.9.0"]
-all = ["torch>=2.7.0", "pywavelets>=1.9.0"]
 
 [tool.poetry]
 packages = [{ include = "imgtools", from = "src" }]
