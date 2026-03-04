@@ -1,18 +1,15 @@
 __all__ = [
     'Tensorlike',
     'align_device_type',
-    'to_channel_coeff',
+    '_to_channel_coeff',
     'arrayize',
     'tensorize',
 ]
-
-from typing import TypeVar
 
 import numpy as np
 import torch
 from torch.types import Number
 
-T = TypeVar('T')
 
 Tensorlike = torch.Tensor | np.ndarray | list[Number] | Number
 
@@ -46,8 +43,27 @@ def check_valid_image_ndim(img: torch.Tensor, min_dim: int = 3) -> bool:
     return is_not_batch
 
 
+def __default_dtype(x: torch.Tensor) -> torch.dtype:
+    """Returns `x.dtype` if the input is floating point data. Otherwist,
+    returns float32.
+
+    Parameters
+    ----------
+    x : torch.Tensor
+        torch.Tensor.
+
+    Returns
+    -------
+    torch.dtype
+        Floating point type.
+    """
+    dtype = x.dtype if torch.is_floating_point(x) else torch.float32
+    return dtype
+
+
 def align_device_type(source: torch.Tensor, target: torch.Tensor):
-    """Aligns device and dtype of the source tensor to the target tensor.
+    """Mathes the device and dtype of the source tensor to the
+    target tensor.
 
     Parameters
     ----------
@@ -65,12 +81,12 @@ def align_device_type(source: torch.Tensor, target: torch.Tensor):
         - same dtype as target tensor if target.dtype is a floating point
         - float32 dtype if target.dtype is not a floating point
     """
-    dtype = target.dtype if torch.is_floating_point(target) else torch.float32
+    dtype = __default_dtype(target)
     source = source.to(target.device, dtype)
     return source
 
 
-def to_channel_coeff(
+def _to_channel_coeff(
     coeff: int | float | torch.Tensor,
     num_ch: int,
 ) -> torch.Tensor:

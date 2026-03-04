@@ -12,6 +12,12 @@ import torch
 from ._ciexyz import StandardIlluminants
 from ._rgb import RGBSpec
 
+_6_29: float
+_6_29_POW3: float
+_SCALING_LAB: float
+_BIAS_LAB: float
+
+#
 @overload
 def xyz_to_lab(
     xyz: torch.Tensor,

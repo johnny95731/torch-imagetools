@@ -3,6 +3,8 @@
 
 .. currentmodule:: imgtools.restoration
 
+Image restoration, including dehaze, deblur, and denoise.
+---------
 
 
 Links

@@ -16,8 +16,8 @@ __all__ = [
 import torch
 
 from ..color import gammaize_rgb, rgb_to_xyz, xyz_to_lms
-from ..utils.helpers import align_device_type, to_channel_coeff
-from ..utils.math import matrix_transform
+from ..utils.helpers import align_device_type, _to_channel_coeff
+from ..core.math import matrix_transform
 from .est_illuminant import estimate_illuminant_cheng
 
 
@@ -180,7 +180,7 @@ def balance_by_scaling(
     num_ch = img.shape[-3]
     # Get max of each channel
     ch_max = img.amax((-1, -2), keepdim=True)
-    scaled_max = to_channel_coeff(scaled_max, num_ch)
+    scaled_max = _to_channel_coeff(scaled_max, num_ch)
     scaled_max = align_device_type(scaled_max, img)
 
     factors = scaled_max / ch_max
@@ -356,7 +356,7 @@ def white_patch_balance(
 
     factors = img_quantile / ch_quantile
     factors = align_device_type(factors, rgb)
-    factors = to_channel_coeff(factors, num_ch)
+    factors = _to_channel_coeff(factors, num_ch)
 
     balanced = (rgb * factors).clip(0.0, 1.0)
     if ret_factors:
@@ -422,7 +422,7 @@ def cheng_pca_balance(
         )
 
     illuminant = estimate_illuminant_cheng(rgb)
-    illuminant = to_channel_coeff(illuminant, 3)
+    illuminant = _to_channel_coeff(illuminant, 3)
     if adaptation == 'rgb':
         coeff = illuminant.mean(-3, keepdim=True) / illuminant
         balanced = (coeff * rgb).clip(0.0, 1.0)

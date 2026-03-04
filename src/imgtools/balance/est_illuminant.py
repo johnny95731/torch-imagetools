@@ -5,7 +5,7 @@ __all__ = [
 import torch
 
 from ..utils.helpers import check_valid_image_ndim
-from ..utils.math import pca
+from ..core.decomposition import pca
 
 
 def estimate_illuminant_cheng(

@@ -2,6 +2,7 @@ __all__ = [
     'dwt2',
     'dwt2_partial',
     'idwt2',
+    'scaling_coeffs_to_wavelet_coeffs',
 ]
 
 from typing import Literal
@@ -31,3 +32,6 @@ def idwt2(
     wavelet: torch.Tensor,
     mode: Literal['constant', 'reflect', 'replicate', 'circular'] = 'reflect',
 ) -> torch.Tensor: ...
+
+#
+def scaling_coeffs_to_wavelet_coeffs(scaling: torch.Tensor) -> torch.Tensor: ...

@@ -3,13 +3,16 @@ __all__ = [
     'laplacian',
     'robinson',
     'kirsch',
+    'prewitt',
+    'sobel',
+    'scharr',
 ]
 
 import torch
 from torch.nn.functional import pad
 
+from ..core.math import calc_padding, filter2d, rad_to_deg
 from ..utils.helpers import align_device_type
-from ..utils.math import atan2, calc_padding, filter2d
 
 
 def gradient_magnitude(
@@ -97,6 +100,7 @@ def gradient_magnitude(
     return mag
 
 
+# 2nd order operators
 def laplacian(
     img: torch.Tensor,
     diagonal: bool = False,
@@ -152,6 +156,7 @@ def laplacian(
     return grad
 
 
+# Compass operators
 def robinson(
     img: torch.Tensor,
     ret_angle: bool = False,
@@ -200,7 +205,9 @@ def robinson(
     mag = torch.stack((grad_y, grad_x, grad_45, grad_135))
     mag = mag.abs().amax(dim=0)
     if ret_angle:
-        angle = atan2(grad_y, grad_x, angle_unit=angle_unit)
+        angle = torch.atan2(grad_y, grad_x)
+        if angle_unit == 'deg':
+            angle = rad_to_deg(angle)
         return mag, angle
     return mag
 
@@ -271,6 +278,165 @@ def kirsch(
     ))
     mag = mag.abs().amax(dim=0)
     if ret_angle:
-        angle = atan2(grad_south, grad_east, angle_unit=angle_unit)
+        angle = torch.atan2(grad_south, grad_east)
+        if angle_unit == 'deg':
+            angle = rad_to_deg(angle)
+        return mag, angle
+    return mag
+
+
+# 1st order operators
+def prewitt(
+    img: torch.Tensor,
+    magnitude: str | int | float = 2,
+    ret_angle: bool = False,
+    angle_unit: str = 'deg',
+) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+    """Edge detection by the Prewitt operators.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape `(*, C, H, W)`.
+    magnitude : {'stack', 'inf', '-inf'} | int | float, default=2
+        Norm for computing gradient's magnitude.
+    ret_angle : bool, default=False
+        Returns the direction of gradient or not.
+    angle_unit : {'rad', 'deg'}, default='deg'
+        The representation of angle is in radian or in degree.
+
+    Returns
+    -------
+    mag : torch.Tensor
+        Image gradient's magnitude.\\
+        The magnitude stacks (y-direction, x-direction) if `magnitude`
+        is 'stack'.\\
+        For details, check `torch_imagetools.filters.gradient_magnitude`.
+    angle : torch.Tensor
+        Image gradient's direction with shape `(*, C, H, W)`.
+        `angle` is returned only if `ret_angle` is true.
+    """
+    kernel_y = torch.tensor((
+        (-1, -1, -1),
+        (0, 0, 0),
+        (1, 1, 1),
+    ))
+    kernel_y = align_device_type(kernel_y, img)
+    # Note: Filtering twice with 2 directional kernel is faster than
+    # filtering by a kernel that stacked 2 kernels
+    padding = calc_padding((3, 3))
+    _img = pad(img, padding, 'reflect')
+    grad_y = filter2d(_img, kernel_y, None)
+    grad_x = filter2d(_img, kernel_y.T, None)
+
+    mag = gradient_magnitude(grad_y, grad_x, magnitude=magnitude)
+    if ret_angle:
+        angle = torch.atan2(grad_y, grad_x)
+        if angle_unit == 'deg':
+            angle = rad_to_deg(angle)
+        return mag, angle
+    return mag
+
+
+def sobel(
+    img: torch.Tensor,
+    magnitude: str | int | float = 2,
+    ret_angle: bool = False,
+    angle_unit: str = 'deg',
+) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+    """Edge detection by the Sobel operators.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape `(*, C, H, W)`.
+    magnitude : {'stack', 'inf', '-inf'} | int | float, default=2
+        Stratge for computing gradient's magnitude.
+    ret_angle : bool, default=False
+        Returns the direction of gradient or not.
+    angle_unit : {'rad', 'deg'}, default='deg'
+        The representation of angle is in radian or in degree.
+
+    Returns
+    -------
+    mag : torch.Tensor
+        Image gradient's magnitude.\\
+        The magnitude stacks (y-direction, x-direction) if `magnitude`
+        is 'stack'.\\
+        For details, check `torch_imagetools.filters.gradient_magnitude`.
+    angle : torch.Tensor
+        Image gradient's direction with shape `(*, C, H, W)`.
+        `angle` is returned only if `ret_angle` is true.
+    """
+    kernel_y = torch.tensor((
+        (-1, -2, -1),
+        (0, 0, 0),
+        (1, 2, 1),
+    ))
+    kernel_y = align_device_type(kernel_y, img)
+    # Note: Filtering twice with 2 directional kernel is faster than
+    # filtering by a kernel that stacked 2 kernels
+    padding = calc_padding((3, 3))
+    _img = pad(img, padding, 'reflect')
+    grad_y = filter2d(_img, kernel_y, None)
+    grad_x = filter2d(_img, kernel_y.T, None)
+
+    mag = gradient_magnitude(grad_y, grad_x, magnitude=magnitude)
+    if ret_angle:
+        angle = torch.atan2(grad_y, grad_x)
+        if angle_unit == 'deg':
+            angle = rad_to_deg(angle)
+        return mag, angle
+    return mag
+
+
+def scharr(
+    img: torch.Tensor,
+    magnitude: str | int | float = 2,
+    ret_angle: bool = False,
+    angle_unit: str = 'deg',
+) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+    """Edge detection by the Scharr operators.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape `(*, C, H, W)`.
+    magnitude : {'stack', 'inf', '-inf'} | int | float, default=2
+        Norm for computing gradient's magnitude.
+    ret_angle : bool, default=False
+        Returns the direction of gradient or not.
+    angle_unit : {'rad', 'deg'}, default='deg'
+        The representation of angle is in radian or in degree.
+
+    Returns
+    -------
+    mag : torch.Tensor
+        Image gradient's magnitude.\\
+        The magnitude stacks (y-direction, x-direction) if `magnitude`
+        is 'stack'.\\
+        For details, check `torch_imagetools.filters.gradient_magnitude`.
+    angle : torch.Tensor
+        Image gradient's direction with shape `(*, C, H, W)`.
+        `angle` is returned only if `ret_angle` is true.
+    """
+    kernel_y = torch.tensor((
+        (-3, -10, -3),
+        (0, 0, 0),
+        (3, 10, 3),
+    ))
+    kernel_y = align_device_type(kernel_y, img)
+    # Note: Filtering twice with 2 directional kernel is faster than
+    # filtering by a kernel that stacked 2 kernels
+    padding = calc_padding((3, 3))
+    _img = pad(img, padding, 'reflect')
+    grad_y = filter2d(_img, kernel_y, None)
+    grad_x = filter2d(_img, kernel_y.T, None)
+
+    mag = gradient_magnitude(grad_y, grad_x, magnitude=magnitude)
+    if ret_angle:
+        angle = torch.atan2(grad_y, grad_x)
+        if angle_unit == 'deg':
+            angle = rad_to_deg(angle)
         return mag, angle
     return mag

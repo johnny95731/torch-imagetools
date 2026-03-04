@@ -1,12 +1,9 @@
 __all__ = [
     'matrix_transform',
-    '_check_ksize',
     'calc_padding',
     'filter2d',
-    'atan2',
-    'p_norm',
-    'pca',
-    'histogram',
+    'deg_to_rad',
+    'rad_to_deg',
 ]
 
 from math import ceil, floor
@@ -14,7 +11,7 @@ from math import ceil, floor
 import torch
 from torch.nn.functional import conv2d, pad
 
-from ..utils.helpers import align_device_type, check_valid_image_ndim
+from ..utils.helpers import align_device_type
 
 
 def matrix_transform(
@@ -160,147 +157,35 @@ def filter2d(
     return res
 
 
-def atan2(
-    y: torch.Tensor,
-    x: torch.Tensor,
-    angle_unit: str = 'deg',
-) -> torch.Tensor:
-    """Computes the direction of an image gradient.
+def deg_to_rad(deg: torch.Tensor):
+    """Convert the angle unit from degree to radian.
 
     Parameters
     ----------
-    y : torch.Tensor
-        The y-component.
-    x : torch.Tensor
-        The x-component.
-    angle_unit : {'rad', 'deg'}, default='deg'
-        The representation of angle is in radian or in degree.
+    deg : torch.Tensor
+        Degree values.
 
     Returns
     -------
     torch.Tensor
-        The angle between the vector and x-axis.
-
-    Raises
-    ------
-    ValueError
-        If angle_unit is neither 'rad' or 'deg'.
+        Radian values.
     """
-    if angle_unit != 'deg' and angle_unit != 'rad':
-        raise ValueError(
-            f"angle_unit must be 'rad' or 'deg', but got {angle_unit}."
-        )
-    angle = torch.atan2(y, x)
-    if angle_unit == 'deg':
-        angle.mul(180 / torch.pi)
-    return angle
+    rad = deg.mul(180 / torch.pi)
+    return rad
 
 
-def p_norm(
-    img: torch.Tensor,
-    p: float | str,
-) -> torch.Tensor:
-    """Computes the p-norm of an image.
+def rad_to_deg(deg: torch.Tensor):
+    """Convert the angle unit from radian to degree.
 
     Parameters
     ----------
-    img : torch.Tensor
-        Image, a tensor with shape `(*, C, H, W)`.
-    p : float | string of float
-        The exponent value.
+    deg : torch.Tensor
+        Radian values.
 
     Returns
     -------
     torch.Tensor
-        The p-norm value with shape `(*,)`.
+        Degree values.
     """
-    if isinstance(p, str):
-        p = float(p)
-
-    img = img.abs()
-    if p == float('inf'):
-        res = img.amax(dim=(-3, -2, -1))
-    elif p == float('-inf'):
-        res = img.amin(dim=(-3, -2, -1))
-    else:
-        res = (img**p).sum(dim=(-3, -2, -1))
-        res = res ** (1 / p)
-    return res
-
-
-def pca(img: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-    """Image PCA.
-
-    Parameters
-    ----------
-    img : torch.Tensor
-        Image with shape `(*, C, H, W)`
-
-    Returns
-    -------
-    L : torch.Tensor
-        Eigenvalues in ascending order.
-    Vt : torch.Tensor
-        Corresponding eigenvectors.
-    """
-    check_valid_image_ndim(img)
-    is_float16 = img.dtype == torch.float16
-    if is_float16 or not torch.is_floating_point(img):
-        img = img.float()
-    flatted = img.flatten(-2)
-    # Covariance
-    mean = flatted.mean(dim=-1, keepdim=True)
-    cov = (flatted @ flatted.movedim(-1, -2)) / (flatted.size(-1) - 1)
-    cov -= mean * mean.movedim(-1, -2)
-
-    L, Vt = torch.linalg.eigh(cov)  # noqa: N806
-    if is_float16:
-        L = L.type(torch.float16)  # noqa: N806
-        Vt = Vt.type(torch.float16)  # noqa: N806
-    return L, Vt
-
-
-def histogram(
-    img: torch.Tensor,
-    bins: int = 256,
-    density: bool = False,
-) -> torch.Tensor:
-    """Compute the histogram of an image.
-
-    Parameters
-    ----------
-    img : torch.Tensor
-        An image in the range of [0, 1] with 2 <= img.ndim <= 4.
-    bins : int, default=256
-        The number of groups in data range.
-    density : bool, default=False
-        If true, return the pdf of each channel.
-
-    Returns
-    -------
-    torch.Tensor
-        The histogram or density.
-
-    Raises
-    ------
-    TypeError
-        If bins is not int type.
-    """
-    if not isinstance(bins, int):
-        raise TypeError(f'`bins` must be an integer: {type(bins)}.')
-    check_valid_image_ndim(img, 2)
-    img = (img * (bins - 1)).type(torch.uint8)
-
-    flat_image = img.flatten(start_dim=-2).long()
-    hist = torch.zeros(
-        img.shape[:-2] + (bins,),
-        dtype=torch.int32,
-        device=img.device,
-    )
-    hist.scatter_add_(
-        dim=-1, index=flat_image, src=hist.new_ones(1).expand_as(flat_image)
-    )
-    if density:
-        num_el = flat_image.size(-1)
-        hist = hist.float() / num_el
-    return hist
+    rad = deg.mul(180 / torch.pi)
+    return rad

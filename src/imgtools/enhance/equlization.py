@@ -7,7 +7,7 @@ __all__ = [
 import torch
 
 from ..utils.helpers import align_device_type, check_valid_image_ndim
-from ..utils.math import histogram
+from ..statistics.basic import histogram
 
 
 def hist_equalize(img: torch.Tensor, bins: int = 256) -> torch.Tensor:

@@ -15,7 +15,8 @@ from ._ciexyz import (
     xyz_to_rgb,
 )
 
-_SCALING_LUV = 0.01 / (((6 / 29) / 2) ** 3)  # = (29 / 3)**3 / 100
+_SCALING_LUV = 0.01 / (((6 / 29) / 2) ** 3)
+"""(29 / 3)**3 / 100"""
 
 
 def _calc_uv_prime(x: torch.Tensor, y: torch.Tensor, z: torch.Tensor):

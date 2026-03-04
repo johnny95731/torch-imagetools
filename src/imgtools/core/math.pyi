@@ -1,11 +1,9 @@
 __all__ = [
     'matrix_transform',
-    '_check_ksize',
     'calc_padding',
     'filter2d',
-    'atan2',
-    'p_norm',
-    'pca',
+    'deg_to_rad',
+    'rad_to_deg',
     'histogram',
 ]
 
@@ -27,24 +25,10 @@ def calc_padding(ksize: tuple[int, int]) -> tuple[int, int, int, int]: ...
 def filter2d(
     img: torch.Tensor,
     kernel: torch.Tensor,
-    padding: list[int] | Literal['same'] | None = 'same',
+    padding: list[int] | str | None = 'same',
     mode: Literal['constant', 'reflect', 'replicate', 'circular'] = 'reflect',
 ) -> torch.Tensor: ...
 
 #
-def atan2(
-    y: torch.Tensor,
-    x: torch.Tensor,
-    angle_unit: Literal['rad', 'deg'] = 'deg',
-) -> torch.Tensor: ...
-
-#
-def p_norm(img: torch.Tensor, p: float | str) -> torch.Tensor: ...
-
-#
-def pca(img: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]: ...
-def histogram(
-    img: torch.Tensor,
-    bins: int = 256,
-    density: bool = False,
-) -> torch.Tensor: ...
+def deg_to_rad(deg: torch.Tensor): ...
+def rad_to_deg(deg: torch.Tensor): ...

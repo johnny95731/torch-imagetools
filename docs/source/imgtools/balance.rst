@@ -53,16 +53,6 @@ Est_illuminant
 
    estimate_illuminant_cheng
 
-
-=====
-Light
-=====
-
-.. autosummary::
-   :nosignatures:
-
-   light_compensation_htchen
-
 ---------
 
 

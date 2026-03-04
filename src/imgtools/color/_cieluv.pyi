@@ -12,6 +12,9 @@ import torch
 from ._ciexyz import StandardIlluminants
 from ._rgb import RGBSpec
 
+_SCALING_LUV: float
+
+#
 @overload
 def xyz_to_luv(
     xyz: torch.Tensor,

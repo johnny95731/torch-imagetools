@@ -16,13 +16,13 @@ from math import log1p
 
 import torch
 
+from ..core.math import filter2d
 from ..filters.blur import get_gaussian_kernel
 from ..utils.helpers import (
+    _to_channel_coeff,
     align_device_type,
     check_valid_image_ndim,
-    to_channel_coeff,
 )
-from ..utils.math import filter2d
 
 
 # Intensity
@@ -55,9 +55,9 @@ def adjust_linear(
     check_valid_image_ndim(img)
 
     num_ch = img.size(-3)
-    slope = to_channel_coeff(slope, num_ch)
+    slope = _to_channel_coeff(slope, num_ch)
     slope = align_device_type(slope, img)
-    center = to_channel_coeff(center, num_ch)
+    center = _to_channel_coeff(center, num_ch)
     center = align_device_type(center, img)
 
     # (img - center) * slope + center
@@ -96,12 +96,12 @@ def adjust_gamma(
     check_valid_image_ndim(img)
 
     num_ch = img.size(-3)
-    gamma = to_channel_coeff(gamma, num_ch)
+    gamma = _to_channel_coeff(gamma, num_ch)
     gamma = align_device_type(gamma, img)
 
     res = img.pow(gamma)
     if scale is not None:
-        scale = to_channel_coeff(scale, num_ch)
+        scale = _to_channel_coeff(scale, num_ch)
         scale = align_device_type(scale, img)
         res.mul(scale)
     return res
@@ -134,7 +134,7 @@ def adjust_log(
     num_ch = img.size(-3)
     res = img.log()
     if scale is not None:
-        scale = to_channel_coeff(scale, num_ch)
+        scale = _to_channel_coeff(scale, num_ch)
         scale = align_device_type(scale, img)
         res.mul(scale)
     return res
@@ -169,9 +169,9 @@ def adjust_sigmoid(
     check_valid_image_ndim(img)
 
     num_ch = img.size(-3)
-    shift = to_channel_coeff(shift, num_ch)
+    shift = _to_channel_coeff(shift, num_ch)
     shift = align_device_type(shift, img)
-    gain = to_channel_coeff(gain, num_ch)
+    gain = _to_channel_coeff(gain, num_ch)
     gain = align_device_type(gain, img)
 
     res = (img - shift).mul(gain).sigmoid()
@@ -203,7 +203,7 @@ def adjust_inverse(
     check_valid_image_ndim(img)
 
     num_ch = img.size(-3)
-    maxi = to_channel_coeff(maxi, num_ch)
+    maxi = _to_channel_coeff(maxi, num_ch)
     maxi = align_device_type(maxi, img)
 
     res = maxi - img

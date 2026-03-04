@@ -7,8 +7,6 @@
 """
 
 __all__ = [
-    'estimate_illuminant_cheng',
-    'light_compensation_htchen',
     'balance_by_scaling',
     'cheng_pca_balance',
     'clipping_balance',
@@ -19,6 +17,7 @@ __all__ = [
     'white_patch_balance',
     'hernandez_andre_approximation',
     'mccamy_approximation',
+    'estimate_illuminant_cheng',
 ]
 
 from ._balance import (
@@ -37,7 +36,4 @@ from ._cct import (
 )
 from .est_illuminant import (
     estimate_illuminant_cheng,
-)
-from .light import (
-    light_compensation_htchen,
 )

@@ -6,11 +6,12 @@ __version__ = '0.1.0'
 _submodules = [
     'balance',
     'color',
+    'core',
     'enhance',
     'filters',
-    'utils',
-    'wavelets',
+    'restoration',
     'statistics',
+    'utils',
 ]
 __all__ = _submodules
 

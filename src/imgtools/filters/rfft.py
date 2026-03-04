@@ -14,7 +14,7 @@ __all__ = [
 from typing import Literal
 import torch
 
-from ..utils.math import _check_ksize
+from ..core.math import _check_ksize
 
 
 def get_gaussian_lowpass(

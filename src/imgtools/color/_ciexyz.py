@@ -14,8 +14,8 @@ __all__ = [
 import numpy as np
 import torch
 
-from ..utils.helpers import align_device_type, to_channel_coeff
-from ..utils.math import matrix_transform
+from ..core.math import matrix_transform
+from ..utils.helpers import _to_channel_coeff, align_device_type
 from ._rgb import gammaize_rgb, linearize_rgb
 
 
@@ -457,7 +457,7 @@ def normalize_xyz(
     matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
     max_ = align_device_type(max_, xyz)
-    max_ = to_channel_coeff(max_, 3)
+    max_ = _to_channel_coeff(max_, 3)
 
     res = xyz / max_
     return res
@@ -487,7 +487,7 @@ def unnormalize_xyz(
     matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
     max_ = align_device_type(max_, xyz)
-    max_ = to_channel_coeff(max_, 3)
+    max_ = _to_channel_coeff(max_, 3)
 
     res = xyz * max_
     return res

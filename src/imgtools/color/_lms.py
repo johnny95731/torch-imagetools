@@ -8,7 +8,7 @@ __all__ = [
 
 import torch
 
-from ..utils.math import matrix_transform
+from ..core.math import matrix_transform
 
 
 def get_chromatic_adaptation() -> tuple[str, ...]:

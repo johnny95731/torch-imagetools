@@ -2,12 +2,14 @@
 
 An image processing library based on PyTorch that aim to provide some non deep learning-based tools for pre-/post-processing, data augmentation, or an alternative option when no data for training the network.
 
-- `imgtools.color`: transformations between color spaces. The spaces including RGB, YUV, HSV, CIEXYZ, LMS, CIELAB, etc.
 - `imgtools.balance`: chromatic adaptations, illuminant estimations, correlate color temperature estimations.
+- `imgtools.color`: transformations between color spaces. The spaces including RGB, YUV, HSV, CIEXYZ, LMS, CIELAB, etc.
+- `imgtools.core`: discrete wavelet transform and its inverse transform, math tools (PCA, filter2d, matrix transform).
 - `imgtools.enhance`: basic intensity trnasform (linear, log, gamma, ...), sharpening/unsharp masking, high dynamic range, low-light enhance.
 - `imgtools.filters`: spatial domain and frequency domain filters.
-- `imgtools.wavelets`: discrete wavelet transform and its inverse transform.
-- `imgtools.utils`: conversion `np.ndarray` <-> `torch.Tensor` (`arrayize`, `tensorize`), math tools (PCA, filter2d, matrix transform).
+- `imgtools.restoration`: dehaze.
+- `imgtools.statistice`: dehaze.
+- `imgtools.utils`: conversion `np.ndarray` <-> `torch.Tensor` (`arrayize`, `tensorize`), 
 
 This library 
 
@@ -15,11 +17,10 @@ This library
 
 ### Future plan
 
-More implementations of the researches. For examples
-- low-light image enhance
+- automatic contrast enhancement
 - highlight removal and shadow removal
 - style transfer
-- denoise
+- restoration
 - chromatic adaptation
 - frequency domain methods
 - gradient domain methods

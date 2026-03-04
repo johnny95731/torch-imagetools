@@ -7,7 +7,7 @@ __all__ = [
 
 import torch
 
-from ..utils.helpers import align_device_type, to_channel_coeff
+from ..utils.helpers import align_device_type, _to_channel_coeff
 from ._ciexyz import (
     get_rgb_to_xyz_matrix,
     rgb_to_xyz,
@@ -15,9 +15,13 @@ from ._ciexyz import (
 )
 
 _6_29 = 6 / 29  # threshold for _lab_helper_inv
+"""6 / 29"""
 _6_29_POW3 = _6_29**3  # threshold for _lab_helper
-_SCALING_LAB = 1 / (3 * _6_29**2)  # = (29 / 6)**2 / 3
+"""(6 / 29) ** 3"""
+_SCALING_LAB = 1 / (3 * _6_29**2)
+"""(29 / 6)**2 / 3"""
 _BIAS_LAB = 16 / 116
+"""16 / 116"""
 
 
 def _lab_helper(value: torch.Tensor):
@@ -81,7 +85,7 @@ def xyz_to_lab(
     matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
     max_ = align_device_type(max_, xyz)
-    max_ = to_channel_coeff(max_, 3)
+    max_ = _to_channel_coeff(max_, 3)
 
     normalized = xyz.div(max_)
     temp = _lab_helper(normalized)
@@ -134,7 +138,7 @@ def lab_to_xyz(
     matrix = get_rgb_to_xyz_matrix(rgb_spec, white, obs)
     max_ = matrix.sum(dim=1)
     max_ = align_device_type(max_, lab)
-    max_ = to_channel_coeff(max_, 3)
+    max_ = _to_channel_coeff(max_, 3)
 
     l = l.add(0.16).mul(1 / 1.16)
     temp_xyz = torch.stack(

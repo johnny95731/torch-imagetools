@@ -3,6 +3,17 @@
 
 .. currentmodule:: imgtools.filters
 
+Basic spatial and frequency domain filters.
+
+- Spatial domain filters
+    * Edge: Laplacian, Sobel, Kirsch, etc.
+    * Blurring filters: box blur, Gaussian, guided filter
+- Frequency domain filters: based on rfft2
+    * Laplacian
+    * Gaussian highpass/lowpass
+    * Butterworthhighpass/lowpass.
+
+---------
 
 
 Links
@@ -18,36 +29,9 @@ _edges
    gradient_magnitude
    kirsch
    laplacian
-   robinson
-
-
-========
-_prewitt
-========
-
-.. autosummary::
-   :nosignatures:
-
    prewitt
-
-
-=======
-_scharr
-=======
-
-.. autosummary::
-   :nosignatures:
-
+   robinson
    scharr
-
-
-======
-_sobel
-======
-
-.. autosummary::
-   :nosignatures:
-
    sobel
 
 

@@ -1,3 +1,5 @@
+"""Image restoration, including dehaze, deblur, and denoise."""
+
 __all__ = [
     'color_attenuation_dehaze',
     'dark_channel_dehaze',
