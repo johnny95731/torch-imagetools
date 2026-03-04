@@ -22,6 +22,7 @@ def handle_a_folder(path: str, depth: int):
         and file != '__init__.py'
         and file != '__pycache__'
     ]
+    entries = sorted(entries)
 
     submodules = []
     submod_attrs: dict[str, list[str]] = {}

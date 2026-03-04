@@ -4,17 +4,9 @@
 Also builda a conda environment.yml
 """
 
-import sys
 import re
+import tomllib as toml
 from pathlib import Path
-
-try:  # standard module since Python 3.11
-    import tomllib as toml
-except ImportError:
-    try:  # available for older Python via pip
-        import tomli as toml
-    except ImportError:
-        sys.exit('Please install `tomli` first: `pip install tomli`')
 
 script_pth = Path(__file__)
 repo_dir = script_pth.parent.parent
