@@ -146,110 +146,10 @@
 </tbody>
 </table>
 </section>
-<section id="light">
-<h3>Light<a class="headerlink" href="#light" title="Link to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.balance.light_compensation_htchen" title="imgtools.balance.light_compensation_htchen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">light_compensation_htchen</span></code></a></p></td>
-<td><p>Light compensation by H.</p></td>
-</tr>
-</tbody>
-</table>
-</section>
 </section>
 <hr class="docutils" />
 <section id="module-imgtools.balance">
 <span id="documents"></span><h2>Documents<a class="headerlink" href="#module-imgtools.balance" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="imgtools.balance.estimate_illuminant_cheng">
-<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">estimate_illuminant_cheng</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_selected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.estimate_illuminant_cheng" title="Link to this definition"></a></dt>
-<dd><p>Estimate the illuminant in the image by Cheng’s PCA method [1].</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An RGB image in the range of [0, 1] with shape <cite>(*, C, H, W)</cite>.</p>
-</dd>
-<dt><strong>n_selected</strong><span class="classifier">int | float, default=3.5</span></dt><dd><p>Percentage for selecting top-n and bottom-n points.
-Select (2 * n_selected)%  points in total.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>The illuminant of the image. An RGB value with shape <cite>(*, C)</cite>.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">References</p>
-<dl class="simple">
-<dt>[1] Cheng, Dongliang, Dilip K. Prasad, and Michael S. Brown. “Illuminant</dt><dd><p>estimation for color constancy: why spatial-domain methods work and
-the role of the color distribution.”
-JOSA A 31.5 (2014): 1049-1058.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="imgtools.balance.light_compensation_htchen">
-<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">light_compensation_htchen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'LAB'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overflow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'norm'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.light_compensation_htchen" title="Link to this definition"></a></dt>
-<dd><p>Light compensation by H. T. Chen’s method [1]. This method can be found
-in [2] and [3].</p>
-<p>Enhance the luminance channel by</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">lum_brighter</span> <span class="o">=</span> <span class="n">scaler</span> <span class="o">*</span> <span class="n">lum</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span class="n">lum</span><span class="p">))</span>
-<span class="linenos">2</span><span class="n">lum_dark</span> <span class="o">=</span> <span class="p">(</span><span class="n">blurred_sat</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">blurred_lum</span><span class="p">)</span> <span class="o">**</span> <span class="n">power</span><span class="p">)</span>
-<span class="linenos">3</span><span class="n">new_lum</span> <span class="o">=</span> <span class="n">lum_brighter</span> <span class="o">*</span> <span class="n">lum_dark</span>
-</pre></div>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>rgb</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An RGB image in range of [0, 1] with shape <cite>(*, C, H, W)</cite>.</p>
-</dd>
-<dt><strong>scaler</strong><span class="classifier">int | float, default=1.0</span></dt><dd><p>The strength of the enhancement.</p>
-</dd>
-<dt><strong>power</strong><span class="classifier">int | float, default=0.1</span></dt><dd><p>The strength of overexpose suppression.</p>
-</dd>
-<dt><strong>space</strong><span class="classifier">{‘LAB’, ‘LUV’, ‘YUV’, ‘HSV’, ‘HSL’, ‘HSI’}, default=’LAB’</span></dt><dd><p>The color space to get luminance and saturation.</p>
-</dd>
-<dt><strong>overflow</strong><span class="classifier">{‘clip’, ‘norm’, ‘both’}, default=’norm’</span></dt><dd><p>Handle the result luminance: clip, normalize (to [0, 1]), or clip
-then normalize. Other value means ignoring.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>Balanced RGB image in range of [0, 1] with shape <cite>(*, C, H, W)</cite>.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt>ValueError</dt><dd><p>When argument <cite>sapce</cite> is not valid.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">References</p>
-<dl class="simple">
-<dt>[1] H. T. Chen, “An Algorithm for Light Compensation,” Master Thesis,</dt><dd><p>Department of Computer Science and Information Engineering,
-National Taiwan University, 2008.</p>
-</dd>
-<dt>[2] C. F. Chang, C. S. Fuh, “Light Compensation,” Proceedings of IPPR</dt><dd><p>Conference on Computer Vision, Graphics, and Image Processing,
-Shitou, Taiwan, B3-9, p. 87, 2009.</p>
-</dd>
-<dt>[3] PDF from C. S. Fuh’s personal webpsite</dt><dd><p><a class="reference external" href="https://www.csie.ntu.edu.tw/~fuh/personal/LightCompensation.pdf">https://www.csie.ntu.edu.tw/~fuh/personal/LightCompensation.pdf</a></p>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">light_compensation_htchen</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span> <span class="o">=</span> <span class="n">light_compensation_htchen</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span>
-</pre></div>
-</div>
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="imgtools.balance.balance_by_scaling">
 <span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">balance_by_scaling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaled_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_factors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.balance.balance_by_scaling" title="Link to this definition"></a></dt>
@@ -618,6 +518,36 @@ approximation.</p>
 <dt>torch.Tensor</dt><dd><p>Correlated color temperature in Kelvin.</p>
 </dd>
 </dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.balance.estimate_illuminant_cheng">
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">estimate_illuminant_cheng</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_selected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.estimate_illuminant_cheng" title="Link to this definition"></a></dt>
+<dd><p>Estimate the illuminant in the image by Cheng’s PCA method [1].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An RGB image in the range of [0, 1] with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>n_selected</strong><span class="classifier">int | float, default=3.5</span></dt><dd><p>Percentage for selecting top-n and bottom-n points.
+Select (2 * n_selected)%  points in total.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The illuminant of the image. An RGB value with shape <cite>(*, C)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>[1] Cheng, Dongliang, Dilip K. Prasad, and Michael S. Brown. “Illuminant</dt><dd><p>estimation for color constancy: why spatial-domain methods work and
+the role of the color distribution.”
+JOSA A 31.5 (2014): 1049-1058.</p>
 </dd>
 </dl>
 </dd></dl>

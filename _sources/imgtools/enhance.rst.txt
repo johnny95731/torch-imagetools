@@ -81,14 +81,15 @@ Lowlight
 .. autosummary::
    :nosignatures:
 
+   light_compensation_htchen
    msrcp
    msrcr
    retinex
 
 
-========
-Transfer
-========
+===========
+Stylization
+===========
 
 .. autosummary::
    :nosignatures:

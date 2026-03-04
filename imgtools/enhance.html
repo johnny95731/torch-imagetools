@@ -188,20 +188,23 @@ vol. 21, no. 5, pp. 34-41, July-Aug. 2001, doi: 10.1109/38.946629</p>
 <h3>Lowlight<a class="headerlink" href="#lowlight" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.enhance.msrcp" title="imgtools.enhance.msrcp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">msrcp</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.enhance.light_compensation_htchen" title="imgtools.enhance.light_compensation_htchen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">light_compensation_htchen</span></code></a></p></td>
+<td><p>Light compensation by H.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.enhance.msrcp" title="imgtools.enhance.msrcp"><code class="xref py py-obj docutils literal notranslate"><span class="pre">msrcp</span></code></a></p></td>
 <td><p>Low-light enhance by using multi-scale retinex with color preservation [1].</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.enhance.msrcr" title="imgtools.enhance.msrcr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">msrcr</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.enhance.msrcr" title="imgtools.enhance.msrcr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">msrcr</span></code></a></p></td>
 <td><p>Low-light enhance by using multi-scale retinex with color restoration [1].</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.enhance.retinex" title="imgtools.enhance.retinex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">retinex</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.enhance.retinex" title="imgtools.enhance.retinex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">retinex</span></code></a></p></td>
 <td><p>Low-light enhance by using multi-scale retinex.</p></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="transfer">
-<h3>Transfer<a class="headerlink" href="#transfer" title="Link to this heading"></a></h3>
+<section id="stylization">
+<h3>Stylization<a class="headerlink" href="#stylization" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.enhance.transfer_reinhard" title="imgtools.enhance.transfer_reinhard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">transfer_reinhard</span></code></a></p></td>
@@ -613,6 +616,66 @@ ACM Trans. Graph. 21, 3 (July 2002), 267-276.
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hdr</span> <span class="o">=</span> <span class="n">reinhard2002</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hdr2</span> <span class="o">=</span> <span class="n">reinhard2002</span><span class="p">(</span><span class="n">dark_rgb</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hdr3</span> <span class="o">=</span> <span class="n">reinhard2002</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">tone</span><span class="o">=</span><span class="s1">&#39;global&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.enhance.light_compensation_htchen">
+<span class="sig-prename descclassname"><span class="pre">imgtools.enhance.</span></span><span class="sig-name descname"><span class="pre">light_compensation_htchen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">power</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'LAB'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overflow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'norm'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.enhance.light_compensation_htchen" title="Link to this definition"></a></dt>
+<dd><p>Light compensation by H. T. Chen’s method [1]. This method can be found
+in [2] and [3].</p>
+<p>Enhance the luminance channel by</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">lum_brighter</span> <span class="o">=</span> <span class="n">scaler</span> <span class="o">*</span> <span class="n">lum</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">log</span><span class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span class="n">lum</span><span class="p">))</span>
+<span class="linenos">2</span><span class="n">lum_dark</span> <span class="o">=</span> <span class="p">(</span><span class="n">blurred_sat</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">blurred_lum</span><span class="p">)</span> <span class="o">**</span> <span class="n">power</span><span class="p">)</span>
+<span class="linenos">3</span><span class="n">new_lum</span> <span class="o">=</span> <span class="n">lum_brighter</span> <span class="o">*</span> <span class="n">lum_dark</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>rgb</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An RGB image in range of [0, 1] with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>scaler</strong><span class="classifier">int | float, default=1.0</span></dt><dd><p>The strength of the enhancement.</p>
+</dd>
+<dt><strong>power</strong><span class="classifier">int | float, default=0.1</span></dt><dd><p>The strength of overexpose suppression.</p>
+</dd>
+<dt><strong>space</strong><span class="classifier">{‘LAB’, ‘LUV’, ‘YUV’, ‘HSV’, ‘HSL’, ‘HSI’}, default=’LAB’</span></dt><dd><p>The color space to get luminance and saturation.</p>
+</dd>
+<dt><strong>overflow</strong><span class="classifier">{‘clip’, ‘norm’, ‘both’}, default=’norm’</span></dt><dd><p>Handle the result luminance: clip, normalize (to [0, 1]), or clip
+then normalize. Other value means ignoring.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Balanced RGB image in range of [0, 1] with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>ValueError</dt><dd><p>When argument <cite>sapce</cite> is not valid.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<dl class="simple">
+<dt>[1] H. T. Chen, “An Algorithm for Light Compensation,” Master Thesis,</dt><dd><p>Department of Computer Science and Information Engineering,
+National Taiwan University, 2008.</p>
+</dd>
+<dt>[2] C. F. Chang, C. S. Fuh, “Light Compensation,” Proceedings of IPPR</dt><dd><p>Conference on Computer Vision, Graphics, and Image Processing,
+Shitou, Taiwan, B3-9, p. 87, 2009.</p>
+</dd>
+<dt>[3] PDF from C. S. Fuh’s personal webpsite</dt><dd><p><a class="reference external" href="https://www.csie.ntu.edu.tw/~fuh/personal/LightCompensation.pdf">https://www.csie.ntu.edu.tw/~fuh/personal/LightCompensation.pdf</a></p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">light_compensation_htchen</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span> <span class="o">=</span> <span class="n">light_compensation_htchen</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

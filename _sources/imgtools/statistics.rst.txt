@@ -3,6 +3,8 @@
 
 .. currentmodule:: imgtools.statistics
 
+Statistics functions
+---------
 
 
 Links
@@ -16,6 +18,7 @@ Basic
    :nosignatures:
 
    combine_mean_std
+   histogram
 
 ---------
 

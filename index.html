@@ -81,12 +81,14 @@
 <h2>torch-imagetools<a class="headerlink" href="#torch-imagetools" title="Link to this heading"></a></h2>
 <p>An image processing library based on PyTorch that aim to provide some non deep learning-based tools for pre-/post-processing, data augmentation, or an alternative option when no data for training the network.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">imgtools.color</span></code>: transformations between color spaces. The spaces including RGB, YUV, HSV, CIEXYZ, LMS, CIELAB, etc.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">imgtools.balance</span></code>: chromatic adaptations, illuminant estimations, correlate color temperature estimations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imgtools.color</span></code>: transformations between color spaces. The spaces including RGB, YUV, HSV, CIEXYZ, LMS, CIELAB, etc.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imgtools.core</span></code>: discrete wavelet transform and its inverse transform, math tools (PCA, filter2d, matrix transform).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">imgtools.enhance</span></code>: basic intensity trnasform (linear, log, gamma, …), sharpening/unsharp masking, high dynamic range, low-light enhance.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">imgtools.filters</span></code>: spatial domain and frequency domain filters.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">imgtools.wavelets</span></code>: discrete wavelet transform and its inverse transform.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">imgtools.utils</span></code>: conversion <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code> &lt;-&gt; <code class="docutils literal notranslate"><span class="pre">torch.Tensor</span></code> (<code class="docutils literal notranslate"><span class="pre">arrayize</span></code>, <code class="docutils literal notranslate"><span class="pre">tensorize</span></code>), math tools (PCA, filter2d, matrix transform).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imgtools.restoration</span></code>: dehaze.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imgtools.statistice</span></code>: dehaze.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">imgtools.utils</span></code>: conversion <code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code> &lt;-&gt; <code class="docutils literal notranslate"><span class="pre">torch.Tensor</span></code> (<code class="docutils literal notranslate"><span class="pre">arrayize</span></code>, <code class="docutils literal notranslate"><span class="pre">tensorize</span></code>),</p></li>
 </ul>
 <p>This library</p>
 <ul class="simple">
@@ -94,12 +96,11 @@
 </ul>
 <section id="future-plan">
 <h3>Future plan<a class="headerlink" href="#future-plan" title="Link to this heading"></a></h3>
-<p>More implementations of the researches. For examples</p>
 <ul class="simple">
-<li><p>low-light image enhance</p></li>
+<li><p>automatic contrast enhancement</p></li>
 <li><p>highlight removal and shadow removal</p></li>
 <li><p>style transfer</p></li>
-<li><p>denoise</p></li>
+<li><p>restoration</p></li>
 <li><p>chromatic adaptation</p></li>
 <li><p>frequency domain methods</p></li>
 <li><p>gradient domain methods</p></li>

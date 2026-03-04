@@ -49,6 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="filters.html">imgtools.filters</a></li>
 <li class="toctree-l1"><a class="reference internal" href="wavelets.html">imgtools.wavelets</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">imgtools.utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#support-tools-for-programming-e-g-type-and-dtype-conversion">Support tools for programming, e.g., type and dtype conversion.</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#links">Links</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-imgtools.utils">Documents</a></li>
 </ul>
@@ -82,6 +83,9 @@
              
   <section id="imgtools-utils">
 <h1><a class="reference internal" href="#module-imgtools.utils" title="imgtools.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">imgtools.utils</span></code></a><a class="headerlink" href="#imgtools-utils" title="Link to this heading"></a></h1>
+<section id="support-tools-for-programming-e-g-type-and-dtype-conversion">
+<h2>Support tools for programming, e.g., type and dtype conversion.<a class="headerlink" href="#support-tools-for-programming-e-g-type-and-dtype-conversion" title="Link to this heading"></a></h2>
+</section>
 <section id="links">
 <h2>Links<a class="headerlink" href="#links" title="Link to this heading"></a></h2>
 <section id="helpers">
@@ -91,48 +95,17 @@
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">Tensorlike</span></code></p></td>
 <td><p>Represent a union type</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.utils.align_device_type" title="imgtools.utils.align_device_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">align_device_type</span></code></a></p></td>
-<td><p>Aligns device and dtype of the source tensor to the target tensor.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.utils.arrayize" title="imgtools.utils.arrayize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arrayize</span></code></a></p></td>
-<td><p>Converts an item to a np.ndarray.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.utils.tensorize" title="imgtools.utils.tensorize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tensorize</span></code></a></p></td>
-<td><p>Converts an item to a contiguous torch.Tensor.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.utils.to_channel_coeff" title="imgtools.utils.to_channel_coeff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_channel_coeff</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_to_channel_coeff</span></code></p></td>
 <td><p>Convert shape of coefficeints such that <cite>coeff (op) img</cite> is valid, where op may be one of arithmetic operations or other operator.</p></td>
 </tr>
-</tbody>
-</table>
-</section>
-<section id="math">
-<h3>Math<a class="headerlink" href="#math" title="Link to this heading"></a></h3>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">_check_ksize</span></code></p></td>
-<td><p>_summary_</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.utils.align_device_type" title="imgtools.utils.align_device_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">align_device_type</span></code></a></p></td>
+<td><p>Mathes the device and dtype of the source tensor to the target tensor.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.utils.atan2" title="imgtools.utils.atan2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">atan2</span></code></a></p></td>
-<td><p>Computes the direction of an image gradient.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.utils.arrayize" title="imgtools.utils.arrayize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">arrayize</span></code></a></p></td>
+<td><p>Converts an item to a np.ndarray.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.utils.calc_padding" title="imgtools.utils.calc_padding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_padding</span></code></a></p></td>
-<td><p>Calculate padding by a given ksize.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.utils.filter2d" title="imgtools.utils.filter2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter2d</span></code></a></p></td>
-<td><p>Image convolution with a 2D kernel.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.utils.histogram" title="imgtools.utils.histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogram</span></code></a></p></td>
-<td><p>Compute the histogram of an image.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.utils.matrix_transform" title="imgtools.utils.matrix_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matrix_transform</span></code></a></p></td>
-<td><p>Converts the channels of an image by linear transformation.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.utils.p_norm" title="imgtools.utils.p_norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">p_norm</span></code></a></p></td>
-<td><p>Computes the p-norm of an image.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.utils.pca" title="imgtools.utils.pca"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pca</span></code></a></p></td>
-<td><p>Image PCA.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.utils.tensorize" title="imgtools.utils.tensorize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tensorize</span></code></a></p></td>
+<td><p>Converts an item to a contiguous torch.Tensor.</p></td>
 </tr>
 </tbody>
 </table>
@@ -144,7 +117,8 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="imgtools.utils.align_device_type">
 <span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">align_device_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.utils.align_device_type" title="Link to this definition"></a></dt>
-<dd><p>Aligns device and dtype of the source tensor to the target tensor.</p>
+<dd><p>Mathes the device and dtype of the source tensor to the
+target tensor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -224,227 +198,6 @@
 <span class="gp">&gt;&gt;&gt; </span><span class="n">img_t</span><span class="o">.</span><span class="n">shape</span>  <span class="c1"># (C, H, W)</span>
 </pre></div>
 </div>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="imgtools.utils.to_channel_coeff">
-<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">to_channel_coeff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coeff</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_ch</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.utils.to_channel_coeff" title="Link to this definition"></a></dt>
-<dd><p>Convert shape of coefficeints such that <cite>coeff (op) img</cite> is valid,
-where op may be one of arithmetic operations or other operator.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>coeff</strong><span class="classifier">int | float | torch.Tensor</span></dt><dd><dl class="simple">
-<dt>The values to be reshape. Must be one of the following:</dt><dd><ol class="arabic simple">
-<li><p>int or float</p></li>
-<li><p>Tensor with only one element.</p></li>
-<li><p>Tensor with shape <cite>(num_ch,)</cite> or <cite>(batch, num_ch)</cite></p></li>
-</ol>
-</dd>
-</dl>
-</dd>
-<dt><strong>num_ch</strong><span class="classifier">int</span></dt><dd><p>Number of image channels.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>Coefficeints with shape</p>
-<ul class="simple">
-<li><p><cite>(1,)</cite> if <cite>coeff</cite> is a number or <cite>coeff.numel() == 1</cite></p></li>
-<li><p><cite>(*, C, 1, 1)</cite> if <cite>coeff.shape</cite> is <cite>(*, C)</cite>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt>ValueError</dt><dd><p>If coeff.numel() == 0 or coeff.ndim &gt; 2.</p>
-</dd>
-<dt>ValueError</dt><dd><p>When coeff.size(-1) is neither 1 nor <cite>num_ch</cite>.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="imgtools.utils.atan2">
-<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">atan2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'deg'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.utils.atan2" title="Link to this definition"></a></dt>
-<dd><p>Computes the direction of an image gradient.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>y</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The y-component.</p>
-</dd>
-<dt><strong>x</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The x-component.</p>
-</dd>
-<dt><strong>angle_unit</strong><span class="classifier">{‘rad’, ‘deg’}, default=’deg’</span></dt><dd><p>The representation of angle is in radian or in degree.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>The angle between the vector and x-axis.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt>ValueError</dt><dd><p>If angle_unit is neither ‘rad’ or ‘deg’.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="imgtools.utils.calc_padding">
-<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">calc_padding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.utils.calc_padding" title="Link to this definition"></a></dt>
-<dd><p>Calculate padding by a given ksize.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>ksize</strong><span class="classifier">tuple[int, int]</span></dt><dd><p>Kernel shape <cite>(y_direction, x_direction)</cite>.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>tuple[int, int, int, int]</dt><dd><p><cite>(padding_left, padding_right, padding_top, padding_bottom)</cite>.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="imgtools.utils.filter2d">
-<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">filter2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'same'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'reflect'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.utils.filter2d" title="Link to this definition"></a></dt>
-<dd><p>Image convolution with a 2D kernel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Image, a tensor with shape <cite>(*, C, H, W)</cite>.</p>
-</dd>
-<dt><strong>kernel</strong><span class="classifier">torch.Tensor</span></dt><dd><p>A convolution kernel with shape <cite>(k_x,)</cite>, <cite>(k_y, k_x)</cite>,
-(1 or k * C, k_y, k_x), or (B, k * C, k_y, k_x), where k is a positive
-integer.</p>
-</dd>
-<dt><strong>padding</strong><span class="classifier">list[int] | ‘same’ | None, default=’same’</span></dt><dd><p>The padding size.</p>
-<ul class="simple">
-<li><p>list[int]: padding size: <cite>(left, right, top, bottom)</cite>. See <cite>torch.nn.functional.pad</cite>.</p></li>
-<li><p>‘same’: computes from kernel size.</p></li>
-<li><p>None: filter without pad.</p></li>
-</ul>
-</dd>
-<dt><strong>mode</strong><span class="classifier">{‘constant’, ‘reflect’, ‘replicate’, ‘circular’}, default=’reflect’</span></dt><dd><p>Padding mode. Same as the argument <cite>mode</cite> in <cite>torch.nn.functional.pad</cite>.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>The image with shape <cite>(*, C, H0, W0)</cite>.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="imgtools.utils.histogram">
-<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.utils.histogram" title="Link to this definition"></a></dt>
-<dd><p>Compute the histogram of an image.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image in the range of [0, 1] with 2 &lt;= img.ndim &lt;= 4.</p>
-</dd>
-<dt><strong>bins</strong><span class="classifier">int, default=256</span></dt><dd><p>The number of groups in data range.</p>
-</dd>
-<dt><strong>density</strong><span class="classifier">bool, default=False</span></dt><dd><p>If true, return the pdf of each channel.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>The histogram or density.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt>TypeError</dt><dd><p>If bins is not int type.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="imgtools.utils.matrix_transform">
-<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">matrix_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.utils.matrix_transform" title="Link to this definition"></a></dt>
-<dd><p>Converts the channels of an image by linear transformation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Image, a tensor with shape <cite>(*, C, H, W)</cite>.</p>
-</dd>
-<dt><strong>matrix</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The transformation matrix with shape <cite>(*, C_out, C)</cite>.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>The image with shape <cite>(*, C_out, H, W)</cite>.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="imgtools.utils.p_norm">
-<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">p_norm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.utils.p_norm" title="Link to this definition"></a></dt>
-<dd><p>Computes the p-norm of an image.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Image, a tensor with shape <cite>(*, C, H, W)</cite>.</p>
-</dd>
-<dt><strong>p</strong><span class="classifier">float | string of float</span></dt><dd><p>The exponent value.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>The p-norm value with shape <cite>(*,)</cite>.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="imgtools.utils.pca">
-<span class="sig-prename descclassname"><span class="pre">imgtools.utils.</span></span><span class="sig-name descname"><span class="pre">pca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.utils.pca" title="Link to this definition"></a></dt>
-<dd><p>Image PCA.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Image with shape <cite>(*, C, H, W)</cite></p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>L</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Eigenvalues in ascending order.</p>
-</dd>
-<dt><strong>Vt</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Corresponding eigenvectors.</p>
-</dd>
-</dl>
-</dd>
-</dl>
 </dd></dl>
 
 </section>

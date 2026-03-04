@@ -49,6 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="wavelets.html">imgtools.wavelets</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.html">imgtools.utils</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">imgtools.statistics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#statistics-functions">Statistics functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#links">Links</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-imgtools.statistics">Documents</a></li>
 </ul>
@@ -81,6 +82,9 @@
              
   <section id="imgtools-statistics">
 <h1><a class="reference internal" href="#module-imgtools.statistics" title="imgtools.statistics"><code class="xref py py-mod docutils literal notranslate"><span class="pre">imgtools.statistics</span></code></a><a class="headerlink" href="#imgtools-statistics" title="Link to this heading"></a></h1>
+<section id="statistics-functions">
+<h2>Statistics functions<a class="headerlink" href="#statistics-functions" title="Link to this heading"></a></h2>
+</section>
 <section id="links">
 <h2>Links<a class="headerlink" href="#links" title="Link to this heading"></a></h2>
 <section id="basic">
@@ -89,6 +93,9 @@
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.statistics.combine_mean_std" title="imgtools.statistics.combine_mean_std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine_mean_std</span></code></a></p></td>
 <td><p>Calculate the mean, standard deviation (std), and dataset size of the combination of two datasets.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.statistics.histogram" title="imgtools.statistics.histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogram</span></code></a></p></td>
+<td><p>Compute the histogram of an image.</p></td>
 </tr>
 </tbody>
 </table>
@@ -128,6 +135,36 @@ np.ndarray type is also acceptable.</p>
 <p class="rubric">References</p>
 <dl class="simple">
 <dt>[1] stack exchange - How do I combine standard deviations of two groups?</dt><dd><p><a class="reference external" href="https://math.stackexchange.com/questions/2971315/how-do-i-combine-standard-deviations-of-two-groups">https://math.stackexchange.com/questions/2971315/how-do-i-combine-standard-deviations-of-two-groups</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.statistics.histogram">
+<span class="sig-prename descclassname"><span class="pre">imgtools.statistics.</span></span><span class="sig-name descname"><span class="pre">histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.statistics.histogram" title="Link to this definition"></a></dt>
+<dd><p>Compute the histogram of an image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image in the range of [0, 1] with 2 &lt;= img.ndim &lt;= 4.</p>
+</dd>
+<dt><strong>bins</strong><span class="classifier">int, default=256</span></dt><dd><p>The number of groups in data range.</p>
+</dd>
+<dt><strong>density</strong><span class="classifier">bool, default=False</span></dt><dd><p>If true, return the pdf of each channel.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The histogram or density.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>TypeError</dt><dd><p>If bins is not int type.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>

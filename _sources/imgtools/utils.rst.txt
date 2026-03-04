@@ -3,6 +3,8 @@
 
 .. currentmodule:: imgtools.utils
 
+Support tools for programming, e.g., type and dtype conversion.
+---------
 
 
 Links
@@ -16,27 +18,10 @@ Helpers
    :nosignatures:
 
    Tensorlike
+   _to_channel_coeff
    align_device_type
    arrayize
    tensorize
-   to_channel_coeff
-
-
-====
-Math
-====
-
-.. autosummary::
-   :nosignatures:
-
-   _check_ksize
-   atan2
-   calc_padding
-   filter2d
-   histogram
-   matrix_transform
-   p_norm
-   pca
 
 ---------
 
