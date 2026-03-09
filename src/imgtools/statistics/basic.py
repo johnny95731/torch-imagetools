@@ -1,11 +1,14 @@
 __all__ = [
     'combine_mean_std',
     'histogram',
+    'mean',
+    'std',
+    'mean_std',
 ]
 
 import torch
 
-from ..utils.helpers import check_valid_image_ndim
+from ..utils.helpers import align_device_type, check_valid_image_ndim
 
 
 def combine_mean_std(
@@ -107,3 +110,128 @@ def histogram(
         num_el = flat_image.size(-1)
         hist = hist.float() / num_el
     return hist
+
+
+def mean(
+    img: torch.Tensor,
+    channelwise: bool = False,
+    weight: torch.Tensor | None = None,
+):
+    """Returns the mean value of an image.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape `(*, C, H, W)`
+    channelwise : bool, default=False
+        Computes the mean for each channel instead of for the entire image.
+    weight : torch.Tensor | None, default=None
+        The weights of pixels.
+
+    Returns
+    -------
+    torch.Tensor
+        The mean value. If `channelwise` is False, the shape is
+        `(*, 1, 1, 1)`; otherwise, the shape is `(*, C, 1, 1)`.
+    """
+    dim = (-2, -3) if channelwise else (-1, -2, -3)
+    if weight is None:
+        std = torch.mean(img, dim=dim, keepdim=True)
+    elif isinstance(weight, torch.Tensor):
+        if weight.size(-1) != img.size(-1) or weight.size(-2) != img.size(-2):
+            raise ValueError(
+                'The shape of `img` and `weight` are not match: '
+                f'img.shape = {img.shape} and weight.shape = {weight.shape}.'
+            )
+        weight = align_device_type(weight, img)
+        weight_sum = weight.sum(dim, keepdim=True)
+        std = (img * weight).sum(dim, keepdim=True) / weight_sum
+    else:
+        raise TypeError(f'`weight` must be None or a Tensor: {type(weight)}')
+    return std
+
+
+def std(
+    img: torch.Tensor,
+    channelwise: bool = False,
+    weight: torch.Tensor | None = None,
+):
+    """Returns the standard deviation of an image.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape `(*, C, H, W)`
+    channelwise : bool, default=False
+        Computes the standard deviation for each channel instead of for the
+        entire image.
+    weight : torch.Tensor | None, default=None
+        The weights of pixels.
+
+    Returns
+    -------
+    torch.Tensor
+        The standard deviation. If `channelwise` is False, the shape is
+        `(*, 1, 1, 1)`; otherwise, the shape is `(*, C, 1, 1)`.
+    """
+    dim = (-1, -2) if channelwise else (-1, -2, -3)
+    if weight is None:
+        mean = torch.std(img, dim=dim, keepdim=True)
+    elif isinstance(weight, torch.Tensor):
+        if weight.size(-1) != img.size(-1) or weight.size(-2) != img.size(-2):
+            raise ValueError(
+                'The shape of `img` and `weight` are not match: '
+                f'img.shape = {img.shape} and weight.shape = {weight.shape}.'
+            )
+        weight = align_device_type(weight, img)
+        weight_sum = weight.sum(dim, keepdim=True)
+        mean = (img * weight).sum(dim, keepdim=True).div(weight_sum)
+        sq_mean = (img.square() * weight).sum(dim, keepdim=True).div(weight_sum)
+        std = sq_mean - mean.square()
+    else:
+        raise TypeError(f'`weight` must be None or a Tensor: {type(weight)}')
+    return std
+
+
+def mean_std(
+    img: torch.Tensor,
+    channelwise: bool = False,
+    weight: torch.Tensor | None = None,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Returns the mean value and the standard deviation (std) of an image.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape `(*, C, H, W)`
+    channelwise : bool, default=False
+        Computes the mean and std for each channel instead of for the
+        entire image.
+    weight : torch.Tensor | None, default=None
+        The weights of pixels.
+
+    Returns
+    -------
+    tuple[torch.Tensor, torch.Tensor]
+        The tuple `(mean, std)`. If `channelwise` is False, the shape of both
+        tensors are `(*, 1, 1, 1)`; otherwise, the shape of both
+        tensors are `(*, C, 1, 1)`.
+    """
+    check_valid_image_ndim(img)
+    dim = (-1, -2) if channelwise else (-1, -2, -3)
+    if weight is None:
+        std, mean = torch.std_mean(img, dim=dim, keepdim=True)
+    elif isinstance(weight, torch.Tensor):
+        if weight.size(-1) != img.size(-1) or weight.size(-2) != img.size(-2):
+            raise ValueError(
+                'The shape of `img` and `weight` are not match: '
+                f'img.shape = {img.shape} and weight.shape = {weight.shape}.'
+            )
+        weight = align_device_type(weight, img)
+        weight_sum = weight.sum(dim, keepdim=True)
+        mean = (img * weight).sum(dim, keepdim=True).div(weight_sum)
+        sq_mean = (img.square() * weight).sum(dim, keepdim=True).div(weight_sum)
+        std = sq_mean - mean.square()
+    else:
+        raise TypeError(f'`weight` must be None or a Tensor: {type(weight)}')
+    return mean, std
