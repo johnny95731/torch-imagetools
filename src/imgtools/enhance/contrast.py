@@ -172,8 +172,10 @@ def lide(
         raise ValueError(f'`rgb` must be 1 or 3 channel: {num_ch}')
     if std_min is not None:
         std_min = _to_channel_coeff(std_min, 1)
+        std_min = align_device_type(std_min, gray)
     if std_max is not None:
         std_max = _to_channel_coeff(std_max, 1)
+        std_max = align_device_type(std_max, gray)
     gray = gray.add(1e-8)
     #
     gray_f = torch.fft.rfft2(gray)

@@ -136,7 +136,7 @@ def mean(
     """
     dim = (-2, -3) if channelwise else (-1, -2, -3)
     if weight is None:
-        std = torch.mean(img, dim=dim, keepdim=True)
+        mean = torch.mean(img, dim=dim, keepdim=True)
     elif isinstance(weight, torch.Tensor):
         if weight.size(-1) != img.size(-1) or weight.size(-2) != img.size(-2):
             raise ValueError(
@@ -145,10 +145,10 @@ def mean(
             )
         weight = align_device_type(weight, img)
         weight_sum = weight.sum(dim, keepdim=True)
-        std = (img * weight).sum(dim, keepdim=True) / weight_sum
+        mean = (img * weight).sum(dim, keepdim=True) / weight_sum
     else:
         raise TypeError(f'`weight` must be None or a Tensor: {type(weight)}')
-    return std
+    return mean
 
 
 def std(
@@ -176,7 +176,7 @@ def std(
     """
     dim = (-1, -2) if channelwise else (-1, -2, -3)
     if weight is None:
-        mean = torch.std(img, dim=dim, keepdim=True)
+        std = torch.std(img, dim=dim, keepdim=True)
     elif isinstance(weight, torch.Tensor):
         if weight.size(-1) != img.size(-1) or weight.size(-2) != img.size(-2):
             raise ValueError(
@@ -187,7 +187,7 @@ def std(
         weight_sum = weight.sum(dim, keepdim=True)
         mean = (img * weight).sum(dim, keepdim=True).div(weight_sum)
         sq_mean = (img.square() * weight).sum(dim, keepdim=True).div(weight_sum)
-        std = sq_mean - mean.square()
+        std = (sq_mean - mean.square()).sqrt()
     else:
         raise TypeError(f'`weight` must be None or a Tensor: {type(weight)}')
     return std
@@ -231,7 +231,7 @@ def mean_std(
         weight_sum = weight.sum(dim, keepdim=True)
         mean = (img * weight).sum(dim, keepdim=True).div(weight_sum)
         sq_mean = (img.square() * weight).sum(dim, keepdim=True).div(weight_sum)
-        std = sq_mean - mean.square()
+        std = (sq_mean - mean.square()).sqrt()
     else:
         raise TypeError(f'`weight` must be None or a Tensor: {type(weight)}')
     return mean, std
