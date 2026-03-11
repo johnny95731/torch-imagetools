@@ -251,7 +251,6 @@ def mean_std(
         tensors are `(*, 1, 1, 1)`; otherwise, the shape of both
         tensors are `(*, C, 1, 1)`.
     """
-    check_valid_image_ndim(img)
     dim = (-1, -2) if channelwise else (-1, -2, -3)
     if weight is None:
         std, mean = torch.std_mean(img, dim=dim, keepdim=True)
@@ -301,7 +300,6 @@ def moments(
         the shape of tensors are `(*, C, 1, 1)`.
     """
     assert order in (3, 4), f'`order` must be 3 or 4: {order}'
-    check_valid_image_ndim(img)
     dim = (-1, -2) if channelwise else (-1, -2, -3)
     if weight is None:
         std, mean = torch.std_mean(img, dim=dim, keepdim=True)
