@@ -1,6 +1,7 @@
 """Automatic contrast enhancement."""
 
 from math import log
+from typing import Literal
 
 import torch
 
@@ -133,6 +134,7 @@ def lide(
     std_min: float | torch.Tensor | None = 0.005,
     std_max: float | torch.Tensor | None = None,
     sigma_blur: float = 300,
+    model: Literal['gauss', 'laplace'] = 'gauss',
 ):
     """Automatic contrast enhancement by local intensity distribution
     equalization (LIDE) [1].
@@ -150,6 +152,8 @@ def lide(
     sigma_blur : float, default=300
         The sigma for Gaussian blurring. Higher value means the stronger
         blurrness.
+    model : {'gauss', 'laplace'}, default = 'gauss'
+        The distribution model.
 
     Returns
     -------
@@ -162,6 +166,9 @@ def lide(
         equalization. J Image Video Proc. 2015, 31 (2015).
         https://doi.org/10.1186/s13640-015-0085-2
     """
+    assert model in ('gauss', 'laplace'), (
+        f'`model` must be "gauss" or "laplace": {model}'
+    )
     num_ch = rgb.size(-3)
     if num_ch == 3:
         yuv = rgb_to_yuv(rgb)
@@ -188,11 +195,18 @@ def lide(
     gray_sq_f = torch.fft.rfft2(gray.square())
     local_sq_mean = gray_sq_f.mul_(lowpass)
     local_sq_mean = torch.fft.irfft2(local_sq_mean, s=gray.shape[-2:])  # type: torch.Tensor
-    local_std = local_sq_mean.sub_(local_mean.square())
+    local_std = local_sq_mean.sub_(local_mean.square()).clip_(0.0).sqrt_()
+    local_std = local_std.clip(std_min, std_max)
     #
-    local_std = local_std.clip(std_min, std_max).sqrt()
-    z_score = (gray - local_mean).div(local_std.mul(2**0.5))
-    res = torch.erf(z_score).add_(1.0).mul_(0.5)
+    if model == 'gauss':
+        z_score = (gray - local_mean).div_(local_std.mul_(2**0.5))
+        res = torch.erf_(z_score).add_(1.0).mul_(0.5)
+    elif model == 'laplace':
+        diff = gray - local_mean
+        sign = diff.sign()
+        z_score = diff.abs_().div_(local_std).mul_(-(2**0.5))
+        part = z_score.exp_().mul_(sign)
+        res = sign.sub_(part).add_(1.0).mul_(0.5)
     if num_ch == 3:
         yuv[..., :1, :, :] = res
         res = yuv_to_rgb(yuv)
