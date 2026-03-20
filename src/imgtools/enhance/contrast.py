@@ -1,5 +1,11 @@
 """Automatic contrast enhancement."""
 
+__all__ = [
+    'auto_gamma_correction',
+    'local_gamma_correction',
+    'lide',
+]
+
 from math import log
 from typing import Literal
 

@@ -33,6 +33,9 @@ __all__ = [
     'adjust_sigmoid',
     'high_frequency_emphasis_filter',
     'unsharp_mask',
+    'auto_gamma_correction',
+    'lide',
+    'local_gamma_correction',
     'hist_equalize',
     'match_historgram',
     'match_mean_std',
@@ -53,6 +56,11 @@ from .basic import (
     adjust_sigmoid,
     high_frequency_emphasis_filter,
     unsharp_mask,
+)
+from .contrast import (
+    auto_gamma_correction,
+    lide,
+    local_gamma_correction,
 )
 from .equlization import (
     hist_equalize,
