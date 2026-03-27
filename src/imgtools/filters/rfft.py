@@ -21,7 +21,7 @@ def get_gaussian_lowpass(
     img_size: int | tuple[int, int] | torch.Tensor,
     sigma: float | tuple[float, float],
     d: float | None = None,
-    scale: bool = False,
+    spatial_sigma: bool = False,
     dtype: torch.dtype = None,
     device: torch.device = None,
 ) -> torch.Tensor:
@@ -30,15 +30,16 @@ def get_gaussian_lowpass(
     Parameters
     ----------
     img_size : int | tuple[int, int] | torch.Tensor
-        The size of rfft image. Shape `(size_y, size_x)`. Or, the rfft image
-        with shape `(..., H, W)`.
+        The size of rfft image. The tuple is `(size_y, size_x)`. Or,
+        the rfft image with shape `(..., H, W)`.
     sigma : float | tuple[float, float]
-        The width of Gaussian function. Shape `[sigma_y, sigma_x]`.
+        The width of Gaussian function. The tuple is `[sigma_y, sigma_x]`.
     d : float | None, default=None
         The sampling length scale. If None, uses 1 / img_size. For details,
         see `torch.fft.fftfreq` and `torch.fft.rfftfreq`.
-    scale : bool, default=False
-        Scale the filter by `1 / (2 * torch.pi * )`.
+    spatial_sigma : bool, default=False
+        Specify the sigma is for the Gaussian function in spatial domain.
+        Set `sigma <- 1 / (2 * pi * sigma)`. Recommend to set `d = 1`.
     dtype : torch.dtype, default=None
         The Data type of the filter.
     device : torch.device, default=None
@@ -48,6 +49,11 @@ def get_gaussian_lowpass(
     -------
     torch.Tensor
         2D Gaussian lowpass filter.
+
+    Notes
+    -----
+    The relation of Gaussian function in spatial domain and frequency domain
+    is `sigma_s * sigma_f = 1 / (2 * pi)`
 
     Examples
     --------
@@ -73,6 +79,8 @@ def get_gaussian_lowpass(
             _sigma = (sigma[0], sigma[1])
     else:
         raise TypeError(f'Invalid type of `gamma`: {type(sigma)}')
+    if spatial_sigma:
+        _sigma = tuple((1 / (2 * torch.pi * s)) for s in _sigma)
 
     freq_y = (
         torch.fft
@@ -99,9 +107,6 @@ def get_gaussian_lowpass(
         .view(1, -1)
     )
     kernel2d = (freq_y + freq_x).exp_()
-    if scale:
-        c = 2 * torch.pi * _sigma[0] * _sigma[1]
-        kernel2d.div_(c)
     return kernel2d
 
 
@@ -109,7 +114,7 @@ def get_gaussian_highpass(
     img_size: int | tuple[int, int] | torch.Tensor,
     sigma: float | tuple[float, float],
     d: float | None = None,
-    scale: bool = False,
+    spatial_sigma: bool = False,
     dtype: torch.dtype = None,
     device: torch.device = None,
 ) -> torch.Tensor:
@@ -118,15 +123,16 @@ def get_gaussian_highpass(
     Parameters
     ----------
     img_size : int | tuple[int, int] | torch.Tensor
-        The size of rfft image. Shape `(size_y, size_x)`. Or, the rfft image
-        with shape `(..., H, W)`.
+        The size of rfft image. The tuple is `(size_y, size_x)`. Or,
+        the rfft image with shape `(..., H, W)`.
     sigma : float | tuple[float, float]
-        The width of Gaussian function. Shape `[sigma_y, sigma_x]`.
+        The width of Gaussian function. The tuple is `[sigma_y, sigma_x]`.
     d : float | None, default=None
         The sampling length scale. If None, uses 1 / img_size. For details,
         see `torch.fft.fftfreq` and `torch.fft.rfftfreq`.
-    scale : bool, default=False
-        Scale the filter by `1 / (2 * torch.pi * )`.
+    spatial_sigma : bool, default=False
+        Specify the sigma is for the Gaussian function in spatial domain.
+        Set `sigma <- 1 / (2 * pi * sigma)`.
     dtype : torch.dtype, default=None
         The Data type of the filter.
     device : torch.device, default=None
@@ -137,6 +143,11 @@ def get_gaussian_highpass(
     torch.Tensor
         2D Gaussian highpass filter.
 
+    Notes
+    -----
+    The relation of Gaussian function in spatial domain and frequency domain
+    is `sigma_s * sigma_f = 1 / (2 * pi)`
+
     Examples
     --------
 
@@ -145,7 +156,9 @@ def get_gaussian_highpass(
     >>> edge_f = img_f * highpass
     >>> edge = torch.fft.irfft2(edge_f)
     """
-    kernel = get_gaussian_lowpass(img_size, sigma, d, scale, dtype, device)
+    kernel = get_gaussian_lowpass(
+        img_size, sigma, d, spatial_sigma, dtype, device
+    )
     kernel = kernel[..., 0, 0] - kernel  # highpass
     return kernel
 
@@ -163,8 +176,8 @@ def get_butterworth_lowpass(
     Parameters
     ----------
     img_size : int | tuple[int, int] | torch.Tensor
-        The size of rfft image. Shape `(size_y, size_x)`. Or, the rfft image
-        with shape `(..., H, W)`.
+        The size of rfft image. The tuple is `(size_y, size_x)`. Or,
+        the rfft image with shape `(..., H, W)`.
     cutoff : float
         The cutoff frequency of Butterworth filter.
     order : float, default=1.0
@@ -235,8 +248,8 @@ def get_butterworth_highpass(
     Parameters
     ----------
     img_size : int | tuple[int, int] | torch.Tensor
-        The size of rfft image. Shape `(size_y, size_x)`. Or, the rfft image
-        with shape `(..., H, W)`.
+        The size of rfft image. The tuple is `(size_y, size_x)`. Or,
+        the rfft image with shape `(..., H, W)`.
     cutoff : float
         The cutoff frequency of Butterworth filter.
     order : float, default=1.0
@@ -279,7 +292,8 @@ def get_freq_laplacian(
     Parameters
     ----------
     img_size : int | tuple[int, int] | torch.Tensor
-        The size of rfft image. Shape `[size_y, size_x]`.
+        The size of rfft image. The tuple is `(size_y, size_x)`. Or,
+        the rfft image with shape `(..., H, W)`.
     form : {'continuous', '4-neighbor'}, default='continuous'
         The form of approximation of discrete Laplacian filter in frequency
         domain.

@@ -25,7 +25,7 @@ from ..color import (
 )
 from ..color._grayscale import rgb_to_gray
 from ..filters.rfft import get_gaussian_lowpass
-from ..utils.helpers import check_valid_image_ndim
+from ..utils.helpers import check_valid_image_ndim, __default_dtype
 
 
 def retinex(
@@ -69,9 +69,18 @@ def retinex(
     log_img = img.log1p()
     img_f = torch.fft.rfft2(img)
     rec_size = img.shape[-2:]
+    dtype = __default_dtype(img)
+    device = img.device
     retinex: torch.Tensor | None = None
     for i, s in enumerate(scales):
-        lowpass = get_gaussian_lowpass(img_f, 1 / s, d=1.0, device=img_f.device)
+        lowpass = get_gaussian_lowpass(
+            img_f,
+            s,
+            d=1.0,
+            spatial_sigma=True,
+            dtype=dtype,
+            device=device,
+        )
         blurred = torch.fft.irfft2(img_f * lowpass, s=rec_size)  # type: torch.Tensor
         single = log_img - blurred.log1p()  # single-scale
         if weights is not None:

@@ -186,7 +186,7 @@ def bilateral_hdr(
         )
     if sigma_s is None:
         sigma_s = min(img.shape[-2:]) * 0.02
-    sigma_s *= downsample * 2 * torch.pi
+    sigma_s *= downsample
     # Only using the brightness.
     is_color = img.size(-3) == 3
     if is_color:
@@ -229,8 +229,9 @@ def bilateral_hdr(
         if j == 0:
             space_kernel = get_gaussian_lowpass(
                 g_j_f,
-                1 / sigma_s,
+                sigma_s,
                 d=1.0,
+                spatial_sigma=True,
                 device=_img_t0.device,
             )
             space_kernel = align_device_type(space_kernel, _img_t0)
