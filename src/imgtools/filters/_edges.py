@@ -11,7 +11,7 @@ __all__ = [
 import torch
 from torch.nn.functional import pad
 
-from ..core.math import calc_padding, filter2d, rad_to_deg
+from ..core.math import filter2d, rad_to_deg
 from ..utils.helpers import align_device_type
 
 
@@ -105,6 +105,7 @@ def laplacian(
     img: torch.Tensor,
     diagonal: bool = False,
     inflection_only: bool = False,
+    mode: str = 'reflect',
 ) -> torch.Tensor:
     """Computes the laplacian of an image.
 
@@ -118,6 +119,9 @@ def laplacian(
         Set non-inflection points to 0.
         A inflection point means that the sign of laplacian changes near
         the point.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -145,8 +149,7 @@ def laplacian(
             (-1, -1, -1),
         ))
     kernel = align_device_type(kernel, img)
-
-    grad = filter2d(img, kernel)
+    grad = filter2d(img, kernel, (1, 1, 1, 1), mode)
     if inflection_only:
         padded = torch.nn.functional.pad(grad, (1, 1, 1, 1))
         x_check = padded[..., 1:-1, :-2] * padded[..., 1:-1, 2:] < 0.0
@@ -161,6 +164,7 @@ def robinson(
     img: torch.Tensor,
     ret_angle: bool = False,
     angle_unit: str = 'deg',
+    mode: str = 'reflect',
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Edge detection by the Robinson compass operators.
 
@@ -172,6 +176,9 @@ def robinson(
         Returns the direction of gradient or not.
     angle_unit : {'rad', 'deg'}, default='deg'
         The representation of angle is in radian or in degree.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -195,12 +202,11 @@ def robinson(
     kernel_y = align_device_type(kernel_y, img)
     kernel_45 = align_device_type(kernel_45, img)
 
-    padding = calc_padding((3, 3))
-    _img = pad(img, padding, 'reflect')
-    grad_y = filter2d(_img, kernel_y, None)
-    grad_x = filter2d(_img, kernel_y.T, None)
-    grad_45 = filter2d(_img, kernel_45, None)
-    grad_135 = filter2d(_img, kernel_45.flip(0), None)
+    img = pad(img, (1, 1, 1, 1), mode)
+    grad_y = filter2d(img, kernel_y, None)
+    grad_x = filter2d(img, kernel_y.T, None)
+    grad_45 = filter2d(img, kernel_45, None)
+    grad_135 = filter2d(img, kernel_45.flip(0), None)
 
     mag = torch.stack((grad_y, grad_x, grad_45, grad_135))
     mag = mag.abs().amax(dim=0)
@@ -216,6 +222,7 @@ def kirsch(
     img: torch.Tensor,
     ret_angle: bool = False,
     angle_unit: str = 'deg',
+    mode: str = 'reflect',
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Edge detection by the Kirsch compass operators.
 
@@ -227,6 +234,9 @@ def kirsch(
         Returns the direction of gradient or not.
     angle_unit : {'rad', 'deg'}, default='deg'
         The representation of angle is in radian or in degree.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -254,17 +264,16 @@ def kirsch(
     kernel_y2 = kernel_y.flip(0)
     kernel_135 = kernel_y.flip(1)
 
-    padding = calc_padding((3, 3))
-    _img = pad(img, padding, 'reflect')
-    grad_south = filter2d(_img, kernel_y, None)
-    grad_north = filter2d(_img, kernel_y2, None)
-    grad_east = filter2d(_img, kernel_y.T, None)
-    grad_west = filter2d(_img, kernel_y2.T, None)
+    img = pad(img, (1, 1, 1, 1), mode)
+    grad_south = filter2d(img, kernel_y, None)
+    grad_north = filter2d(img, kernel_y2, None)
+    grad_east = filter2d(img, kernel_y.T, None)
+    grad_west = filter2d(img, kernel_y2.T, None)
 
-    grad_se = filter2d(_img, kernel_45, None)
-    grad_sw = filter2d(_img, kernel_135, None)
-    grad_ne = filter2d(_img, kernel_45.flip(0), None)
-    grad_nw = filter2d(_img, kernel_135.flip(0), None)
+    grad_se = filter2d(img, kernel_45, None)
+    grad_sw = filter2d(img, kernel_135, None)
+    grad_ne = filter2d(img, kernel_45.flip(0), None)
+    grad_nw = filter2d(img, kernel_135.flip(0), None)
 
     mag = torch.stack((
         grad_south,
@@ -291,6 +300,7 @@ def prewitt(
     magnitude: str | int | float = 2,
     ret_angle: bool = False,
     angle_unit: str = 'deg',
+    mode: str = 'reflect',
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Edge detection by the Prewitt operators.
 
@@ -304,6 +314,9 @@ def prewitt(
         Returns the direction of gradient or not.
     angle_unit : {'rad', 'deg'}, default='deg'
         The representation of angle is in radian or in degree.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -324,10 +337,9 @@ def prewitt(
     kernel_y = align_device_type(kernel_y, img)
     # Note: Filtering twice with 2 directional kernel is faster than
     # filtering by a kernel that stacked 2 kernels
-    padding = calc_padding((3, 3))
-    _img = pad(img, padding, 'reflect')
-    grad_y = filter2d(_img, kernel_y, None)
-    grad_x = filter2d(_img, kernel_y.T, None)
+    img = pad(img, (1, 1, 1, 1), mode)
+    grad_y = filter2d(img, kernel_y, None)
+    grad_x = filter2d(img, kernel_y.T, None)
 
     mag = gradient_magnitude(grad_y, grad_x, magnitude=magnitude)
     if ret_angle:
@@ -343,6 +355,7 @@ def sobel(
     magnitude: str | int | float = 2,
     ret_angle: bool = False,
     angle_unit: str = 'deg',
+    mode: str = 'reflect',
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Edge detection by the Sobel operators.
 
@@ -356,6 +369,9 @@ def sobel(
         Returns the direction of gradient or not.
     angle_unit : {'rad', 'deg'}, default='deg'
         The representation of angle is in radian or in degree.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -376,10 +392,9 @@ def sobel(
     kernel_y = align_device_type(kernel_y, img)
     # Note: Filtering twice with 2 directional kernel is faster than
     # filtering by a kernel that stacked 2 kernels
-    padding = calc_padding((3, 3))
-    _img = pad(img, padding, 'reflect')
-    grad_y = filter2d(_img, kernel_y, None)
-    grad_x = filter2d(_img, kernel_y.T, None)
+    img = pad(img, (1, 1, 1, 1), mode)
+    grad_y = filter2d(img, kernel_y, None)
+    grad_x = filter2d(img, kernel_y.T, None)
 
     mag = gradient_magnitude(grad_y, grad_x, magnitude=magnitude)
     if ret_angle:
@@ -395,6 +410,7 @@ def scharr(
     magnitude: str | int | float = 2,
     ret_angle: bool = False,
     angle_unit: str = 'deg',
+    mode: str = 'reflect',
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Edge detection by the Scharr operators.
 
@@ -408,6 +424,9 @@ def scharr(
         Returns the direction of gradient or not.
     angle_unit : {'rad', 'deg'}, default='deg'
         The representation of angle is in radian or in degree.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -428,10 +447,9 @@ def scharr(
     kernel_y = align_device_type(kernel_y, img)
     # Note: Filtering twice with 2 directional kernel is faster than
     # filtering by a kernel that stacked 2 kernels
-    padding = calc_padding((3, 3))
-    _img = pad(img, padding, 'reflect')
-    grad_y = filter2d(_img, kernel_y, None)
-    grad_x = filter2d(_img, kernel_y.T, None)
+    img = pad(img, (1, 1, 1, 1), mode)
+    grad_y = filter2d(img, kernel_y, None)
+    grad_x = filter2d(img, kernel_y.T, None)
 
     mag = gradient_magnitude(grad_y, grad_x, magnitude=magnitude)
     if ret_angle:

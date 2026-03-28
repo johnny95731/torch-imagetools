@@ -108,7 +108,7 @@ def calc_padding(ksize: tuple[int, int]) -> tuple[int, int, int, int]:
 def filter2d(
     img: torch.Tensor,
     kernel: torch.Tensor,
-    padding: list[int] | str | None = 'same',
+    padding: int | list[int] | str | None = 'same',
     mode: str = 'reflect',
 ) -> torch.Tensor:
     """Image convolution with a 2D kernel.
@@ -119,14 +119,11 @@ def filter2d(
         Image, a tensor with shape `(*, C, H, W)`.
     kernel : torch.Tensor
         A convolution kernel with shape `(k_x,)`, `(k_y, k_x)`,
-        (1 or k * C, k_y, k_x), or (B, k * C, k_y, k_x), where k is a positive
+        `(C * k, k_y, k_x)`, or `(B, C * k, k_y, k_x)`, where k is a positive
         integer.
-    padding : list[int] | 'same' | None, default='same'
-        The padding size.
-
-        - list[int]: padding size: `(left, right, top, bottom)`. See `torch.nn.functional.pad`.
-        - 'same': computes from kernel size.
-        - None: filter without pad.
+    padding : int | list[int] | 'same' | None, default='same'
+        The padding size. `"same"`: computes from `ksize`.
+        `list[int]`: `(left, right, top, bottom)`. `None`: no padding.
     mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
         Padding mode. Same as the argument `mode` in `torch.nn.functional.pad`.
 
@@ -141,7 +138,7 @@ def filter2d(
     num_ch = img.size(-3)
     if not torch.is_floating_point(img):
         img = img.float()
-
+    # kernel shape
     kernel = align_device_type(kernel, img)
     if kernel.ndim == 1:
         kernel = kernel.view(1, 1, 1, kernel.shape[0])
@@ -150,16 +147,27 @@ def filter2d(
         kernel = kernel.view(1, 1, kernel.shape[0], kernel.shape[1])
         kernel = kernel.repeat(num_ch, 1, 1, 1)
     elif kernel.ndim == 3:
-        kernel = kernel.repeat(num_ch, 1, 1).unsqueeze_(1)
+        kernel = kernel.unsqueeze_(1)
     kernel = kernel.contiguous()
-
+    #
     if padding == 'same':
         padding = calc_padding(kernel.shape[2:])
-    if padding is not None:
+    elif isinstance(padding, int):
+        padding = (padding,) * 4
+    elif isinstance(padding, (tuple, list)) and len(padding) == 2:
+        padding = (padding[0], padding[0], padding[1], padding[1])
+    #
+    if padding is None:
+        res = conv2d(img, weight=kernel, groups=num_ch)
+    elif mode == 'constant' and (
+        padding[0] == padding[1] and padding[2] == padding[3]
+    ):
+        res = conv2d(img, weight=kernel, padding=padding[::2], groups=num_ch)
+    else:
         img = pad(img, padding, mode)
-    res = conv2d(img, weight=kernel, groups=num_ch)
+        res = conv2d(img, weight=kernel, groups=num_ch)
     if is_single_image:
-        res = res.squeeze(0)
+        res = res.squeeze_(0)
     return res
 
 

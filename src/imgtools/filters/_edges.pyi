@@ -23,6 +23,7 @@ def laplacian(
     img: torch.Tensor,
     diagonal: bool = False,
     inflection_only: bool = False,
+    mode: Literal['constant', 'reflect', 'replicate', 'circular'] = 'reflect',
 ) -> torch.Tensor: ...
 
 #
@@ -30,6 +31,8 @@ def laplacian(
 def robinson(
     img: torch.Tensor,
     ret_angle: Literal[False] = False,
+    angle_unit: Literal['rad', 'deg'] = 'deg',
+    mode: Literal['constant', 'reflect', 'replicate', 'circular'] = 'reflect',
 ) -> torch.Tensor:
     """Edge detection by the Robinson compass operators.
 
@@ -39,6 +42,11 @@ def robinson(
         An image with shape `(*, C, H, W)`.
     ret_angle : {False}, default=False
         Returns the direction of gradient or not.
+    angle_unit : {'rad', 'deg'}, default='deg'
+        The representation of angle is in radian or in degree.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -51,6 +59,8 @@ def robinson(
 def robinson(
     img: torch.Tensor,
     ret_angle: Literal[True] = True,
+    angle_unit: Literal['rad', 'deg'] = 'deg',
+    mode: Literal['constant', 'reflect', 'replicate', 'circular'] = 'reflect',
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Edge detection by the Robinson compass operators.
 
@@ -60,6 +70,11 @@ def robinson(
         An image with shape `(*, C, H, W)`.
     ret_angle : {True}, default=True
         Returns the direction of gradient or not.
+    angle_unit : {'rad', 'deg'}, default='deg'
+        The representation of angle is in radian or in degree.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -75,6 +90,7 @@ def robinson(
 def kirsch(
     img: torch.Tensor,
     ret_angle: Literal[False] = False,
+    mode: Literal['constant', 'reflect', 'replicate', 'circular'] = 'reflect',
 ) -> torch.Tensor:
     """Edge detection by the Kirsch compass operators.
 
@@ -84,6 +100,9 @@ def kirsch(
         An image with shape `(*, C, H, W)`.
     ret_angle : {False}, default=False
         Returns the direction of gradient or not.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -96,6 +115,7 @@ def kirsch(
 def kirsch(
     img: torch.Tensor,
     ret_angle: Literal[True] = True,
+    mode: Literal['constant', 'reflect', 'replicate', 'circular'] = 'reflect',
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Edge detection by the Kirsch compass operators.
 
@@ -105,6 +125,9 @@ def kirsch(
         An image with shape `(*, C, H, W)`.
     ret_angle : {True}, default=True
         Returns the direction of gradient or not.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -122,6 +145,7 @@ def prewitt(
     magnitude: Literal['stack', 'inf', '-inf'] | int | float = 2,
     ret_angle: Literal[False] = False,
     angle_unit: Literal['rad', 'deg'] = 'deg',
+    mode: Literal['constant', 'reflect', 'replicate', 'circular'] = 'reflect',
 ) -> torch.Tensor:
     """Edge detection by the Prewitt operators.
 
@@ -135,6 +159,9 @@ def prewitt(
         Returns the direction of gradient or not.
     angle_unit : {'rad', 'deg'}, default='deg'
         The representation of angle is in radian or in degree.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -151,6 +178,7 @@ def prewitt(
     magnitude: Literal['stack', 'inf', '-inf'] | int | float = 2,
     ret_angle: Literal[True] = True,
     angle_unit: Literal['rad', 'deg'] = 'deg',
+    mode: Literal['constant', 'reflect', 'replicate', 'circular'] = 'reflect',
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Edge detection by the Prewitt operators.
 
@@ -164,6 +192,9 @@ def prewitt(
         Returns the direction of gradient or not.
     angle_unit : {'rad', 'deg'}, default='deg'
         The representation of angle is in radian or in degree.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -183,6 +214,7 @@ def sobel(
     magnitude: Literal['stack', 'inf', '-inf'] | int | float = 2,
     ret_angle: Literal[False] = False,
     angle_unit: Literal['rad', 'deg'] = 'deg',
+    mode: Literal['constant', 'reflect', 'replicate', 'circular'] = 'reflect',
 ) -> torch.Tensor:
     """Edge detection by the Sobel operators.
 
@@ -196,6 +228,9 @@ def sobel(
         Returns the direction of gradient or not.
     angle_unit : {'rad', 'deg'}, default='deg'
         The representation of angle is in radian or in degree.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -212,6 +247,7 @@ def sobel(
     magnitude: Literal['stack', 'inf', '-inf'] | int | float = 2,
     ret_angle: Literal[True] = True,
     angle_unit: Literal['rad', 'deg'] = 'deg',
+    mode: Literal['constant', 'reflect', 'replicate', 'circular'] = 'reflect',
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Edge detection by the Sobel operators.
 
@@ -225,6 +261,9 @@ def sobel(
         Returns the direction of gradient or not.
     angle_unit : {'rad', 'deg'}, default='deg'
         The representation of angle is in radian or in degree.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -244,6 +283,7 @@ def scharr(
     magnitude: Literal['stack', 'inf', '-inf'] | int | float = 2,
     ret_angle: Literal[False] = False,
     angle_unit: Literal['rad', 'deg'] = 'deg',
+    mode: Literal['constant', 'reflect', 'replicate', 'circular'] = 'reflect',
 ) -> torch.Tensor:
     """Edge detection by the Scharr operators.
 
@@ -257,6 +297,9 @@ def scharr(
         Returns the direction of gradient or not.
     angle_unit : {'rad', 'deg'}, default='deg'
         The representation of angle is in radian or in degree.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------
@@ -273,6 +316,7 @@ def scharr(
     magnitude: Literal['stack', 'inf', '-inf'] | int | float = 2,
     ret_angle: Literal[True] = True,
     angle_unit: Literal['rad', 'deg'] = 'deg',
+    mode: Literal['constant', 'reflect', 'replicate', 'circular'] = 'reflect',
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Edge detection by the Scharr operators.
 
@@ -286,6 +330,9 @@ def scharr(
         Returns the direction of gradient or not.
     angle_unit : {'rad', 'deg'}, default='deg'
         The representation of angle is in radian or in degree.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in
+        `torch.nn.functional.pad`.
 
     Returns
     -------

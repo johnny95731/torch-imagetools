@@ -26,7 +26,7 @@ def calc_padding(ksize: tuple[int, int]) -> tuple[int, int, int, int]: ...
 def filter2d(
     img: torch.Tensor,
     kernel: torch.Tensor,
-    padding: list[int] | str | None = 'same',
+    padding: int | list[int] | Literal['same'] | None = 'same',
     mode: Literal['constant', 'reflect', 'replicate', 'circular'] = 'reflect',
 ) -> torch.Tensor: ...
 
