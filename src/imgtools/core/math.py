@@ -40,20 +40,24 @@ def matrix_transform(
 def _check_ksize(
     ksize: int | tuple[int, int],
     positive: bool = True,
+    odd: bool = False,
 ) -> tuple[int, int]:
-    """_summary_
+    """Checks the validity of the kernel size and returns a tuple of kernel
+    size.
 
     Parameters
     ----------
     ksize : int | tuple[int, int]
-        _description_
-    positive : bool, optional
-        _description_, by default True
+        Kernel size.
+    positive : bool, default=True
+        Requires the kernel size to be (strict) positive.
+    odd : bool, default=False
+        Requires the kernel size to be odd.
 
     Returns
     -------
     tuple[int, int]
-        _description_
+        A tuple of kernel size `(ksize_y, ksize_x)`.
     """
     if isinstance(ksize, int):
         _ksize = (ksize, ksize)
@@ -70,6 +74,8 @@ def _check_ksize(
         raise TypeError(f'Invalid type of ksize: {type(ksize)}')
     if positive and (_ksize[0] <= 0 or _ksize[1] <= 0):
         raise ValueError('ksize must be positive integers.')
+    if odd and (_ksize[0] % 2 == 0 or _ksize[1] % 2 == 0):
+        raise ValueError(f'`ksize` must be odd integer(s): {ksize}')
     return _ksize
 
 

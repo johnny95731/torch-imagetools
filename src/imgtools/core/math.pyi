@@ -20,6 +20,7 @@ def matrix_transform(
 def _check_ksize(
     ksize: int | tuple[int, int],
     positive: bool = True,
+    odd: bool = False,
 ) -> tuple[int, int]: ...
 def calc_padding(ksize: tuple[int, int]) -> tuple[int, int, int, int]: ...
 def filter2d(
