@@ -113,7 +113,7 @@ def dwt2_partial(
     )
     is_not_batch = check_valid_image_ndim(img)
     num_ch = img.size(-3)
-    length = scaling.numel()
+    length = scaling.numel() if scaling is not None else wavelet.numel()
     # prepare kernel
     target = target.upper()
     row_vector = scaling if target[0] == 'L' else wavelet
