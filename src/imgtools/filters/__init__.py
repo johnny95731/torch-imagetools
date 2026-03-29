@@ -21,6 +21,8 @@ __all__ = [
     'gaussian_blur',
     'get_gaussian_kernel',
     'guided_filter',
+    'max_filter',
+    'min_filter',
     'get_butterworth_highpass',
     'get_butterworth_lowpass',
     'get_freq_laplacian',
@@ -42,6 +44,8 @@ from .blur import (
     gaussian_blur,
     get_gaussian_kernel,
     guided_filter,
+    max_filter,
+    min_filter,
 )
 from .rfft import (
     get_butterworth_highpass,
