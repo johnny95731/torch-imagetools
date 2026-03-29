@@ -138,7 +138,7 @@ def mean(
         The mean value. If `channelwise` is False, the shape is
         `(*, 1, 1, 1)`; otherwise, the shape is `(*, C, 1, 1)`.
     """
-    dim = (-2, -3) if channelwise else (-1, -2, -3)
+    dim = (-1, -2) if channelwise else (-1, -2, -3)
     if weight is None:
         mean = torch.mean(img, dim=dim, keepdim=True)
     elif isinstance(weight, torch.Tensor):
