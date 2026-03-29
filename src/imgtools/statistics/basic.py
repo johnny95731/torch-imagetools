@@ -2,17 +2,28 @@ __all__ = [
     'combine_mean_std',
     'histogram',
     'mean',
+    'moving_mean',
     'var',
+    'moving_var',
     'std',
     'mean_std',
+    'moving_mean_std',
     'moments',
+    'covar',
+    'covar_matrix',
 ]
 
 from typing import Literal
 
 import torch
 
-from ..utils.helpers import align_device_type, check_valid_image_ndim
+from ..filters.blur import box_blur
+from ..filters.rfft import get_gaussian_lowpass
+from ..utils.helpers import (
+    __default_dtype,
+    align_device_type,
+    check_valid_image_ndim,
+)
 
 
 def combine_mean_std(
@@ -156,6 +167,31 @@ def mean(
     return mean
 
 
+def moving_mean(
+    img: torch.Tensor,
+    ksize: int | tuple[int, int] = 3,
+    fft_approx: bool = False,
+    sigma: float = 1,
+    mode: str = 'reflect',
+) -> torch.Tensor:
+    check_valid_image_ndim(img)
+    if not fft_approx:
+        _mean = box_blur(img, ksize, mode=mode)
+    else:
+        img_f = torch.fft.rfft2(img)
+        dtype = __default_dtype(img)
+        kernel = get_gaussian_lowpass(
+            img_f,
+            sigma,
+            d=1,
+            spatial_sigma=True,
+            dtype=dtype,
+            device=img.device,
+        )
+        _mean = torch.fft.irfft2(img_f * kernel, s=img.shape[-2:])
+    return _mean
+
+
 def var(
     img: torch.Tensor,
     channelwise: bool = False,
@@ -197,6 +233,37 @@ def var(
     else:
         raise TypeError(f'`weight` must be None or a Tensor: {type(weight)}')
     return var
+
+
+def moving_var(
+    img: torch.Tensor,
+    ksize: int | tuple[int, int] = 3,
+    fft_approx: bool = False,
+    sigma: float = 1,
+    mode: str = 'reflect',
+) -> torch.Tensor:
+    check_valid_image_ndim(img)
+    if not fft_approx:
+        _mean = box_blur(img, ksize, mode=mode)
+        _sq_mean = box_blur(img.square(), ksize, mode=mode)
+        res = _sq_mean.sub_(_mean.square_())
+    else:
+        img_f = torch.fft.rfft2(img)
+        img_sq_f = torch.fft.rfft2(img.square())
+        ori_size = img.shape[-2:]
+        dtype = __default_dtype(img)
+        kernel = get_gaussian_lowpass(
+            img_f,
+            sigma,
+            d=1,
+            spatial_sigma=True,
+            dtype=dtype,
+            device=img.device,
+        )
+        _mean = torch.fft.irfft2(img_f.mul_(kernel), s=ori_size)
+        _sq_mean = torch.fft.irfft2(img_sq_f.mul_(kernel), s=ori_size)
+        res = _sq_mean.sub_(_mean.square_())
+    return res
 
 
 def std(
@@ -271,6 +338,37 @@ def mean_std(
     return mean, std
 
 
+def moving_mean_std(
+    img: torch.Tensor,
+    ksize: int | tuple[int, int] = 3,
+    fft_approx: bool = False,
+    sigma: float = 10,
+    mode: str = 'reflect',
+) -> tuple[torch.Tensor, torch.Tensor]:
+    check_valid_image_ndim(img)
+    if not fft_approx:
+        _mean = box_blur(img, ksize, mode=mode)
+        _sq_mean = box_blur(img.square(), ksize, mode=mode)
+        _std = _sq_mean.sub_(_mean.square()).sqrt_()
+    else:
+        img_f = torch.fft.rfft2(img)
+        img_sq_f = torch.fft.rfft2(img.square())
+        ori_size = img.shape[-2:]
+        dtype = __default_dtype(img)
+        kernel = get_gaussian_lowpass(
+            img_f,
+            sigma,
+            d=1,
+            spatial_sigma=True,
+            dtype=dtype,
+            device=img.device,
+        )
+        _mean = torch.fft.irfft2(img_f.mul_(kernel), s=ori_size)
+        _sq_mean = torch.fft.irfft2(img_sq_f.mul_(kernel), s=ori_size)
+        _std = _sq_mean.sub_(_mean.square()).sqrt_()
+    return _mean, _std
+
+
 def moments(
     img: torch.Tensor,
     order: Literal[3, 4],
@@ -335,3 +433,61 @@ def moments(
         raise TypeError(f'`weight` must be None or a Tensor: {type(weight)}')
     excess_kurtosis = kurtosis - 3.0
     return mean, std, skewness, excess_kurtosis
+
+
+def covar(
+    img1: torch.Tensor,
+    img2: torch.Tensor,
+    channelwise: bool = False,
+) -> torch.Tensor:
+    """Computes the covariance of two images.
+
+    Parameters
+    ----------
+    img1 : torch.Tensor
+        Image with shape `(*, C, H, W)`.
+    img2 : torch.Tensor
+        Image with shape `(*, C, H, W)`.
+    channelwise : bool, default=False
+        Computes the covariance for each channel instead of for the
+        entire image.
+
+    Returns
+    -------
+    torch.Tensor
+        The covariance of two images. If `channelwise` is False, the shape is
+        `(*, 1, 1, 1)`; otherwise, the shape is `(*, C, 1, 1)`.
+    """
+    check_valid_image_ndim(img1)
+    check_valid_image_ndim(img2)
+    img2 = align_device_type(img2, img1)
+    dim = (-1, -2) if channelwise else (-1, -2, -3)
+    mean1 = img1.mean(dim=dim, keepdim=True)
+    mean2 = img2.mean(dim=dim, keepdim=True)
+    mul_mean = (img1 * img2).mean(dim=dim, keepdim=True)
+
+    cov = mul_mean - mean1 * mean2
+    return cov
+
+
+def covar_matrix(img: torch.Tensor) -> torch.Tensor:
+    """Computes the covariance matrix of the input image.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        Image with shape `(*, C, H, W)`.
+
+    Returns
+    -------
+    torch.Tensor
+        The covariance matrix with shape `(*, C, C)`
+    """
+    check_valid_image_ndim(img)
+    flatted = img.flatten(-2)
+    n = flatted.size(-1)
+    mean = flatted.mean(dim=-1, keepdim=True)
+
+    covmat = torch.matmul(flatted, flatted.movedim(-1, -2)).div_(n - 1)
+    covmat = covmat - (n / (n - 1)) * mean * mean.movedim(-1, -2)
+    return covmat
