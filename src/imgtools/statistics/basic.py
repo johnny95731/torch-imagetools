@@ -57,6 +57,17 @@ def combine_mean_std(
     ----------
     [1] stack exchange - How do I combine standard deviations of two groups?
         https://math.stackexchange.com/questions/2971315/how-do-i-combine-standard-deviations-of-two-groups
+
+    Examples
+    --------
+
+    >>> from imgtools.statistics import combine_mean_std, mean_std
+    >>>
+    >>> stats = [
+    >>>     (*mean_std(img, channelwise=True), img.shape[-1] * img.shape[-2])
+    >>>     for img in imgs
+    >>> ]
+    >>> _mean, _std, num_pixels = combine_mean_std(*stats)
     """
     mean_x, std_x, num_x = stats[0][:3]
     if len(stats) == 1:
@@ -102,10 +113,16 @@ def histogram(
     torch.Tensor
         The histogram or density.
 
-    Raises
-    ------
-    TypeError
-        If bins is not int type.
+    Examples
+    --------
+
+    >>> from imgtools.statistics import histogram
+    >>>
+    >>> img = torch.rand(3, 512, 512)
+    >>> _hist1 = histogram(img)  # torch.Size([3, 256])
+    >>> _hist2 = histogram(img, bins=300)  # torch.Size([3, 300])
+    >>> _hist3 = mean(img, density=True)  # torch.Size([3, 256])
+    >>> _hist3.sum(-1)  # (1., 1., 1.)
     """
     if not isinstance(bins, int):
         raise TypeError(f'`bins` must be an integer: {type(bins)}.')
@@ -148,6 +165,19 @@ def mean(
     torch.Tensor
         The mean value. If `channelwise` is False, the shape is
         `(*, 1, 1, 1)`; otherwise, the shape is `(*, C, 1, 1)`.
+
+    Examples
+    --------
+
+    >>> from imgtools.statistics import mean
+    >>>
+    >>> img = torch.rand(3, 512, 512)
+    >>> _mean = mean(img, channelwise=False)  # torch.Size([1, 1, 1])
+    >>> _mean2 = mean(img, channelwise=True)  # torch.Size([3, 1, 1])
+    >>>
+    >>> weight = torch.rand(512, 512)
+    >>> _mean3 = mean(img, weight=weight)  # torch.Size([1, 1, 1])
+    >>> torch.allclose(_mean, _mean3)  # False
     """
     dim = (-1, -2) if channelwise else (-1, -2, -3)
     if weight is None:
@@ -171,9 +201,38 @@ def moving_mean(
     img: torch.Tensor,
     ksize: int | tuple[int, int] = 3,
     fft_approx: bool = False,
-    sigma: float = 1,
+    sigma: float | tuple[float, float] = 1,
     mode: str = 'reflect',
 ) -> torch.Tensor:
+    """The 2D moving average of an image. Equals mean blur.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape `(*, C, H, W)`.
+    ksize : int | tuple[int, int], default=3
+        The size of window.
+    fft_approx : bool, default=False
+        Uses the frequency domain Gaussian filter to approach mean blur.
+        Recommend to use when window size is large.
+    sigma : float | tuple[float, float], default 1
+        The strength of blurrness.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in `torch.nn.functional.pad`.
+
+    Returns
+    -------
+    torch.Tensor
+        Moving average with shape `(*, C, H, W)`.
+
+    Examples
+    --------
+
+    >>> from imgtools.statistics import moving_mean
+    >>>
+    >>> img = torch.rand(3, 512, 512)
+    >>> _mean = moving_mean(img)  # torch.Size([3, 512, 512])
+    """
     check_valid_image_ndim(img)
     if not fft_approx:
         _mean = box_blur(img, ksize, mode=mode)
@@ -214,6 +273,19 @@ def var(
     torch.Tensor
         The variance. If `channelwise` is False, the shape is
         `(*, 1, 1, 1)`; otherwise, the shape is `(*, C, 1, 1)`.
+
+    Examples
+    --------
+
+    >>> from imgtools.statistics import var
+    >>>
+    >>> img = torch.rand(3, 512, 512)
+    >>> _var = var(img, channelwise=False)  # (1, 1, 1)
+    >>> _var2 = var(img, channelwise=True)  # (3, 1, 1)
+    >>>
+    >>> weight = torch.rand(512, 512)
+    >>> _var3 = var(img, weight=weight)  # (1, 1, 1)
+    >>> torch.allclose(_var, _var3)  # False
     """
     dim = (-1, -2) if channelwise else (-1, -2, -3)
     if weight is None:
@@ -242,6 +314,35 @@ def moving_var(
     sigma: float = 1,
     mode: str = 'reflect',
 ) -> torch.Tensor:
+    """The 2D moving variance of an image.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape `(*, C, H, W)`.
+    ksize : int | tuple[int, int], default=3
+        The size of window.
+    fft_approx : bool, default=False
+        Uses the frequency domain Gaussian filter to approach mean blur.
+        Recommend to use when window size is large.
+    sigma : float | tuple[float, float], default 1
+        The strength of blurrness.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in `torch.nn.functional.pad`.
+
+    Returns
+    -------
+    torch.Tensor
+        Moving variance with shape `(*, C, H, W)`.
+
+    Examples
+    --------
+
+    >>> from imgtools.statistics import moving_var
+    >>>
+    >>> img = torch.rand(3, 512, 512)
+    >>> _var = moving_var(img)  # torch.Size([3, 512, 512])
+    """
     check_valid_image_ndim(img)
     if not fft_approx:
         _mean = box_blur(img, ksize, mode=mode)
@@ -288,6 +389,21 @@ def std(
     torch.Tensor
         The standard deviation. If `channelwise` is False, the shape is
         `(*, 1, 1, 1)`; otherwise, the shape is `(*, C, 1, 1)`.
+
+    Examples
+    --------
+
+    >>> from imgtools.statistics import std, var
+    >>>
+    >>> img = torch.rand(3, 512, 512)
+    >>> _std = std(img, channelwise=False)  # (1, 1, 1)
+    >>> _std2 = std(img, channelwise=True)  # (3, 1, 1)
+    >>> _var = var(img)  # (1, 1, 1)
+    >>> torch.allclose(_std, _var.sqrt())  # True
+    >>>
+    >>> weight = torch.rand(512, 512)
+    >>> _std3 = std(img, weight=weight)  # (1, 1, 1)
+    >>> torch.allclose(_std, _std3)  # False
     """
     _var = var(img, channelwise, weight)
     std = _var.sqrt()
@@ -317,6 +433,18 @@ def mean_std(
         The tuple `(mean, std)`. If `channelwise` is False, the shape of both
         tensors are `(*, 1, 1, 1)`; otherwise, the shape of both
         tensors are `(*, C, 1, 1)`.
+
+    Examples
+    --------
+
+    >>> from imgtools.statistics import mean, mean_std, std
+    >>>
+    >>> img = torch.rand(3, 512, 512)
+    >>> _mean, _std = mean_std(img)
+    >>> _mean2 = mean(img)
+    >>> _std2 = std(img)
+    >>> torch.allclose(_mean, _mean2)  # True
+    >>> torch.allclose(_std, _std2)  # True
     """
     dim = (-1, -2) if channelwise else (-1, -2, -3)
     if weight is None:
@@ -345,6 +473,41 @@ def moving_mean_std(
     sigma: float = 10,
     mode: str = 'reflect',
 ) -> tuple[torch.Tensor, torch.Tensor]:
+    """The 2D moving variance of an image.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape `(*, C, H, W)`.
+    ksize : int | tuple[int, int], default=3
+        The size of window.
+    fft_approx : bool, default=False
+        Uses the frequency domain Gaussian filter to approach mean blur.
+        Recommend to use when window size is large.
+    sigma : float | tuple[float, float], default 1
+        The strength of blurrness.
+    mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
+        Padding mode. Same as the argument `mode` in `torch.nn.functional.pad`.
+
+    Returns
+    -------
+    torch.Tensor
+        Moving average with shape `(*, C, H, W)`.
+    torch.Tensor
+        Moving variance with shape `(*, C, H, W)`.
+
+    Examples
+    --------
+
+    >>> from imgtools.statistics import moving_mean, moving_mean_std, moving_var
+    >>>
+    >>> img = torch.rand(3, 512, 512)
+    >>> _mean, _std = moving_mean_std(img)
+    >>> _mean2 = moving_mean(img)
+    >>> _std2 = moving_var(img).sqrt_()
+    >>> torch.allclose(_mean, _mean2)  # True
+    >>> torch.allclose(_std, _std2)  # True
+    """
     check_valid_image_ndim(img)
     if not fft_approx:
         _mean = box_blur(img, ksize, mode=mode)
@@ -374,7 +537,7 @@ def moments(
     order: Literal[3, 4],
     channelwise: bool = False,
     weight: torch.Tensor | None = None,
-) -> tuple[torch.Tensor, torch.Tensor]:
+) -> tuple[torch.Tensor, ...]:
     """Returns the mean value, variance, skewness and excess kurtosis (
     when `order` is 4).
 
@@ -392,10 +555,23 @@ def moments(
 
     Returns
     -------
-    tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]
-        The tuple `(mean, std, skewness, excess_kurtosis)`. If `channelwise`
+    tuple[torch.Tensor, torch.Tensor, torch.Tensor]
+        The tuple `(mean, std, skewness)` when `order == 3`. If `channelwise`
         is False, the shape of tensors are `(*, 1, 1, 1)`; otherwise,
         the shape of tensors are `(*, C, 1, 1)`.
+    tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]
+        The tuple `(mean, std, skewness, excess_kurtosis)` when `order == 4`.
+        If `channelwise` is False, the shape of tensors are `(*, 1, 1, 1)`;
+        otherwise, the shape of tensors are `(*, C, 1, 1)`.
+
+    Examples
+    --------
+
+    >>> from imgtools.statistics import moments
+    >>>
+    >>> img = torch.rand(3, 512, 512)
+    >>> _mean, _std, _skewness = moments(img, order=3)
+    >>> _mean, _std, _skewness, _kurtosis = moments(img, order=4)
     """
     assert order in (3, 4), f'`order` must be 3 or 4: {order}'
     dim = (-1, -2) if channelwise else (-1, -2, -3)
@@ -457,6 +633,16 @@ def covar(
     torch.Tensor
         The covariance of two images. If `channelwise` is False, the shape is
         `(*, 1, 1, 1)`; otherwise, the shape is `(*, C, 1, 1)`.
+
+    Examples
+    --------
+
+    >>> from imgtools.statistics import covar
+    >>>
+    >>> img1 = torch.rand(3, 512, 512)
+    >>> img2 = torch.rand(3, 512, 512)
+    >>> _covar1 = covar(img1, img2)  #  torch.Size([1, 1, 1])
+    >>> _covar2 = covar(img1, img2, True)  #  torch.Size([3, 1, 1])
     """
     check_valid_image_ndim(img1)
     check_valid_image_ndim(img2)
@@ -481,7 +667,20 @@ def covar_matrix(img: torch.Tensor) -> torch.Tensor:
     Returns
     -------
     torch.Tensor
-        The covariance matrix with shape `(*, C, C)`
+        The covariance matrix with shape `(*, C, C)`.
+
+    Examples
+    --------
+
+    >>> from imgtools.statistics import covar_matrix
+    >>>
+    >>> img = torch.rand(3, 512, 512)
+    >>> _cov1 = covar_matrix(img)  #  torch.Size([3, 3])
+    >>> _cov2 = torch.cov(img.flatten(-2))
+    >>> torch.allclose(_cov1, _cov2, atol=1e-6)  # True
+    >>>
+    >>> img2 = torch.rand(5, 3, 512, 512)
+    >>> _cov1 = covar_matrix(img2)  #  torch.Size([5, 3, 3])
     """
     check_valid_image_ndim(img)
     flatted = img.flatten(-2)
