@@ -9,7 +9,7 @@ from tests.basic import (
     run_over_all_dtype_device,
 )
 
-from imgtools.wavelets import _pywt_wrapping, wavelets
+from imgtools.core import _pywt_wrapping, wavelets
 
 
 class DWT(BasicTest):

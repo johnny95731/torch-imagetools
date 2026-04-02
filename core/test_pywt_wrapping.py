@@ -1,6 +1,6 @@
 import unittest
 
-from imgtools.wavelets import _pywt_wrapping
+from imgtools.core import _pywt_wrapping
 from tests.basic import BasicTest
 
 

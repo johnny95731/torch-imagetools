@@ -1,4 +1,5 @@
 import os
+import subprocess
 import sys
 import unittest
 from collections.abc import Callable
@@ -23,7 +24,7 @@ def path_to_module_path(file_path: str) -> str:
 
 def run_module(module: str):
     print(f'Run `{module}`.')
-    os.system(f'{os.getcwd()}/.venv/Scripts/python.exe -m {module}')
+    subprocess.call(f'{os.getcwd()}/.venv/Scripts/python.exe -m {module}')
 
 
 DEFAULT_CONST = {

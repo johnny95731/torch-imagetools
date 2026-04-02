@@ -1,13 +1,14 @@
 import unittest
 
 import torch
-from imgtools.enhance import transfer
 from tests.basic import (
     DEFAULT_CONST,
     BasicTest,
     iter_dtype_device,
     run_over_all_dtype_device,
 )
+
+from imgtools.enhance import stylization
 
 BATCH = DEFAULT_CONST['batch']
 CHANNEL = DEFAULT_CONST['channel']
@@ -42,7 +43,7 @@ class Transfer(BasicTest):
         self.print_name()
 
         cases = run_over_all_dtype_device(
-            transfer.transfer_reinhard,
+            stylization.transfer_reinhard,
             num_imgs=2,
         )
         for inps, res in cases:
