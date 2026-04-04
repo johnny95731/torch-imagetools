@@ -147,7 +147,7 @@ def filter2d(
         kernel = kernel.view(1, 1, kernel.shape[0], kernel.shape[1])
         kernel = kernel.repeat(num_ch, 1, 1, 1)
     elif kernel.ndim == 3:
-        kernel = kernel.unsqueeze_(1)
+        kernel = kernel.unsqueeze(1)
     kernel = kernel.contiguous()
     #
     if padding == 'same':
