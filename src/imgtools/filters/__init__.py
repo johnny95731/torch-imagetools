@@ -10,6 +10,7 @@
 """
 
 __all__ = [
+    'difference',
     'gradient_magnitude',
     'kirsch',
     'laplacian',
@@ -31,6 +32,7 @@ __all__ = [
 ]
 
 from ._edges import (
+    difference,
     gradient_magnitude,
     kirsch,
     laplacian,

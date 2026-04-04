@@ -3,6 +3,7 @@ __all__ = [
     'laplacian',
     'robinson',
     'kirsch',
+    'difference',
     'prewitt',
     'sobel',
     'scharr',
@@ -139,6 +140,21 @@ def kirsch(
     """
 
 #
+@overload
+def difference(
+    img: torch.Tensor,
+    magnitude: str | int | float = 2,
+    ret_angle: Literal[False] = False,
+    angle_unit: str = 'deg',
+)-> torch.Tensor:...
+@overload
+def difference(
+    img: torch.Tensor,
+    magnitude: str | int | float = 2,
+    ret_angle: Literal[True] = True,
+    angle_unit: str = 'deg',
+) -> tuple[torch.Tensor, torch.Tensor]:...
+    
 @overload
 def prewitt(
     img: torch.Tensor,

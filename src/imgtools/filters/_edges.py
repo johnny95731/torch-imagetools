@@ -3,6 +3,7 @@ __all__ = [
     'laplacian',
     'robinson',
     'kirsch',
+    'difference',
     'prewitt',
     'sobel',
     'scharr',
@@ -295,6 +296,48 @@ def kirsch(
 
 
 # 1st order operators
+def difference(
+    img: torch.Tensor,
+    magnitude: str | int | float = 2,
+    ret_angle: bool = False,
+    angle_unit: str = 'deg',
+) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+    """The forward difference of image along y- and x-axis.
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image with shape `(*, C, H, W)`.
+    magnitude : {'stack', 'inf', '-inf'} | int | float, default=2
+        Norm for computing gradient's magnitude.
+    ret_angle : bool, default=False
+        Returns the direction of gradient or not.
+    angle_unit : {'rad', 'deg'}, default='deg'
+        The representation of angle is in radian or in degree.
+
+    Returns
+    -------
+    mag : torch.Tensor
+        Image gradient's magnitude.\\
+        The magnitude stacks (y-direction, x-direction) if `magnitude`
+        is 'stack'.\\
+        For details, check `torch_imagetools.filters.gradient_magnitude`.
+    angle : torch.Tensor
+        Image gradient's direction with shape `(*, C, H, W)`.
+        `angle` is returned only if `ret_angle` is true.
+    """
+    dy = torch.diff(img, dim=-2, append=img[..., -1:, :])
+    dx = torch.diff(img, dim=-1, append=img[..., -1:])
+
+    mag = gradient_magnitude(dy, dx, magnitude=magnitude)
+    if ret_angle:
+        angle = torch.atan2(dy, dx)
+        if angle_unit == 'deg':
+            angle = rad_to_deg(angle)
+        return mag, angle
+    return mag
+
+
 def prewitt(
     img: torch.Tensor,
     magnitude: str | int | float = 2,
