@@ -282,7 +282,7 @@ def get_butterworth_highpass(
 
 def get_freq_laplacian(
     img_size: int | tuple[int, int] | torch.Tensor,
-    form: Literal['continuous', '4-neighbor', '8-neighbor'] = 'continuous',
+    form: Literal['continuous', '5-point', '9-point'] = 'continuous',
     d: float | None = 1.0,
     dtype: torch.dtype = None,
     device: torch.device = None,
@@ -294,16 +294,16 @@ def get_freq_laplacian(
     img_size : int | tuple[int, int] | torch.Tensor
         The size of rfft image. The tuple is `(size_y, size_x)`. Or,
         the rfft image with shape `(..., H, W)`.
-    form : {'continuous', '4-neighbor'}, default='continuous'
+    form : {'continuous', '5-point', '9-point'}, default='continuous'
         The form of approximation of discrete Laplacian filter in frequency
         domain.
 
         - `'continuous'`: Discretize the Fourier transform of the continuous
         Laplacian operator. Better
-        - `'4-neighbor'`: Computes the Fourier transform of the discrete
-        4-neighbor Laplacian operator. This can be used to solve the PDE.
-        - `'8-neighbor'`: Computes the Fourier transform of the discrete
-        8-neighbor Laplacian operator.
+        - `'5-point'`: Computes the Fourier transform of the 5-point stencil
+        Laplacian operator.
+        - `'9-point'`: Computes the Fourier transform of the 9-point stencil
+        Laplacian operator.
     d : float | None, default=1.0
         The sampling length scale. If None, uses 1 / img_size. For details,
         see `torch.fft.fftfreq` and `torch.fft.rfftfreq`.
@@ -315,7 +315,7 @@ def get_freq_laplacian(
     Returns
     -------
     torch.Tensor
-        2D Laplacian filter.
+        2D Laplacian filter in frequency domain.
 
     Notes
     -----
@@ -354,19 +354,19 @@ def get_freq_laplacian(
         # Discretize the Fourier transform of the continuous Laplacian operator
         freq_y.mul_(2 * torch.pi).square_()
         freq_x.mul_(2 * torch.pi).square_()
-        fft_laplacian = -freq_y - freq_x
-    elif form == '4-neighbor':
-        # The Fourier transform of the discrete 4-neighbor Laplacian
-        freq_y.mul_(2 * torch.pi).cos_().mul_(-2.0).add_(4.0)
-        freq_x.mul_(2 * torch.pi).cos_().mul_(-2.0)
+        fft_laplacian = freq_y.add(freq_x).neg_()
+    elif form == '5-point':
+        # The Fourier transform of the 5-point stencil.
+        freq_y.mul_(2 * torch.pi).cos_().mul_(2.0).sub_(4.0)
+        freq_x.mul_(2 * torch.pi).cos_().mul_(2.0)
         fft_laplacian = freq_y + freq_x
-    elif form == '8-neighbor':
-        # The Fourier transform of the discrete 8-neighbor Laplacian
-        freq_y.mul_(2 * torch.pi).cos_().mul_(-2.0)
-        freq_x.mul_(2 * torch.pi).cos_().mul_(-2.0)
-        fft_laplacian = (freq_y + freq_x).sub_(freq_y * freq_x).add_(8.0)
+    elif form == '9-point':
+        # The Fourier transform of the 9-point stencil
+        freq_y.mul_(2 * torch.pi).cos_().mul_(2.0)
+        freq_x.mul_(2 * torch.pi).cos_().mul_(2.0)
+        fft_laplacian = (freq_y + freq_x).add_(freq_y * freq_x).sub_(8.0)
     else:
         raise ValueError(
-            f'`form` must be one of "continuous", "4-neighbor", or "8-neighbor": {form}'
+            f'`form` must be one of "continuous", "5-point", or "9-point": {form}'
         )
     return fft_laplacian
