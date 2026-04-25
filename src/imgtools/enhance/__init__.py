@@ -41,7 +41,6 @@ __all__ = [
     'match_mean_std',
     'bilateral_hdr',
     'reinhard2002',
-    'light_compensation_htchen',
     'msrcp',
     'msrcr',
     'retinex',
@@ -72,7 +71,6 @@ from .hdr import (
     reinhard2002,
 )
 from .lowlight import (
-    light_compensation_htchen,
     msrcp,
     msrcr,
     retinex,
