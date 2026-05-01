@@ -2,13 +2,14 @@ __all__ = [
     'retinex',
     'msrcr',
     'msrcp',
+    'faster_lime',
 ]
 
 import torch
 
 from ..balance._balance import clipping_balance
 from ..color._grayscale import rgb_to_gray
-from ..filters.rfft import get_gaussian_lowpass
+from ..filters.rfft import get_butterworth_lowpass, get_gaussian_lowpass
 from ..utils.helpers import __default_dtype
 
 
@@ -191,3 +192,61 @@ def msrcp(
     coeff = torch.minimum(1.0 / maxi_ch, temp / gray).nan_to_num(0.0)
     _msrcr = rgb * coeff
     return _msrcr
+
+
+def faster_lime(
+    img: torch.Tensor,
+    alpha: float = 2.0,
+    order: float = 1.0,
+    gamma: float = 0.5,
+):
+    """The faster-LIME algorithm [1]. The original LIME algorithm,
+    see [2] and [3].
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        Image in the range of [0, 1] with shape `(*, C, H, W)`.
+    alpha : float, default=2.0,
+        The blurrness of filter.
+    order : float, default=1.0
+        The order of Butterworth filter.
+    gamma : float, default=0.5
+        Gamma correction of the esimated illuminant. The higher value means
+
+    Returns
+    -------
+    torch.Tensor
+        Enhanced image. shape `(*, C, H, W)`.
+
+    References
+    ----------
+    [1] My HackMD, https://hackmd.io/@johnny95731/B1-Hb_Cnbx
+    [2] Guo X, Li Y, Ling H. LIME: Low-Light Image Enhancement via
+        Illumination Map Estimation. IEEE Transactions on Image Processing
+        2017, 26 (2), 982-993. https://doi.org/10.1109/TIP.2016.2639450.
+    [3] https://arxiv.org/abs/1605.05034
+    """
+    t_hat = torch.amax(img, -3, keepdim=True)
+    dtype = __default_dtype(img)
+    device = img.device
+
+    t_hat_f = torch.fft.rfft2(t_hat)
+    fft_filter = get_butterworth_lowpass(
+        t_hat_f,
+        1 / alpha,
+        order,
+        d=1,
+        dtype=dtype,
+        device=device,
+    )
+    res_f = t_hat_f.mul_(fft_filter)
+    img_t = torch.fft.irfft2(res_f, s=t_hat.shape[-2:], out=t_hat)
+    # normalize
+    mini = img_t.amin((-1, -2), keepdim=True)
+    maxi = img_t.amax((-1, -2), keepdim=True)
+    img_t.sub_(mini).div_(maxi.sub_(mini))
+
+    img_t.pow_(gamma).add_(1e-8)
+    res = img.div(img_t).clip_(0.0, 1.0)
+    return res
