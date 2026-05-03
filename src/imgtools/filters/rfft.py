@@ -20,10 +20,10 @@ from ..core.math import _check_ksize
 def get_gaussian_lowpass(
     img_size: int | tuple[int, int] | torch.Tensor,
     sigma: float | tuple[float, float],
-    d: float | None = None,
+    d: float | None = 1.0,
     spatial_sigma: bool = False,
-    dtype: torch.dtype = None,
-    device: torch.device = None,
+    dtype: torch.dtype | None = None,
+    device: torch.device | None = None,
 ) -> torch.Tensor:
     """Create a 2D Gaussian lowpass filter for rfft image.
 
@@ -34,15 +34,15 @@ def get_gaussian_lowpass(
         the rfft image with shape `(..., H, W)`.
     sigma : float | tuple[float, float]
         The width of Gaussian function. The tuple is `[sigma_y, sigma_x]`.
-    d : float | None, default=None
-        The sampling length scale. If None, uses 1 / img_size. For details,
+    d : float | None, default=1.0
+        The sampling length scale. If `None`, uses `1/img_size`. For details,
         see `torch.fft.fftfreq` and `torch.fft.rfftfreq`.
     spatial_sigma : bool, default=False
         Specify the sigma is for the Gaussian function in spatial domain.
         Set `sigma <- 1 / (2 * pi * sigma)`. Recommend to set `d = 1`.
-    dtype : torch.dtype, default=None
+    dtype : torch.dtype | None, default=None
         The Data type of the filter.
-    device : torch.device, default=None
+    device : torch.device | None, default=None
         The Device of the returned filter.
 
     Returns
@@ -113,10 +113,10 @@ def get_gaussian_lowpass(
 def get_gaussian_highpass(
     img_size: int | tuple[int, int] | torch.Tensor,
     sigma: float | tuple[float, float],
-    d: float | None = None,
+    d: float | None = 1.0,
     spatial_sigma: bool = False,
-    dtype: torch.dtype = None,
-    device: torch.device = None,
+    dtype: torch.dtype | None = None,
+    device: torch.device | None = None,
 ) -> torch.Tensor:
     """Create a 2D Gaussian highpass filter for rfft image.
 
@@ -127,15 +127,15 @@ def get_gaussian_highpass(
         the rfft image with shape `(..., H, W)`.
     sigma : float | tuple[float, float]
         The width of Gaussian function. The tuple is `[sigma_y, sigma_x]`.
-    d : float | None, default=None
-        The sampling length scale. If None, uses 1 / img_size. For details,
+    d : float | None, default=1.0
+        The sampling length scale. If `None`, uses `1/img_size`. For details,
         see `torch.fft.fftfreq` and `torch.fft.rfftfreq`.
     spatial_sigma : bool, default=False
         Specify the sigma is for the Gaussian function in spatial domain.
         Set `sigma <- 1 / (2 * pi * sigma)`.
-    dtype : torch.dtype, default=None
+    dtype : torch.dtype | None, default=None
         The Data type of the filter.
-    device : torch.device, default=None
+    device : torch.device | None, default=None
         The Device of the returned filter.
 
     Returns
@@ -167,9 +167,9 @@ def get_butterworth_lowpass(
     img_size: int | tuple[int, int] | torch.Tensor,
     cutoff: float,
     order: float = 1.0,
-    d: float | None = None,
-    dtype: torch.dtype = None,
-    device: torch.device = None,
+    d: float | None = 1.0,
+    dtype: torch.dtype | None = None,
+    device: torch.device | None = None,
 ) -> torch.Tensor:
     """Create a 2D Butterworth lowpass filter for rfft image.
 
@@ -182,12 +182,12 @@ def get_butterworth_lowpass(
         The cutoff frequency of Butterworth filter.
     order : float, default=1.0
         The order of Butterworth filter.
-    d : float | None, default=None
-        The sampling length scale. If None, uses 1 / img_size. For details,
+    d : float | None, default=1.0
+        The sampling length scale. If `None`, uses `1/img_size`. For details,
         see `torch.fft.fftfreq` and `torch.fft.rfftfreq`.
-    dtype : torch.dtype, default=None
+    dtype : torch.dtype | None, default=None
         The Data type of the filter.
-    device : torch.device, default=None
+    device : torch.device | None, default=None
         The Device of the returned filter.
 
     Returns
@@ -239,9 +239,9 @@ def get_butterworth_highpass(
     img_size: int | tuple[int, int] | torch.Tensor,
     cutoff: float,
     order: float = 1.0,
-    d: float | None = None,
-    dtype: torch.dtype = None,
-    device: torch.device = None,
+    d: float | None = 1.0,
+    dtype: torch.dtype | None = None,
+    device: torch.device | None = None,
 ) -> torch.Tensor:
     """Create a 2D Butterworth highpass filter for rfft image.
 
@@ -254,12 +254,12 @@ def get_butterworth_highpass(
         The cutoff frequency of Butterworth filter.
     order : float, default=1.0
         The order of Butterworth filter.
-    d : float | None, default=None
-        The sampling length scale. If None, uses 1 / img_size. For details,
+    d : float | None, default=1.0
+        The sampling length scale. If `None`, uses `1/img_size`. For details,
         see `torch.fft.fftfreq` and `torch.fft.rfftfreq`.
-    dtype : torch.dtype, default=None
+    dtype : torch.dtype | None, default=None
         The Data type of the filter.
-    device : torch.device, default=None
+    device : torch.device | None, default=None
         The Device of the returned filter.
 
     Returns
@@ -284,8 +284,8 @@ def get_freq_laplacian(
     img_size: int | tuple[int, int] | torch.Tensor,
     form: Literal['continuous', '5-point', '9-point'] = 'continuous',
     d: float | None = 1.0,
-    dtype: torch.dtype = None,
-    device: torch.device = None,
+    dtype: torch.dtype | None = None,
+    device: torch.device | None = None,
 ) -> torch.Tensor:
     """Create a frequency domain Laplacian filter for rfft image.
 
@@ -305,11 +305,11 @@ def get_freq_laplacian(
         - `'9-point'`: Computes the Fourier transform of the 9-point stencil
         Laplacian operator.
     d : float | None, default=1.0
-        The sampling length scale. If None, uses 1 / img_size. For details,
+        The sampling length scale. If `None`, uses `1/img_size`. For details,
         see `torch.fft.fftfreq` and `torch.fft.rfftfreq`.
-    dtype : torch.dtype, default=None
+    dtype : torch.dtype | None, default=None
         The Data type of the filter.
-    device : torch.device, default=None
+    device : torch.device | None, default=None
         The Device of the returned filter.
 
     Returns
