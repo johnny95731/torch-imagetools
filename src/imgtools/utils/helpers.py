@@ -167,7 +167,12 @@ def arrayize(img: Tensorlike) -> np.ndarray:
     return img
 
 
-def tensorize(img: Tensorlike) -> torch.Tensor:
+def tensorize(
+    img: Tensorlike,
+    dtype: torch.dtype | None = None,
+    device: torch.device = torch.device('cpu'),
+    copy: bool = False,
+) -> torch.Tensor:
     """
     Converts an item to a contiguous torch.Tensor.
 
@@ -184,6 +189,13 @@ def tensorize(img: Tensorlike) -> torch.Tensor:
     ----------
     img : Tensorlike
         An item to be converted to tensor.
+    dtype : torch.dtype | None, default=None
+        The dtype of output tensor. If `None` is provided, the dtype will be
+        set to `torch.get_default_dtype()`.
+    device : torch.device, default=device('cpu')
+        The device of output tensor.
+    copy : bool, default=False
+        Whether to create a new tensor.
 
     Examples
     --------
@@ -197,16 +209,18 @@ def tensorize(img: Tensorlike) -> torch.Tensor:
     >>> img_t = tensorize(img)
     >>> img_t.shape  # (C, H, W)
     """
+    if dtype is None:
+        dtype = torch.get_default_dtype()
     if isinstance(img, np.ndarray):
         img = torch.from_numpy(img)
         img = (
             img.movedim(-1, -3)  # (..., H, W, C) -> (..., C, H, W)
             if img.ndim >= 3
-            else img.unsqueeze(0)  # (H, W) -> (1, H, W)
+            else img.unsqueeze_(0)  # (H, W) -> (1, H, W)
             if img.ndim == 2
             else img
         )
     elif not isinstance(img, torch.Tensor):
-        img = torch.tensor(img)
-    img = img.contiguous()
+        img = torch.as_tensor(img, device, dtype)
+    img = img.to(device, dtype, copy=copy).contiguous()
     return img
