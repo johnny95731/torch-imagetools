@@ -4,12 +4,12 @@ import torch
 
 from ...color._grayscale import rgb_to_gray
 from ...filters.rfft import get_gaussian_lowpass
-from ...utils.helpers import align_device_type, check_valid_image_ndim
+from ...utils.helpers import __default_dtype, check_valid_image_ndim
 
 
 def scale_luminance(
     lum: torch.Tensor,
-    exposure: float = 1.7,
+    mid_gray: float = 0.7,
 ):
     """Scales the image by the ratio of the `mid_gray` to the geometric mean
     of `lum`.
@@ -18,7 +18,7 @@ def scale_luminance(
     ----------
     lum : torch.Tensor
         An image with shape `(*, C, H, W)`
-    exposure : float, default=1.0
+    mid_gray : float, default=0.7
         Scaling coefficient.
 
     Returns
@@ -28,9 +28,8 @@ def scale_luminance(
     """
     log_lum = lum.add(1e-8).log_()
     geo_mean = log_lum.mean(dim=(-1, -2, -3), keepdim=True).exp_()
-    scaled_lum = exposure * lum
-    mid_gray = exposure * geo_mean
-    return scaled_lum, mid_gray
+    scaled_lum = (mid_gray / geo_mean) * lum
+    return scaled_lum
 
 
 def global_tone_mapping(
@@ -106,15 +105,15 @@ def local_tone_mapping(
         https://doi.org/10.1145/566654.566575
     """
     bias = mid_gray * (2**phi)
+    dtype = __default_dtype(lum)
     lum_f = torch.fft.rfft2(lum)  # type: torch.Tensor
     rec_size = lum.shape[-2:]
     sigma0 = 2 * torch.pi * alpha
     for scale in range(num_scale, 0, -1):
         sigma = sigma0 * ratio ** (scale - 1)
         lowpass = get_gaussian_lowpass(
-            lum_f, 1 / sigma, d=1.0, device=lum_f.device
+            lum_f, 1 / sigma, d=1.0, dtype=dtype, device=lum_f.device
         )
-        lowpass = align_device_type(lowpass, lum)
         v1 = torch.fft.irfft2(lum_f * lowpass, s=rec_size)  # type: torch.Tensor
         if scale == num_scale:
             v1sm = v1
@@ -131,7 +130,7 @@ def local_tone_mapping(
 
 def reinhard2002(
     img: torch.Tensor,
-    exposure: float = 1.7,
+    mid_gray: float = 0.7,
     l_white: float | None = None,
     num_scale: int = 4,
     alpha: float = 0.35355,
@@ -148,11 +147,9 @@ def reinhard2002(
     img : torch.Tensor
         An RGB or grayscale image in the range of [0, 1] with
         shape `(*, C, H, W)`.
-    exposure : float, default=1.7
+    mid_gray : float, default=0.7
         An mutiplier for scaling the luminance. Affects significantly
-        the luminance of output. The relation between exposure and mid
-        gray (`a` in equation (2) of [1]) is
-        `exposure = a / geometric_mean(lum)`
+        the luminance of output.
     l_white : float | None, default=None
         Maximum luminance. If None, the value will be set to the mean
         of luminance.
@@ -210,7 +207,7 @@ def reinhard2002(
         raise TypeError(f'`l_white` must be a positive number: {type(l_white)}')
     elif l_white <= 0:
         raise ValueError(f'`l_white` must be a positive number: {l_white}')
-    scaled_lum, mid_gray = scale_luminance(gray, exposure)
+    scaled_lum = scale_luminance(gray, mid_gray)
     tone = tone.lower()
     if tone == 'local':
         tone_mapping = local_tone_mapping(

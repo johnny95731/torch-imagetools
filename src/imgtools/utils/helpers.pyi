@@ -29,4 +29,9 @@ def _to_channel_coeff(
 
 #
 def arrayize(img: Tensorlike) -> np.ndarray: ...
-def tensorize(img: Tensorlike) -> torch.Tensor: ...
+def tensorize(
+    img: Tensorlike,
+    dtype: torch.dtype | None = None,
+    device: torch.device = torch.device('cpu'),
+    copy: bool = False,
+) -> torch.Tensor: ...

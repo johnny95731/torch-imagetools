@@ -5,7 +5,7 @@ from torch.nn.functional import interpolate
 
 from ...color._yuv import rgb_to_yuv, yuv_to_rgb
 from ...filters.rfft import get_gaussian_lowpass
-from ...utils.helpers import align_device_type, check_valid_image_ndim
+from ...utils.helpers import __default_dtype, check_valid_image_ndim
 
 
 # Note that the stopping functions are normalize to the range [c, 1]
@@ -102,7 +102,7 @@ def bilateral_hdr(
     img: torch.Tensor,
     sigma_c: float = 0.15,
     sigma_s: float | None = 1.0,
-    contrast: float = 1.5,
+    contrast: float = 1.0,
     downsample: float = 1,
     edge_stopping: str = 'gaussian',
     tone: str = 'soft',
@@ -121,9 +121,9 @@ def bilateral_hdr(
         Sigma in the space/coordinate. A larger value means that the
         farther points will cause more effect. If None, `sigma_s` is set
         to be `min(H, W) * 0.02`.
-    contrast: float, default=1.5
+    contrast: float, default=1.0
         The contrast factor. When `tone == 'std'`, the `contrast` will be
-        clipped to [1, inf).
+        clipped to (0, inf).
     downsample : float, default=1
         Downsample rate. A smaller value means small size in iteration.
     edge_stopping : {'huber', 'lorentz', 'turkey', 'gaussian'}, default='gaussian'
@@ -197,8 +197,9 @@ def bilateral_hdr(
     else:
         raise ValueError(f'The channel of `img` must be 1 or 3: {img.size(-3)}')
     if tone == 'std':
-        lum = _img_t0
-        _img_t0 = _img_t0.add(1e-7).log_()
+        lum = _img_t0.add(1e-7)
+        _img_t0 = lum.log()
+    dtype = __default_dtype(img)
     # Downsample
     if not isinstance(downsample, (int, float)):
         raise TypeError(f'`downsample` must be a number: {type(downsample)}')
@@ -221,27 +222,27 @@ def bilateral_hdr(
     delta /= num_seg - 1
     # Fast bilateral filter
     base = torch.zeros_like(_img_t0)
+    irfft2_shape = img_t0.shape[-2:]
+    space_kernel = get_gaussian_lowpass(
+        [irfft2_shape[0], (irfft2_shape[1] + 2) // 2],
+        sigma_s,
+        d=1.0,
+        spatial_sigma=True,
+        dtype=dtype,
+        device=_img_t0.device,
+    )
     for j in range(num_seg):
         i_j = j * delta + mini
 
         g_j = color_fn(img_t0 - i_j, coeff_c)
         g_j_f = torch.fft.rfft2(g_j)  # type: torch.Tensor
-        if j == 0:
-            space_kernel = get_gaussian_lowpass(
-                g_j_f,
-                sigma_s,
-                d=1.0,
-                spatial_sigma=True,
-                device=_img_t0.device,
-            )
-            space_kernel = align_device_type(space_kernel, _img_t0)
         k_j_f = g_j_f * space_kernel
         h_j = g_j * img_t0
         h_j_f = torch.fft.rfft2(h_j)  # type: torch.Tensor
         h_star_j_f = h_j_f.mul_(space_kernel)
 
         k_j = torch.fft.irfft2(k_j_f, s=g_j.shape[-2:])  # type: torch.Tensor
-        h_star_j = torch.fft.irfft2(h_star_j_f, s=h_j.shape[-2:])  # type: torch.Tensor
+        h_star_j = torch.fft.irfft2(h_star_j_f, s=irfft2_shape)  # type: torch.Tensor
         j_j = h_star_j / (k_j + 1e-7)
         # Get interpolation weights
         diff = img_t0 - i_j
@@ -254,13 +255,11 @@ def bilateral_hdr(
         base += delta_base
     # Tone mapping
     if tone == 'std':
-        contrast = max(contrast, 1.0)
+        contrast = max(contrast, 0)
         detail = _img_t0.sub_(base)
-        tone_mapping = (
-            base.mul_(contrast).add_(detail).exp_().div_(lum.add(1e-8))
-        )
-        maxi_tone = tone_mapping.amax((-1, -2), keepdim=True)
-        res = (img * tone_mapping.div_(maxi_tone)).clip_(0.0, 1.0)
+        # exp{c * base + (lum-base)} / lum
+        tone_mapping = base.mul_(contrast).add_(detail).exp_().div_(lum)
+        res = (img * tone_mapping).clip_(0.0, 1.0)
     elif is_color:
         tone_mapping = base
         yuv[..., :1, :, :] = tone_mapping.clip_(0.0, 1.0).pow_(contrast)
@@ -268,5 +267,5 @@ def bilateral_hdr(
     else:
         res = base.clip_(0.0, 1.0).pow_(contrast)
     if is_not_batch:
-        res = res.squeeze(0)
+        res = res.squeeze_(0)
     return res

@@ -19,7 +19,7 @@ def bilateral_hdr(
     img: torch.Tensor,
     sigma_c: float = 0.15,
     sigma_s: float | None = 1.0,
-    contrast: float = 1.5,
+    contrast: float = 1.0,
     downsample: float = 1,
     edge_stopping: Literal[
         'huber', 'lorentz', 'turkey', 'gaussian'

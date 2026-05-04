@@ -159,7 +159,7 @@ def get_gaussian_highpass(
     kernel = get_gaussian_lowpass(
         img_size, sigma, d, spatial_sigma, dtype, device
     )
-    kernel = kernel[..., 0, 0] - kernel  # highpass
+    kernel = torch.sub(1.0, kernel, out=kernel)  # highpass
     return kernel
 
 
@@ -276,7 +276,7 @@ def get_butterworth_highpass(
     >>> edge = torch.fft.irfft2(edge_f)
     """
     kernel = get_butterworth_lowpass(img_size, cutoff, order, d, dtype, device)
-    kernel = 1 - kernel  # highpass
+    kernel = torch.sub(1.0, kernel, out=kernel)  # highpass
     return kernel
 
 
