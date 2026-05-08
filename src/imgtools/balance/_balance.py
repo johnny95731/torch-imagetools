@@ -10,7 +10,7 @@ __all__ = [
     'gray_edge_balance',
     'white_patch_balance',
     'cheng_pca_balance',
-    'clipping_balance',
+    'simplest_color_balance',
 ]
 
 import torch
@@ -366,6 +366,7 @@ def white_patch_balance(
 
 def cheng_pca_balance(
     rgb: torch.Tensor,
+    n_selected: float = 3.5,
     adaptation: str = 'von kries',
     rgb_spec: str = 'srgb',
     white: str = 'D65',
@@ -378,6 +379,8 @@ def cheng_pca_balance(
     ----------
     rgb : torch.Tensor
         An RGB image in the range of [0, 1] with shape `(*, C, H, W)`.
+    n_selected : float, default=3.5
+        A percentage value for picking pixels to estimate illuminant.
     adaptation : Literal['rgb', 'von kries'], default='von kries'
         Chromatic adaptation method. RGB scaling or von Kries transformation.
         - 'RGB': Scaling the illuminant to 1.
@@ -421,7 +424,7 @@ def cheng_pca_balance(
             f"`adaptation` should be 'rgb' or 'von kries', but got {adaptation}."
         )
 
-    illuminant = estimate_illuminant_cheng(rgb)
+    illuminant = estimate_illuminant_cheng(rgb, n_selected)
     illuminant = _to_channel_coeff(illuminant, 3)
     if adaptation == 'rgb':
         coeff = illuminant.mean(-3, keepdim=True) / illuminant
@@ -443,12 +446,13 @@ def cheng_pca_balance(
     return balanced
 
 
-def clipping_balance(
+def simplest_color_balance(
     img: torch.Tensor,
     dark_percent: float = 0.0,
     light_percent: float = 0.0,
 ):
     """Clip top-k1 and bottom-k2 percentage values and normalize to `[0, 1]`.
+    The algorithm is proposed by Limare et al [1].
 
     Parameters
     ----------
@@ -463,6 +467,10 @@ def clipping_balance(
     -------
     torch.Tensor
         A balanced image with shape `(*, C, H, W)`.
+
+    References
+    ----------
+    [1] Nicolas Limare, Jose-Luis Lisani, Jean-Michel Morel, Ana Belén Petro, and Catalina Sbert, Simplest Color Balance, Image Processing On Line, 1 (2011), pp. 297–315. https://doi.org/10.5201/ipol.2011.llmps-scb
     """
     flatted = img.flatten(-2)
     num_pixel = flatted.shape[-1]

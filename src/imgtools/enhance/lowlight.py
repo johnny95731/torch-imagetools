@@ -7,7 +7,7 @@ __all__ = [
 
 import torch
 
-from ..balance._balance import clipping_balance
+from ..balance._balance import simplest_color_balance
 from ..color._grayscale import rgb_to_gray
 from ..filters.rfft import get_butterworth_lowpass, get_gaussian_lowpass
 from ..utils.helpers import __default_dtype
@@ -132,7 +132,7 @@ def msrcr(
     bias = img.sum((-3), keepdim=True).log1p()
     _msrcr = _msrcr * (img.mul(125.0).log1p() - bias)
     # color balance
-    _msrcr = clipping_balance(_msrcr, dark_percent, light_percent)
+    _msrcr = simplest_color_balance(_msrcr, dark_percent, light_percent)
     return _msrcr
 
 
@@ -187,7 +187,7 @@ def msrcp(
     gray = rgb_to_gray(rgb)
     _msr = retinex(gray, scales, weights, normalize=False)
     # color balance
-    temp = clipping_balance(_msr, dark_percent, light_percent)
+    temp = simplest_color_balance(_msr, dark_percent, light_percent)
     maxi_ch = rgb.amax(-3, True)
     coeff = torch.minimum(1.0 / maxi_ch, temp / gray).nan_to_num(0.0)
     _msrcr = rgb * coeff

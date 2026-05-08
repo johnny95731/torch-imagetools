@@ -6,7 +6,7 @@ __all__ = [
     'gray_edge_balance',
     'white_patch_balance',
     'cheng_pca_balance',
-    'clipping_balance',
+    'simplest_color_balance',
 ]
 
 from typing import Literal, overload
@@ -101,6 +101,7 @@ def linear_regression_balance(rgb: torch.Tensor) -> torch.Tensor: ...
 #
 def cheng_pca_balance(
     rgb: torch.Tensor,
+    n_selected: float = 3.5,
     adaptation: Literal['rgb', 'von kries'] = 'von kries',
     rgb_spec: str | RGBSpec = 'srgb',
     white: str | StandardIlluminants = 'D65',
@@ -108,7 +109,7 @@ def cheng_pca_balance(
 ) -> torch.Tensor: ...
 
 #
-def clipping_balance(
+def simplest_color_balance(
     img: torch.Tensor,
     dark_percent: float = 0.0,
     light_percent: float = 0.0,
