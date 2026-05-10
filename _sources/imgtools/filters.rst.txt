@@ -26,6 +26,7 @@ _edges
 .. autosummary::
    :nosignatures:
 
+   difference
    gradient_magnitude
    kirsch
    laplacian
@@ -46,6 +47,8 @@ Blur
    gaussian_blur
    get_gaussian_kernel
    guided_filter
+   max_filter
+   min_filter
 
 
 ====

@@ -102,17 +102,17 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#imgtools.balance.cheng_pca_balance" title="imgtools.balance.cheng_pca_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cheng_pca_balance</span></code></a></p></td>
 <td><p>White balance by Cheng's PCA method [1].</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.balance.clipping_balance" title="imgtools.balance.clipping_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clipping_balance</span></code></a></p></td>
-<td><p>Clip top-k1 and bottom-k2 percentage values and normalize to <cite>[0, 1]</cite>.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.balance.get_von_kries_transform_matrix" title="imgtools.balance.get_von_kries_transform_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_von_kries_transform_matrix</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.balance.get_von_kries_transform_matrix" title="imgtools.balance.get_von_kries_transform_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_von_kries_transform_matrix</span></code></a></p></td>
 <td><p>Returns a transformation matrix for von Kries adaptation, which converts colors from a illuminant to another illuminant.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.balance.gray_edge_balance" title="imgtools.balance.gray_edge_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gray_edge_balance</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.balance.gray_edge_balance" title="imgtools.balance.gray_edge_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gray_edge_balance</span></code></a></p></td>
 <td><p>White balance by the gray-edge algorithm.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.balance.gray_world_balance" title="imgtools.balance.gray_world_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gray_world_balance</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.balance.gray_world_balance" title="imgtools.balance.gray_world_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gray_world_balance</span></code></a></p></td>
 <td><p>White balance by the gray-world algorithm.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.balance.simplest_color_balance" title="imgtools.balance.simplest_color_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simplest_color_balance</span></code></a></p></td>
+<td><p>Clip top-k1 and bottom-k2 percentage values and normalize to <cite>[0, 1]</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.balance.von_kries_transform" title="imgtools.balance.von_kries_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">von_kries_transform</span></code></a></p></td>
 <td><p>Applies chromatic adaptation transformation to an image in CIE XYZ space with given source and target white points.</p></td>
@@ -193,13 +193,15 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="imgtools.balance.cheng_pca_balance">
-<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">cheng_pca_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'von</span> <span class="pre">kries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rgb_spec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'srgb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">white</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'D65'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.cheng_pca_balance" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">cheng_pca_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_selected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'von</span> <span class="pre">kries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rgb_spec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'srgb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">white</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'D65'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.cheng_pca_balance" title="Link to this definition"></a></dt>
 <dd><p>White balance by Cheng’s PCA method [1]. Estimate the illuminant and
 applies chromatic adaptation transformation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>rgb</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An RGB image in the range of [0, 1] with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>n_selected</strong><span class="classifier">float, default=3.5</span></dt><dd><p>A percentage value for picking pixels to estimate illuminant.</p>
 </dd>
 <dt><strong>adaptation</strong><span class="classifier">Literal[‘rgb’, ‘von kries’], default=’von kries’</span></dt><dd><p>Chromatic adaptation method. RGB scaling or von Kries transformation.
 - ‘RGB’: Scaling the illuminant to 1.
@@ -244,30 +246,6 @@ the role of the color distribution.” JOSA A 31.5 (2014): 1049-1058.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="imgtools.balance.clipping_balance">
-<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">clipping_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">light_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.balance.clipping_balance" title="Link to this definition"></a></dt>
-<dd><p>Clip top-k1 and bottom-k2 percentage values and normalize to <cite>[0, 1]</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite>.</p>
-</dd>
-<dt><strong>dark_percent</strong><span class="classifier">float, default=0.0</span></dt><dd><p>The percentage value for clipping the lowest <a href="#id1"><span class="problematic" id="id2">`</span></a>dark_percent`% values.</p>
-</dd>
-<dt><strong>light_percent</strong><span class="classifier">float, default=0.0</span></dt><dd><p>The percentage value for clipping the highest <a href="#id3"><span class="problematic" id="id4">`</span></a>light_percent`% values.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>A balanced image with shape <cite>(*, C, H, W)</cite>.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="imgtools.balance.get_von_kries_transform_matrix">
 <span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">get_von_kries_transform_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xyz_white</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xyz_target_white</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'bradford'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.get_von_kries_transform_matrix" title="Link to this definition"></a></dt>
 <dd><p>Returns a transformation matrix for von Kries adaptation, which
@@ -285,7 +263,7 @@ converts colors from a illuminant to another illuminant.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt>torch.Tensor</dt><dd><p>Matrix with shape=`(<a href="#id5"><span class="problematic" id="id6">*</span></a>, 3, 3)`. Same dtype and device as <cite>xyz_white</cite>.</p>
+<dt>torch.Tensor</dt><dd><p>Matrix with shape=`(<a href="#id1"><span class="problematic" id="id2">*</span></a>, 3, 3)`. Same dtype and device as <cite>xyz_white</cite>.</p>
 </dd>
 </dl>
 </dd>
@@ -378,6 +356,33 @@ converts colors from a illuminant to another illuminant.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">factors</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># tensor([1.0003, 1.0013, 0.9984])</span>
 </pre></div>
 </div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.balance.simplest_color_balance">
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">simplest_color_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">light_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.balance.simplest_color_balance" title="Link to this definition"></a></dt>
+<dd><p>Clip top-k1 and bottom-k2 percentage values and normalize to <cite>[0, 1]</cite>.
+The algorithm is proposed by Limare et al [1].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>dark_percent</strong><span class="classifier">float, default=0.0</span></dt><dd><p>The percentage value for clipping the lowest <a href="#id3"><span class="problematic" id="id4">`</span></a>dark_percent`% values.</p>
+</dd>
+<dt><strong>light_percent</strong><span class="classifier">float, default=0.0</span></dt><dd><p>The percentage value for clipping the highest <a href="#id5"><span class="problematic" id="id6">`</span></a>light_percent`% values.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>A balanced image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<p>[1] Nicolas Limare, Jose-Luis Lisani, Jean-Michel Morel, Ana Belén Petro, and Catalina Sbert, Simplest Color Balance, Image Processing On Line, 1 (2011), pp. 297–315. <a class="reference external" href="https://doi.org/10.5201/ipol.2011.llmps-scb">https://doi.org/10.5201/ipol.2011.llmps-scb</a></p>
 </dd></dl>
 
 <dl class="py function">

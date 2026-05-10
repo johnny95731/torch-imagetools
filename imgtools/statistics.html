@@ -94,8 +94,38 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.statistics.combine_mean_std" title="imgtools.statistics.combine_mean_std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">combine_mean_std</span></code></a></p></td>
 <td><p>Calculate the mean, standard deviation (std), and dataset size of the combination of two datasets.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.statistics.covar" title="imgtools.statistics.covar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">covar</span></code></a></p></td>
+<td><p>Computes the covariance of two images.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.statistics.covar_matrix" title="imgtools.statistics.covar_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">covar_matrix</span></code></a></p></td>
+<td><p>Computes the covariance matrix of the input image.</p></td>
+</tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#imgtools.statistics.histogram" title="imgtools.statistics.histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">histogram</span></code></a></p></td>
 <td><p>Compute the histogram of an image.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.statistics.mean" title="imgtools.statistics.mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean</span></code></a></p></td>
+<td><p>Returns the mean value of an image.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.statistics.mean_std" title="imgtools.statistics.mean_std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_std</span></code></a></p></td>
+<td><p>Returns the mean value and the standard deviation (std) of an image.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.statistics.moments" title="imgtools.statistics.moments"><code class="xref py py-obj docutils literal notranslate"><span class="pre">moments</span></code></a></p></td>
+<td><p>Returns the mean value, variance, skewness and excess kurtosis ( when <cite>order</cite> is 4).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.statistics.moving_mean" title="imgtools.statistics.moving_mean"><code class="xref py py-obj docutils literal notranslate"><span class="pre">moving_mean</span></code></a></p></td>
+<td><p>The 2D moving average of an image.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.statistics.moving_mean_std" title="imgtools.statistics.moving_mean_std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">moving_mean_std</span></code></a></p></td>
+<td><p>The 2D moving variance of an image.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.statistics.moving_var" title="imgtools.statistics.moving_var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">moving_var</span></code></a></p></td>
+<td><p>The 2D moving variance of an image.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.statistics.std" title="imgtools.statistics.std"><code class="xref py py-obj docutils literal notranslate"><span class="pre">std</span></code></a></p></td>
+<td><p>Returns the standard deviation of an image.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.statistics.var" title="imgtools.statistics.var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">var</span></code></a></p></td>
+<td><p>Returns the variance of an image.</p></td>
 </tr>
 </tbody>
 </table>
@@ -137,6 +167,83 @@ np.ndarray type is also acceptable.</p>
 <dt>[1] stack exchange - How do I combine standard deviations of two groups?</dt><dd><p><a class="reference external" href="https://math.stackexchange.com/questions/2971315/how-do-i-combine-standard-deviations-of-two-groups">https://math.stackexchange.com/questions/2971315/how-do-i-combine-standard-deviations-of-two-groups</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">combine_mean_std</span><span class="p">,</span> <span class="n">mean_std</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stats</span> <span class="o">=</span> <span class="p">[</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="p">(</span><span class="o">*</span><span class="n">mean_std</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">channelwise</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">imgs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_mean</span><span class="p">,</span> <span class="n">_std</span><span class="p">,</span> <span class="n">num_pixels</span> <span class="o">=</span> <span class="n">combine_mean_std</span><span class="p">(</span><span class="o">*</span><span class="n">stats</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.statistics.covar">
+<span class="sig-prename descclassname"><span class="pre">imgtools.statistics.</span></span><span class="sig-name descname"><span class="pre">covar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channelwise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.statistics.covar" title="Link to this definition"></a></dt>
+<dd><p>Computes the covariance of two images.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img1</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>img2</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>channelwise</strong><span class="classifier">bool, default=False</span></dt><dd><p>Computes the covariance for each channel instead of for the
+entire image.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The covariance of two images. If <cite>channelwise</cite> is False, the shape is
+<cite>(*, 1, 1, 1)</cite>; otherwise, the shape is <cite>(*, C, 1, 1)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">covar</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img1</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_covar1</span> <span class="o">=</span> <span class="n">covar</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">img2</span><span class="p">)</span>  <span class="c1">#  torch.Size([1, 1, 1])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_covar2</span> <span class="o">=</span> <span class="n">covar</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">img2</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>  <span class="c1">#  torch.Size([3, 1, 1])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.statistics.covar_matrix">
+<span class="sig-prename descclassname"><span class="pre">imgtools.statistics.</span></span><span class="sig-name descname"><span class="pre">covar_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.statistics.covar_matrix" title="Link to this definition"></a></dt>
+<dd><p>Computes the covariance matrix of the input image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The covariance matrix with shape <cite>(*, C, C)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">covar_matrix</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_cov1</span> <span class="o">=</span> <span class="n">covar_matrix</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>  <span class="c1">#  torch.Size([3, 3])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_cov2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">_cov1</span><span class="p">,</span> <span class="n">_cov2</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-6</span><span class="p">)</span>  <span class="c1"># True</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img2</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_cov1</span> <span class="o">=</span> <span class="n">covar_matrix</span><span class="p">(</span><span class="n">img2</span><span class="p">)</span>  <span class="c1">#  torch.Size([5, 3, 3])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -160,13 +267,326 @@ np.ndarray type is also acceptable.</p>
 </dd>
 </dl>
 </dd>
-<dt class="field-odd">Raises<span class="colon">:</span></dt>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">histogram</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_hist1</span> <span class="o">=</span> <span class="n">histogram</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>  <span class="c1"># torch.Size([3, 256])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_hist2</span> <span class="o">=</span> <span class="n">histogram</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>  <span class="c1"># torch.Size([3, 300])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_hist3</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># torch.Size([3, 256])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_hist3</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># (1., 1., 1.)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.statistics.mean">
+<span class="sig-prename descclassname"><span class="pre">imgtools.statistics.</span></span><span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channelwise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.statistics.mean" title="Link to this definition"></a></dt>
+<dd><p>Returns the mean value of an image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
-<dt>TypeError</dt><dd><p>If bins is not int type.</p>
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite></p>
+</dd>
+<dt><strong>channelwise</strong><span class="classifier">bool, default=False</span></dt><dd><p>Computes the mean for each channel instead of for the entire image.</p>
+</dd>
+<dt><strong>weight</strong><span class="classifier">torch.Tensor | None, default=None</span></dt><dd><p>The weights of pixels.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The mean value. If <cite>channelwise</cite> is False, the shape is
+<cite>(*, 1, 1, 1)</cite>; otherwise, the shape is <cite>(*, C, 1, 1)</cite>.</p>
 </dd>
 </dl>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">mean</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_mean</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">channelwise</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># torch.Size([1, 1, 1])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_mean2</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">channelwise</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># torch.Size([3, 1, 1])</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">weight</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_mean3</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>  <span class="c1"># torch.Size([1, 1, 1])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">_mean</span><span class="p">,</span> <span class="n">_mean3</span><span class="p">)</span>  <span class="c1"># False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.statistics.mean_std">
+<span class="sig-prename descclassname"><span class="pre">imgtools.statistics.</span></span><span class="sig-name descname"><span class="pre">mean_std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channelwise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.statistics.mean_std" title="Link to this definition"></a></dt>
+<dd><p>Returns the mean value and the standard deviation (std) of an image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite></p>
+</dd>
+<dt><strong>channelwise</strong><span class="classifier">bool, default=False</span></dt><dd><p>Computes the mean and std for each channel instead of for the
+entire image.</p>
+</dd>
+<dt><strong>weight</strong><span class="classifier">torch.Tensor | None, default=None</span></dt><dd><p>The weights of pixels.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[torch.Tensor, torch.Tensor]</dt><dd><p>The tuple <cite>(mean, std)</cite>. If <cite>channelwise</cite> is False, the shape of both
+tensors are <cite>(*, 1, 1, 1)</cite>; otherwise, the shape of both
+tensors are <cite>(*, C, 1, 1)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">mean</span><span class="p">,</span> <span class="n">mean_std</span><span class="p">,</span> <span class="n">std</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_mean</span><span class="p">,</span> <span class="n">_std</span> <span class="o">=</span> <span class="n">mean_std</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_mean2</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_std2</span> <span class="o">=</span> <span class="n">std</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">_mean</span><span class="p">,</span> <span class="n">_mean2</span><span class="p">)</span>  <span class="c1"># True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">_std</span><span class="p">,</span> <span class="n">_std2</span><span class="p">)</span>  <span class="c1"># True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.statistics.moments">
+<span class="sig-prename descclassname"><span class="pre">imgtools.statistics.</span></span><span class="sig-name descname"><span class="pre">moments</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="m"><span class="pre">3</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channelwise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.statistics.moments" title="Link to this definition"></a></dt>
+<dd><p>Returns the mean value, variance, skewness and excess kurtosis (
+when <cite>order</cite> is 4).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite></p>
+</dd>
+<dt><strong>channelwise</strong><span class="classifier">bool, default=False</span></dt><dd><p>Computes the mean and std for each channel instead of for the
+entire image.</p>
+</dd>
+<dt><strong>order</strong><span class="classifier">{3, 4}, default=3</span></dt><dd><p>The weights of pixels.</p>
+</dd>
+<dt><strong>weight</strong><span class="classifier">torch.Tensor | None, default=None</span></dt><dd><p>The weights of pixels.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>tuple[torch.Tensor, torch.Tensor, torch.Tensor]</dt><dd><p>The tuple <cite>(mean, std, skewness)</cite> when <cite>order == 3</cite>. If <cite>channelwise</cite>
+is False, the shape of tensors are <cite>(*, 1, 1, 1)</cite>; otherwise,
+the shape of tensors are <cite>(*, C, 1, 1)</cite>.</p>
+</dd>
+<dt>tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]</dt><dd><p>The tuple <cite>(mean, std, skewness, excess_kurtosis)</cite> when <cite>order == 4</cite>.
+If <cite>channelwise</cite> is False, the shape of tensors are <cite>(*, 1, 1, 1)</cite>;
+otherwise, the shape of tensors are <cite>(*, C, 1, 1)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">moments</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_mean</span><span class="p">,</span> <span class="n">_std</span><span class="p">,</span> <span class="n">_skewness</span> <span class="o">=</span> <span class="n">moments</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_mean</span><span class="p">,</span> <span class="n">_std</span><span class="p">,</span> <span class="n">_skewness</span><span class="p">,</span> <span class="n">_kurtosis</span> <span class="o">=</span> <span class="n">moments</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.statistics.moving_mean">
+<span class="sig-prename descclassname"><span class="pre">imgtools.statistics.</span></span><span class="sig-name descname"><span class="pre">moving_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fft_approx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'reflect'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.statistics.moving_mean" title="Link to this definition"></a></dt>
+<dd><p>The 2D moving average of an image. Equals mean blur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>ksize</strong><span class="classifier">int | tuple[int, int], default=3</span></dt><dd><p>The size of window.</p>
+</dd>
+<dt><strong>fft_approx</strong><span class="classifier">bool, default=False</span></dt><dd><p>Uses the frequency domain Gaussian filter to approach mean blur.
+Recommend to use when window size is large.</p>
+</dd>
+<dt><strong>sigma</strong><span class="classifier">float | tuple[float, float], default 1</span></dt><dd><p>The strength of blurrness.</p>
+</dd>
+<dt><strong>mode</strong><span class="classifier">{‘constant’, ‘reflect’, ‘replicate’, ‘circular’}, default=’reflect’</span></dt><dd><p>Padding mode. Same as the argument <cite>mode</cite> in <cite>torch.nn.functional.pad</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Moving average with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">moving_mean</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_mean</span> <span class="o">=</span> <span class="n">moving_mean</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>  <span class="c1"># torch.Size([3, 512, 512])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.statistics.moving_mean_std">
+<span class="sig-prename descclassname"><span class="pre">imgtools.statistics.</span></span><span class="sig-name descname"><span class="pre">moving_mean_std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fft_approx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'reflect'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.statistics.moving_mean_std" title="Link to this definition"></a></dt>
+<dd><p>The 2D moving variance of an image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>ksize</strong><span class="classifier">int | tuple[int, int], default=3</span></dt><dd><p>The size of window.</p>
+</dd>
+<dt><strong>fft_approx</strong><span class="classifier">bool, default=False</span></dt><dd><p>Uses the frequency domain Gaussian filter to approach mean blur.
+Recommend to use when window size is large.</p>
+</dd>
+<dt><strong>sigma</strong><span class="classifier">float | tuple[float, float], default 1</span></dt><dd><p>The strength of blurrness.</p>
+</dd>
+<dt><strong>mode</strong><span class="classifier">{‘constant’, ‘reflect’, ‘replicate’, ‘circular’}, default=’reflect’</span></dt><dd><p>Padding mode. Same as the argument <cite>mode</cite> in <cite>torch.nn.functional.pad</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Moving average with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt>torch.Tensor</dt><dd><p>Moving variance with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">moving_mean</span><span class="p">,</span> <span class="n">moving_mean_std</span><span class="p">,</span> <span class="n">moving_var</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_mean</span><span class="p">,</span> <span class="n">_std</span> <span class="o">=</span> <span class="n">moving_mean_std</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_mean2</span> <span class="o">=</span> <span class="n">moving_mean</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_std2</span> <span class="o">=</span> <span class="n">moving_var</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">sqrt_</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">_mean</span><span class="p">,</span> <span class="n">_mean2</span><span class="p">)</span>  <span class="c1"># True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">_std</span><span class="p">,</span> <span class="n">_std2</span><span class="p">)</span>  <span class="c1"># True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.statistics.moving_var">
+<span class="sig-prename descclassname"><span class="pre">imgtools.statistics.</span></span><span class="sig-name descname"><span class="pre">moving_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ksize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fft_approx</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'reflect'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.statistics.moving_var" title="Link to this definition"></a></dt>
+<dd><p>The 2D moving variance of an image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+<dt><strong>ksize</strong><span class="classifier">int | tuple[int, int], default=3</span></dt><dd><p>The size of window.</p>
+</dd>
+<dt><strong>fft_approx</strong><span class="classifier">bool, default=False</span></dt><dd><p>Uses the frequency domain Gaussian filter to approach mean blur.
+Recommend to use when window size is large.</p>
+</dd>
+<dt><strong>sigma</strong><span class="classifier">float | tuple[float, float], default 1</span></dt><dd><p>The strength of blurrness.</p>
+</dd>
+<dt><strong>mode</strong><span class="classifier">{‘constant’, ‘reflect’, ‘replicate’, ‘circular’}, default=’reflect’</span></dt><dd><p>Padding mode. Same as the argument <cite>mode</cite> in <cite>torch.nn.functional.pad</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>Moving variance with shape <cite>(*, C, H, W)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">moving_var</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_var</span> <span class="o">=</span> <span class="n">moving_var</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>  <span class="c1"># torch.Size([3, 512, 512])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.statistics.std">
+<span class="sig-prename descclassname"><span class="pre">imgtools.statistics.</span></span><span class="sig-name descname"><span class="pre">std</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channelwise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.statistics.std" title="Link to this definition"></a></dt>
+<dd><p>Returns the standard deviation of an image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite></p>
+</dd>
+<dt><strong>channelwise</strong><span class="classifier">bool, default=False</span></dt><dd><p>Computes the standard deviation for each channel instead of for the
+entire image.</p>
+</dd>
+<dt><strong>weight</strong><span class="classifier">torch.Tensor | None, default=None</span></dt><dd><p>The weights of pixels.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The standard deviation. If <cite>channelwise</cite> is False, the shape is
+<cite>(*, 1, 1, 1)</cite>; otherwise, the shape is <cite>(*, C, 1, 1)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">std</span><span class="p">,</span> <span class="n">var</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_std</span> <span class="o">=</span> <span class="n">std</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">channelwise</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># (1, 1, 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_std2</span> <span class="o">=</span> <span class="n">std</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">channelwise</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># (3, 1, 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_var</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>  <span class="c1"># (1, 1, 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">_std</span><span class="p">,</span> <span class="n">_var</span><span class="o">.</span><span class="n">sqrt</span><span class="p">())</span>  <span class="c1"># True</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">weight</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_std3</span> <span class="o">=</span> <span class="n">std</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>  <span class="c1"># (1, 1, 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">_std</span><span class="p">,</span> <span class="n">_std3</span><span class="p">)</span>  <span class="c1"># False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="imgtools.statistics.var">
+<span class="sig-prename descclassname"><span class="pre">imgtools.statistics.</span></span><span class="sig-name descname"><span class="pre">var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channelwise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.statistics.var" title="Link to this definition"></a></dt>
+<dd><p>Returns the variance of an image.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with shape <cite>(*, C, H, W)</cite></p>
+</dd>
+<dt><strong>channelwise</strong><span class="classifier">bool, default=False</span></dt><dd><p>Computes the variance for each channel instead of for the
+entire image.</p>
+</dd>
+<dt><strong>weight</strong><span class="classifier">torch.Tensor | None, default=None</span></dt><dd><p>The weights of pixels.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The variance. If <cite>channelwise</cite> is False, the shape is
+<cite>(*, 1, 1, 1)</cite>; otherwise, the shape is <cite>(*, C, 1, 1)</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">var</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_var</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">channelwise</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># (1, 1, 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_var2</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">channelwise</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># (3, 1, 1)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">weight</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_var3</span> <span class="o">=</span> <span class="n">var</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="n">weight</span><span class="p">)</span>  <span class="c1"># (1, 1, 1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">torch</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">_var</span><span class="p">,</span> <span class="n">_var3</span><span class="p">)</span>  <span class="c1"># False</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>

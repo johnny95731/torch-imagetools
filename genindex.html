@@ -110,15 +110,17 @@
 </li>
       <li><a href="imgtools/enhance.html#imgtools.enhance.adjust_linear">adjust_linear() (in module imgtools.enhance)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="imgtools/enhance.html#imgtools.enhance.adjust_log">adjust_log() (in module imgtools.enhance)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="imgtools/enhance.html#imgtools.enhance.adjust_sigmoid">adjust_sigmoid() (in module imgtools.enhance)</a>
 </li>
       <li><a href="imgtools/utils.html#imgtools.utils.align_device_type">align_device_type() (in module imgtools.utils)</a>
 </li>
       <li><a href="imgtools/utils.html#imgtools.utils.arrayize">arrayize() (in module imgtools.utils)</a>
+</li>
+      <li><a href="imgtools/enhance.html#imgtools.enhance.auto_gamma_correction">auto_gamma_correction() (in module imgtools.enhance)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -146,13 +148,15 @@
 </li>
       <li><a href="imgtools/balance.html#imgtools.balance.cheng_pca_balance">cheng_pca_balance() (in module imgtools.balance)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="imgtools/balance.html#imgtools.balance.clipping_balance">clipping_balance() (in module imgtools.balance)</a>
-</li>
       <li><a href="imgtools/restoration.html#imgtools.restoration.color_attenuation_dehaze">color_attenuation_dehaze() (in module imgtools.restoration)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="imgtools/statistics.html#imgtools.statistics.combine_mean_std">combine_mean_std() (in module imgtools.statistics)</a>
+</li>
+      <li><a href="imgtools/statistics.html#imgtools.statistics.covar">covar() (in module imgtools.statistics)</a>
+</li>
+      <li><a href="imgtools/statistics.html#imgtools.statistics.covar_matrix">covar_matrix() (in module imgtools.statistics)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -174,6 +178,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="imgtools/filters.html#imgtools.filters.difference">difference() (in module imgtools.filters)</a>
+</li>
       <li><a href="imgtools/core.html#imgtools.core.Wavelet.dtype">dtype (imgtools.core.Wavelet property)</a>
 </li>
       <li><a href="imgtools/core.html#imgtools.core.Wavelet.dwt2">dwt2() (imgtools.core.Wavelet method)</a>
@@ -209,6 +215,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="imgtools/core.html#imgtools.core.Wavelet.family_name">family_name (imgtools.core.Wavelet attribute)</a>
+</li>
+      <li><a href="imgtools/enhance.html#imgtools.enhance.faster_lime">faster_lime() (in module imgtools.enhance)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -388,11 +396,13 @@
 </li>
       <li><a href="imgtools/filters.html#imgtools.filters.laplacian">laplacian() (in module imgtools.filters)</a>
 </li>
+      <li><a href="imgtools/enhance.html#imgtools.enhance.lide">lide() (in module imgtools.enhance)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="imgtools/enhance.html#imgtools.enhance.light_compensation_htchen">light_compensation_htchen() (in module imgtools.enhance)</a>
-</li>
       <li><a href="imgtools/color.html#imgtools.color.lms_to_xyz">lms_to_xyz() (in module imgtools.color)</a>
+</li>
+      <li><a href="imgtools/enhance.html#imgtools.enhance.local_gamma_correction">local_gamma_correction() (in module imgtools.enhance)</a>
 </li>
       <li><a href="imgtools/color.html#imgtools.color.luv_to_rgb">luv_to_rgb() (in module imgtools.color)</a>
 </li>
@@ -410,7 +420,15 @@
 </li>
       <li><a href="imgtools/core.html#imgtools.core.matrix_transform">matrix_transform() (in module imgtools.core)</a>
 </li>
+      <li><a href="imgtools/filters.html#imgtools.filters.max_filter">max_filter() (in module imgtools.filters)</a>
+</li>
       <li><a href="imgtools/balance.html#imgtools.balance.mccamy_approximation">mccamy_approximation() (in module imgtools.balance)</a>
+</li>
+      <li><a href="imgtools/statistics.html#imgtools.statistics.mean">mean() (in module imgtools.statistics)</a>
+</li>
+      <li><a href="imgtools/statistics.html#imgtools.statistics.mean_std">mean_std() (in module imgtools.statistics)</a>
+</li>
+      <li><a href="imgtools/filters.html#imgtools.filters.min_filter">min_filter() (in module imgtools.filters)</a>
 </li>
       <li>
     module
@@ -435,6 +453,14 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="imgtools/statistics.html#imgtools.statistics.moments">moments() (in module imgtools.statistics)</a>
+</li>
+      <li><a href="imgtools/statistics.html#imgtools.statistics.moving_mean">moving_mean() (in module imgtools.statistics)</a>
+</li>
+      <li><a href="imgtools/statistics.html#imgtools.statistics.moving_mean_std">moving_mean_std() (in module imgtools.statistics)</a>
+</li>
+      <li><a href="imgtools/statistics.html#imgtools.statistics.moving_var">moving_var() (in module imgtools.statistics)</a>
+</li>
       <li><a href="imgtools/enhance.html#imgtools.enhance.msrcp">msrcp() (in module imgtools.enhance)</a>
 </li>
       <li><a href="imgtools/enhance.html#imgtools.enhance.msrcr">msrcr() (in module imgtools.enhance)</a>
@@ -523,11 +549,15 @@
 </li>
       <li><a href="imgtools/filters.html#imgtools.filters.scharr">scharr() (in module imgtools.filters)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="imgtools/core.html#imgtools.core.Wavelet.short_family_name">short_family_name (imgtools.core.Wavelet attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="imgtools/balance.html#imgtools.balance.simplest_color_balance">simplest_color_balance() (in module imgtools.balance)</a>
+</li>
       <li><a href="imgtools/filters.html#imgtools.filters.sobel">sobel() (in module imgtools.filters)</a>
+</li>
+      <li><a href="imgtools/statistics.html#imgtools.statistics.std">std() (in module imgtools.statistics)</a>
 </li>
       <li><a href="imgtools/core.html#imgtools.core.Wavelet.symmetry">symmetry (imgtools.core.Wavelet attribute)</a>
 </li>
@@ -562,6 +592,10 @@
 
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="imgtools/statistics.html#imgtools.statistics.var">var() (in module imgtools.statistics)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="imgtools/balance.html#imgtools.balance.von_kries_transform">von_kries_transform() (in module imgtools.balance)</a>
 </li>

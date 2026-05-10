@@ -51,6 +51,18 @@ Basic
    unsharp_mask
 
 
+========
+Contrast
+========
+
+.. autosummary::
+   :nosignatures:
+
+   auto_gamma_correction
+   lide
+   local_gamma_correction
+
+
 ===========
 Equlization
 ===========
@@ -81,7 +93,7 @@ Lowlight
 .. autosummary::
    :nosignatures:
 
-   light_compensation_htchen
+   faster_lime
    msrcp
    msrcr
    retinex
