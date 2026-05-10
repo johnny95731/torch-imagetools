@@ -14,7 +14,7 @@ import torch
 from ..color._grayscale import rgb_to_gray
 from ..color._yuv import rgb_to_yuv, yuv_to_rgb
 from ..filters.rfft import get_gaussian_lowpass
-from ..statistics.basic import mean, mean_std
+from ..statistics.basic import mean
 from ..utils.helpers import (
     _to_channel_coeff,
     align_device_type,
@@ -70,17 +70,15 @@ def local_gamma_correction(
     rgb: torch.Tensor,
     sigma_blur: int = 50,
     basic_gamma: float = 1.0,
-    gain: int | float | torch.Tensor = 0.5,
-    weight: torch.Tensor | None = None,
+    gain: int | float | torch.Tensor = 1.3,
 ):
     """Adaptive Gamma-correction based on local brightness. Inspired by [1].
 
     1. `gray = rgb_to_gray(rgb)`.
-    2. Computes global mean and std `mean, std = mean_std(gray)`.
-    3. Computes local mean `local_mean = blur(gray)`.
-    4. Computes the gamma by
-        `gamma = ((local_mean - mean) / std) * gain + basic_gamma`.
-    5. Gamma correction `res = rgb.pow(gamma)`
+    2. Computes local mean `local_mean`. We use Gaussian lowpass filter in the
+       frequency domain to appoximate local mean.
+    3. Computes the gamma by `gamma = (local_mean - 0.5) * gain + basic_gamma`.
+    4. Gamma correction `res = rgb.pow(gamma)`
 
     Parameters
     ----------
@@ -91,10 +89,8 @@ def local_gamma_correction(
         blurrness.
     basic_gamma : float, default=1.0
         The basic gamma value. Must be float or a tensor with shape `(*, 1)`.
-    gain : int float | torch.Tensor, default=0.5
+    gain : int | float | torch.Tensor, default=1.3
         The effect of local mean. Must be float or a tensor with shape `(*, 1)`.
-    weight : torch.Tensor | None, default=None
-        The weight for computing the mean value and the standard deviation.
 
     Returns
     -------
@@ -119,7 +115,6 @@ def local_gamma_correction(
         gray = rgb
     else:
         raise ValueError(f'`rgb` must be 1 or 3 channel: {num_ch}')
-    mean, std = mean_std(gray, weight=weight)
     gray = gray.add(1e-8)
     #
     gray_f = torch.fft.rfft2(gray)
@@ -128,9 +123,9 @@ def local_gamma_correction(
     lowpass = align_device_type(lowpass, gray)
     local_mean = gray_f.mul_(lowpass)
     local_mean = torch.fft.irfft2(local_mean, s=gray.shape[-2:])
-    #
-    m_coeff = gain / std
-    gamma = local_mean * m_coeff + (basic_gamma - mean * m_coeff)
+    # gamma = local_mean * gain + (basic_gamma - 0.5 * gain)
+    gamma = local_mean.mul_(gain).add_(basic_gamma.sub_(gain, alpha=0.5))
+    gamma.relu_()
     res = rgb.pow(gamma)
     return res
 
