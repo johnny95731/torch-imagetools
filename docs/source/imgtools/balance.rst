@@ -25,10 +25,10 @@ _balance
 
    balance_by_scaling
    cheng_pca_balance
-   clipping_balance
    get_von_kries_transform_matrix
    gray_edge_balance
    gray_world_balance
+   simplest_color_balance
    von_kries_transform
    white_patch_balance
 
