@@ -72,7 +72,7 @@ def local_gamma_correction(
     basic_gamma: float = 1.0,
     gain: int | float | torch.Tensor = 1.3,
 ):
-    """Adaptive Gamma-correction based on local brightness. Inspired by [1].
+    """Adaptive Gamma-correction based on local brightness.
 
     1. `gray = rgb_to_gray(rgb)`.
     2. Computes local mean `local_mean`. We use Gaussian lowpass filter in the
@@ -96,13 +96,6 @@ def local_gamma_correction(
     -------
     torch.Tensor
         Enhanced image with the same shape as input.
-
-    References
-    ----------
-    [1] A. Acharya and A. V. Giri, "Contrast Improvement using Local
-        Gamma Correction," 2020 6th International Conference on Advanced
-        Computing and Communication Systems (ICACCS), Coimbatore, India,
-        2020, pp. 110-114, doi: 10.1109/ICACCS48705.2020.9074386.
     """
     check_valid_image_ndim(rgb)
     num_ch = rgb.size(-3)
