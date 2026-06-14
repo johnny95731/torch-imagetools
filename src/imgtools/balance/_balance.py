@@ -5,7 +5,6 @@ algorithm, etc...
 __all__ = [
     'get_von_kries_transform_matrix',
     'von_kries_transform',
-    'balance_by_scaling',
     'gray_world_balance',
     'gray_edge_balance',
     'white_patch_balance',
@@ -16,8 +15,12 @@ __all__ = [
 import torch
 
 from ..color import gammaize_rgb, rgb_to_xyz, xyz_to_lms
-from ..utils.helpers import align_device_type, _to_channel_coeff
 from ..core.math import matrix_transform
+from ..utils.helpers import (
+    _to_channel_coeff,
+    align_device_type,
+    check_valid_image_ndim,
+)
 from .est_illuminant import estimate_illuminant_cheng
 
 
@@ -139,62 +142,10 @@ def von_kries_transform(
     return new_xyz
 
 
-def balance_by_scaling(
-    img: torch.Tensor,
-    scaled_max: int | float | torch.Tensor,
-    ret_factors: bool = False,
-) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
-    """Wrong von Kries transform. Multiplies an image by
-
-    `coeff_channel = scaled_max / maximum_of_channel`.
-
-    Parameters
-    ----------
-    img : torch.Tensor
-        Image in RGB space with shape `(*, C, H, W)`.
-    scaled_max : int | float | torch.Tensor
-        The maximum(s) after scaling.\n
-        - A single number: A coefficient for all channels.
-        - Tensor with shape `(C,)`: the coefficients of each channels.
-    ret_factors : bool, default=False
-        If true, returns image and scaling factors.
-
-    Returns
-    -------
-    balanced : torch.Tensor
-        An image with the shape `(*, C, H, W)`.
-    factors : torch.Tensor
-        Scaling factors with shape `(C,)`.
-        `factors` is returned only if `ret_factors` is true.
-
-    Examples
-    --------
-
-    >>> from imgtools.balance import balance_by_scaling
-    >>>
-    >>> rgb = torch.rand((3, 512, 512))
-    >>> maxi = torch.tensor((1.0, 1.0, 0.95))
-    >>> balanced, factors = balance_by_scaling(rgb, maxi, ret_factors=True)
-    >>> factors.reshape(3)  # tensor([1.0000, 1.0000, 0.9500])
-    """
-    num_ch = img.shape[-3]
-    # Get max of each channel
-    ch_max = img.amax((-1, -2), keepdim=True)
-    scaled_max = _to_channel_coeff(scaled_max, num_ch)
-    scaled_max = align_device_type(scaled_max, img)
-
-    factors = scaled_max / ch_max
-
-    balanced = img * factors
-    if ret_factors:
-        return balanced, factors
-    return balanced
-
-
 def gray_world_balance(
     rgb: torch.Tensor,
-    ret_factors: bool = False,
-) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+    ret_illum: bool = False,
+) -> torch.Tensor:
     """White balance by the gray-world algorithm. Multiplies each channel by
 
     `coeff_channel = mean / mean_of_channel`.
@@ -203,16 +154,18 @@ def gray_world_balance(
     ----------
     rgb : torch.Tensor
         An Image in RGB space with shape `(*, C, H, W)`.
-    ret_factors : bool, default=False
-        If true, returns image and scaling factors.
+    ret_illum : bool, default=False
+        Return the estimated illuminant color instead of returning the
+        balanced image.
 
     Returns
     -------
     balanced : torch.Tensor
-        An image with the shape `(*, C, H, W)`.
-    factors : torch.Tensor
-        Scaling factors with shape `(C,)`.
-        `factors` is returned only if `ret_factors` is true.
+        A balanced image with the shape `(*, C, H, W)` when `ret_factors` is
+        `False`.
+    illuminant : torch.Tensor
+        Estimated illuminant color with shape `(*, C, 1, 1)` when
+        `ret_factors` is `True`.
 
     Examples
     --------
@@ -220,26 +173,27 @@ def gray_world_balance(
     >>> from imgtools.balance import gray_world_balance
     >>>
     >>> rgb = torch.rand((3, 512, 512))
-    >>> balanced, factors = gray_world_balance(rgb, ret_factors=True)
-    >>> factors.reshape(3)  # tensor([1.0003, 1.0013, 0.9984])
+    >>> balanced = gray_world_balance(rgb)
+    >>>
+    >>> illum = gray_world_balance(rgb, ret_factors=True)
+    >>> balanced2 = rgb * (illum.mean() / illum)
+    >>> # or
+    >>> # balanced2 = rgb * (illum[1] / illum)
     """
-    # Get mean values
+    check_valid_image_ndim(rgb)
     ch_mean = rgb.mean((-1, -2), keepdim=True)
-    img_mean = ch_mean.mean()
-
-    factors = img_mean / ch_mean
-
-    balanced = (rgb * factors).clip(0.0, 1.0)
-    if ret_factors:
-        return balanced, factors
+    if ret_illum:
+        return ch_mean
+    factors = ch_mean.mean() / ch_mean
+    balanced = (rgb * factors).clip_(0.0, 1.0)
     return balanced
 
 
 def gray_edge_balance(
     rgb: torch.Tensor,
     edge: torch.Tensor,
-    ret_factors: bool = False,
-) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+    ret_illum: bool = False,
+) -> torch.Tensor:
     """White balance by the gray-edge algorithm. Multiplies each channel by
 
     `coeff_channel = mean_of_gradient / mean_of_gradient_of_channel`.
@@ -250,16 +204,18 @@ def gray_edge_balance(
         Image in RGB space with shape `(*, C, H, W)`.
     edge : torch.Tensor
         The edge of the image with shape `(*, C, H, W)`.
-    ret_factors : bool, default=False
-        If true, returns image and scaling factors.
+    ret_illum : bool, default=False
+        Return the estimated illuminant color instead of returning the
+        balanced image.
 
     Returns
     -------
     balanced : torch.Tensor
-        An image with the shape `(*, C, H, W)`.
-    factors : torch.Tensor
-        Scaling factors with shape `(C,)`.
-        `factors` is returned only if `ret_factors` is true.
+        A balanced image with the shape `(*, C, H, W)` when `ret_factors` is
+        `False`.
+    illuminant : torch.Tensor
+        Estimated illuminant color with shape `(*, C, 1, 1)` when
+        `ret_factors` is `True`.
 
     Examples
     --------
@@ -269,28 +225,30 @@ def gray_edge_balance(
     >>>
     >>> rgb = torch.rand((3, 512, 512))
     >>> edge = laplacian(rgb)
-    >>> balanced, factors = gray_edge_balance(rgb, edge, ret_factors=True)
-    >>> factors.reshape(3)  # tensor([1.0094, 0.9822, 1.0089])
+    >>> balanced = gray_edge_balance(rgb, edge)
+    >>>
+    >>> illum = gray_edge_balance(rgb, edge, ret_factors=True)
+    >>> balanced2 = rgb * (illum.mean() / illum)
+    >>> # or
+    >>> # balanced2 = rgb * (illum[1] / illum)
     """
+    check_valid_image_ndim(rgb)
+    check_valid_image_ndim(edge)
     edge = edge.abs()
-    # Get mean values of gradients
     ch_grad_mean = edge.mean((-1, -2), keepdim=True)
-    img_grad_mean = ch_grad_mean.mean()
-
-    factors = img_grad_mean / ch_grad_mean
+    if ret_illum:
+        return ch_grad_mean
+    factors = ch_grad_mean.mean() / ch_grad_mean
     factors = align_device_type(factors, rgb)
-
-    balanced = (rgb * factors).clip(0.0, 1.0)
-    if ret_factors:
-        return balanced, factors
+    balanced = (rgb * factors).clip_(0.0, 1.0)
     return balanced
 
 
 def white_patch_balance(
     rgb: torch.Tensor,
     q: int | float | torch.Tensor = 1.0,
-    ret_factors: bool = False,
-) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+    ret_illum: bool = False,
+) -> torch.Tensor:
     """White balance by generalized white patch algorithm. Multiplies each
     channel of an RGB image by
 
@@ -309,58 +267,60 @@ def white_patch_balance(
         q-quantile. The values will be cliped to [0, 1].
         - A single number: the quantile for all channels.
         - Tensor with shape `(3,)`: the quantiles of channels.
-    ret_factors : bool, default=False
-        If false, only the image is returned.
-        If true, also return the scaling factors.
+    ret_illum : bool, default=False
+        Return the estimated illuminant color instead of returning the
+        balanced image.
 
     Returns
     -------
     balanced : torch.Tensor
-        An image with the shape `(*, C, H, W)`.
-    factors : torch.Tensor
-        Scaling factors with shape `(C,)`.
-        `factors` is returned only if `ret_factors` is true.
+        A balanced image with the shape `(*, C, H, W)` when `ret_factors` is
+        `False`.
+    illuminant : torch.Tensor
+        Estimated illuminant color with shape `(*, C, 1, 1)` when
+        `ret_factors` is `True`.
 
     Examples
     --------
 
     >>> from imgtools.balance import white_patch_balance
-    >>> from imgtools.filter import laplacian
     >>>
     >>> rgb = torch.rand((3, 512, 512))
-    >>> balanced, factors = white_patch_balance(rgb, 0.9, ret_factors=True)
-    >>> factors.reshape(3)  # tensor([1.0008, 0.9999, 1.0005])
+    >>> balanced = white_patch_balance(rgb, 0.9)
+    >>>
+    >>> illum = gray_edge_balance(rgb, edge, ret_factors=True)
+    >>> balanced2 = rgb * (illum.mean() / illum)
+    >>> # or
+    >>> # balanced2 = rgb * (illum[1] / illum)
     """
-    if not torch.is_floating_point(rgb):
-        raise ValueError
-    flatten = torch.flatten(rgb.movedim(-3, 0), 1)
+    is_not_batch = check_valid_image_ndim(rgb)
+    if is_not_batch:
+        rgb = rgb.unsqueeze(0)
+    flatten = torch.flatten(rgb, -2)
     flatten = flatten.sort()[0].contiguous()
 
-    num_ch = rgb.size(-3)
-    length = flatten.size(1) - 1
-
+    shape = rgb.shape[:-2]
+    length = flatten.size(-1) - 1
     if isinstance(q, float):
-        q = torch.full((num_ch,), q)
+        q = torch.full(
+            shape, int(round(q * length)), dtype=torch.int64, device=rgb.device
+        )
     elif isinstance(q, int):
-        q = torch.full((num_ch,), q)
-    if q.numel() == 1:
-        q = q.repeat(num_ch)
-    q = q.clip(0.0, 1.0)
-    q = align_device_type(q, rgb)
+        q = torch.full(
+            shape, int(round(q * length)), dtype=torch.int64, device=rgb.device
+        )
+    else:
+        q = (q * length).round_().long().to(rgb.device)
+    q = q.clip_(0, length - 1).broadcast_to(*shape, 1)
 
-    ch_quantile = torch.empty(len(q), dtype=flatten.dtype, device=rgb.device)
-    for i, _q in enumerate(q):
-        _q = int(round(_q.item() * length))  # `int()` make it jit-able
-        ch_quantile[i] = flatten[i, _q]
-    img_quantile = ch_quantile.quantile(q)  # approximation
+    ch_quantile = flatten.gather(2, q).unsqueeze_(-1)
+    if ret_illum:
+        return ch_quantile
 
-    factors = img_quantile / ch_quantile
-    factors = align_device_type(factors, rgb)
-    factors = _to_channel_coeff(factors, num_ch)
-
-    balanced = (rgb * factors).clip(0.0, 1.0)
-    if ret_factors:
-        return balanced, factors
+    factors = ch_quantile[:, 1:2] / ch_quantile
+    balanced = (rgb * factors).clip_(0.0, 1.0)
+    if is_not_batch:
+        balanced = balanced.squeeze(0)
     return balanced
 
 
@@ -374,6 +334,9 @@ def cheng_pca_balance(
 ) -> torch.Tensor:
     """White balance by Cheng's PCA method [1]. Estimate the illuminant and
     applies chromatic adaptation transformation.
+
+    If you want to estimate the illuminant, call
+    `balance.estimate_illuminant_cheng`.
 
     Parameters
     ----------
@@ -453,6 +416,8 @@ def simplest_color_balance(
 ):
     """Clip top-k1 and bottom-k2 percentage values and normalize to `[0, 1]`.
     The algorithm is proposed by Limare et al [1].
+
+    This function will not estimate the illuminant.
 
     Parameters
     ----------

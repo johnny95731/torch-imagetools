@@ -89,8 +89,10 @@ def align_device_type(source: torch.Tensor, target: torch.Tensor):
 def _to_channel_coeff(
     coeff: int | float | torch.Tensor,
     num_ch: int,
+    dtype: torch.dtype | None = None,
+    device: str | torch.device | None = None,
 ) -> torch.Tensor:
-    """Convert shape of coefficeints such that `coeff (op) img` is valid,
+    """Expand shape of coefficeints such that `coeff (op) img` is valid,
     where op may be one of arithmetic operations or other operator.
 
     Parameters
@@ -103,6 +105,10 @@ def _to_channel_coeff(
 
     num_ch : int
         Number of image channels.
+    dtype: torch.dtype | None, default=None
+        The dtype of the returned tensor.
+    device: str | torch.device | None, default=None
+        The device of the returned tensor.
 
     Returns
     -------
@@ -120,10 +126,10 @@ def _to_channel_coeff(
         When coeff.size(-1) is neither 1 nor `num_ch`.
     """
     if isinstance(coeff, (int, float)):
-        res = torch.tensor(float(coeff))
+        res = torch.tensor(float(coeff), dtype=dtype, device=device)
         return res
     if coeff.numel() == 1:
-        res = coeff.reshape(1)
+        res = coeff.reshape(1).to(device, dtype)
         return coeff
 
     if coeff.numel() == 0 or coeff.ndim > 2:
@@ -134,7 +140,7 @@ def _to_channel_coeff(
     if coeff.size(-1) != 1 and coeff.size(-1) != num_ch:
         raise ValueError('coeff.size(-1) must equals to 1 or num_ch.')
 
-    res = coeff.unsqueeze(-1).unsqueeze_(-1)
+    res = coeff.unsqueeze(-1).unsqueeze_(-1).to(device, dtype)
     return res
 
 

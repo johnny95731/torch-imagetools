@@ -25,6 +25,8 @@ def align_device_type(
 def _to_channel_coeff(
     coeff: int | float | torch.Tensor,
     num_ch: int,
+    dtype: torch.dtype | None = None,
+    device: str | torch.device | None = None,
 ) -> torch.Tensor: ...
 
 #

@@ -42,61 +42,24 @@ def von_kries_transform(
 ) -> tuple[torch.Tensor, torch.Tensor]: ...
 
 #
-@overload
-def balance_by_scaling(
-    img: torch.Tensor,
-    scaled_max: int | float | torch.Tensor,
-    ret_factors: Literal[False] = False,
-) -> torch.Tensor: ...
-@overload
-def balance_by_scaling(
-    img: torch.Tensor,
-    scaled_max: int | float | torch.Tensor,
-    ret_factors: Literal[True],
-) -> tuple[torch.Tensor, torch.Tensor]: ...
-
-#
-@overload
 def gray_world_balance(
     rgb: torch.Tensor,
-    ret_factors: Literal[False] = False,
+    ret_illum: bool = False,
 ) -> torch.Tensor: ...
-@overload
-def gray_world_balance(
-    rgb: torch.Tensor,
-    ret_factors: Literal[True],
-) -> tuple[torch.Tensor, torch.Tensor]: ...
 
 #
-@overload
 def gray_edge_balance(
     rgb: torch.Tensor,
     edge: torch.Tensor,
-    ret_factors: Literal[False] = False,
+    ret_illum: bool = False,
 ) -> torch.Tensor: ...
-@overload
-def gray_edge_balance(
-    rgb: torch.Tensor,
-    edge: torch.Tensor,
-    ret_factors: Literal[True],
-) -> tuple[torch.Tensor, torch.Tensor]: ...
 
 #
-@overload
 def white_patch_balance(
     rgb: torch.Tensor,
     q: int | float | torch.Tensor = 1.0,
-    ret_factors: Literal[False] = False,
+    ret_illum: Literal[False] = False,
 ) -> torch.Tensor: ...
-@overload
-def white_patch_balance(
-    rgb: torch.Tensor,
-    q: int | float | torch.Tensor = 1.0,
-    ret_factors: Literal[True] = True,
-) -> tuple[torch.Tensor, torch.Tensor]: ...
-
-#
-def linear_regression_balance(rgb: torch.Tensor) -> torch.Tensor: ...
 
 #
 def cheng_pca_balance(

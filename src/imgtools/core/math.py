@@ -11,7 +11,12 @@ from math import ceil, floor
 import torch
 from torch.nn.functional import conv2d, pad
 
-from ..utils.helpers import align_device_type
+from ..utils.helpers import (
+    _to_channel_coeff,
+    align_device_type,
+    check_valid_image_ndim,
+    __default_dtype,
+)
 
 
 def matrix_transform(
@@ -203,3 +208,25 @@ def rad_to_deg(deg: torch.Tensor):
     """
     rad = deg.mul(180 / torch.pi)
     return rad
+
+
+def rescale_range(
+    img: torch.Tensor,
+    src_mini: float | torch.Tensor,
+    src_maxi: float | torch.Tensor,
+    tar_mini: float | torch.Tensor,
+    tar_maxi: float | torch.Tensor,
+):
+    check_valid_image_ndim(img)
+    dtype = __default_dtype(img)
+    device = img.device
+    num_ch = img.size(-3)
+    src_mini = _to_channel_coeff(src_mini, num_ch, dtype=dtype, device=device)
+    src_maxi = _to_channel_coeff(src_maxi, num_ch, dtype=dtype, device=device)
+    tar_mini = _to_channel_coeff(tar_mini, num_ch, dtype=dtype, device=device)
+    tar_maxi = _to_channel_coeff(tar_maxi, num_ch, dtype=dtype, device=device)
+
+    k = (tar_maxi - tar_mini).div_(src_maxi - src_mini)
+    b = tar_mini - src_mini * k
+    res = (img * k).add_(b).clip_(tar_mini, tar_maxi)
+    return res

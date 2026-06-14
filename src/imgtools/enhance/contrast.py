@@ -123,6 +123,122 @@ def local_gamma_correction(
     return res
 
 
+def local_gamma_correction2(
+    rgb: torch.Tensor,
+    sigma_blur: int = 50,
+    basic_gamma: float = 1.0,
+    gain: int | float | torch.Tensor = 1.3,
+):
+    """Adaptive Gamma-correction based on local brightness.
+
+    1. `gray = rgb_to_gray(rgb)`.
+    2. Computes local mean `local_mean`. We use Gaussian lowpass filter in the
+       frequency domain to appoximate local mean.
+    3. Computes the gamma by `gamma = (local_mean - 0.5) * gain + basic_gamma`.
+    4. Gamma correction `res = rgb.pow(gamma)`
+
+    Parameters
+    ----------
+    rgb : torch.Tensor
+        An RGB or grayscale image with shape `(*, C, H, W)`.
+    sigma_blur : int, default=50
+        The sigma for Gaussian blurring. Higher value means the stronger
+        blurrness.
+    basic_gamma : float, default=1.0
+        The basic gamma value. Must be float or a tensor with shape `(*, 1)`.
+    gain : int | float | torch.Tensor, default=1.3
+        The effect of local mean. Must be float or a tensor with shape `(*, 1)`.
+
+    Returns
+    -------
+    torch.Tensor
+        Enhanced image with the same shape as input.
+    """
+    check_valid_image_ndim(rgb)
+    num_ch = rgb.size(-3)
+    gain = _to_channel_coeff(gain, 1)
+    basic_gamma = _to_channel_coeff(basic_gamma, 1)
+    if num_ch == 3:
+        yuv = rgb_to_yuv(rgb)
+        gray = yuv[..., :1, :, :].add_(1e-8)
+    elif num_ch == 1:
+        gray = rgb.add(1e-8)
+    else:
+        raise ValueError(f'`rgb` must be 1 or 3 channel: {num_ch}')
+    #
+    gray_f = torch.fft.rfft2(gray)
+    sigma_blur = 1 / (2 * torch.pi * sigma_blur)
+    lowpass = get_gaussian_lowpass(gray_f, sigma_blur, d=1.0)
+    lowpass = align_device_type(lowpass, gray)
+    local_mean = gray_f.mul_(lowpass)
+    local_mean = torch.fft.irfft2(local_mean, s=gray.shape[-2:])
+    # gamma = local_mean * gain + (basic_gamma - 0.5 * gain)
+    gamma = local_mean.mul_(gain).add_(basic_gamma.sub_(gain, alpha=0.5))
+    gamma.relu_()
+    gray.pow_(gamma)
+    if num_ch == 3:
+        yuv[..., :1, :, :] = gray
+        res = yuv_to_rgb(yuv)
+    return res
+
+
+def local_gamma_correction3(
+    rgb: torch.Tensor,
+    sigma_blur: int = 50,
+    basic_gamma: float = 1.0,
+    gain: int | float | torch.Tensor = 1.3,
+):
+    """Adaptive Gamma-correction based on local brightness.
+
+    1. `gray = rgb_to_gray(rgb)`.
+    2. Computes local mean `local_mean`. We use Gaussian lowpass filter in the
+       frequency domain to appoximate local mean.
+    3. Computes the gamma by `gamma = (local_mean - 0.5) * gain + basic_gamma`.
+    4. Gamma correction `res = rgb.pow(gamma)`
+
+    Parameters
+    ----------
+    rgb : torch.Tensor
+        An RGB or grayscale image with shape `(*, C, H, W)`.
+    sigma_blur : int, default=50
+        The sigma for Gaussian blurring. Higher value means the stronger
+        blurrness.
+    basic_gamma : float, default=1.0
+        The basic gamma value. Must be float or a tensor with shape `(*, 1)`.
+    gain : int | float | torch.Tensor, default=1.3
+        The effect of local mean. Must be float or a tensor with shape `(*, 1)`.
+
+    Returns
+    -------
+    torch.Tensor
+        Enhanced image with the same shape as input.
+    """
+    check_valid_image_ndim(rgb)
+    num_ch = rgb.size(-3)
+    gain = _to_channel_coeff(gain, 1)
+    basic_gamma = _to_channel_coeff(basic_gamma, 1)
+    if num_ch == 3:
+        gray = rgb_to_gray(rgb)
+    elif num_ch == 1:
+        gray = rgb
+    else:
+        raise ValueError(f'`rgb` must be 1 or 3 channel: {num_ch}')
+    gray = gray.add(1e-8)
+    #
+    gray_f = torch.fft.rfft2(gray)
+    sigma_blur = 1 / (2 * torch.pi * sigma_blur)
+    lowpass = get_gaussian_lowpass(gray_f, sigma_blur, d=1.0)
+    lowpass = align_device_type(lowpass, gray)
+    local_mean = gray_f.mul_(lowpass)
+    local_mean = torch.fft.irfft2(local_mean, s=gray.shape[-2:])
+    # gamma = local_mean * gain + (basic_gamma - 0.5 * gain)
+    gamma = local_mean.mul_(gain).add_(basic_gamma.sub_(gain, alpha=0.5))
+    gamma.relu_()
+    new_gray = gray.pow(gamma - 1)
+    res = rgb * new_gray
+    return res
+
+
 def lide(
     rgb: torch.Tensor,
     std_min: float | torch.Tensor | None = 0.005,

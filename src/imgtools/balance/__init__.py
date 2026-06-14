@@ -7,7 +7,6 @@
 """
 
 __all__ = [
-    'balance_by_scaling',
     'cheng_pca_balance',
     'get_von_kries_transform_matrix',
     'gray_edge_balance',
@@ -21,7 +20,6 @@ __all__ = [
 ]
 
 from ._balance import (
-    balance_by_scaling,
     cheng_pca_balance,
     get_von_kries_transform_matrix,
     gray_edge_balance,
