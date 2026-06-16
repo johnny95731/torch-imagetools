@@ -130,7 +130,7 @@ def _to_channel_coeff(
         return res
     if coeff.numel() == 1:
         res = coeff.reshape(1).to(device, dtype)
-        return coeff
+        return res
 
     if coeff.numel() == 0 or coeff.ndim > 2:
         raise ValueError(
