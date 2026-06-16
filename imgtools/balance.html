@@ -96,28 +96,25 @@
 <h3>_balance<a class="headerlink" href="#balance" title="Link to this heading"></a></h3>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.balance.balance_by_scaling" title="imgtools.balance.balance_by_scaling"><code class="xref py py-obj docutils literal notranslate"><span class="pre">balance_by_scaling</span></code></a></p></td>
-<td><p>Wrong von Kries transform.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.balance.cheng_pca_balance" title="imgtools.balance.cheng_pca_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cheng_pca_balance</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.balance.cheng_pca_balance" title="imgtools.balance.cheng_pca_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cheng_pca_balance</span></code></a></p></td>
 <td><p>White balance by Cheng's PCA method [1].</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.balance.get_von_kries_transform_matrix" title="imgtools.balance.get_von_kries_transform_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_von_kries_transform_matrix</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.balance.get_von_kries_transform_matrix" title="imgtools.balance.get_von_kries_transform_matrix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_von_kries_transform_matrix</span></code></a></p></td>
 <td><p>Returns a transformation matrix for von Kries adaptation, which converts colors from a illuminant to another illuminant.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.balance.gray_edge_balance" title="imgtools.balance.gray_edge_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gray_edge_balance</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.balance.gray_edge_balance" title="imgtools.balance.gray_edge_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gray_edge_balance</span></code></a></p></td>
 <td><p>White balance by the gray-edge algorithm.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.balance.gray_world_balance" title="imgtools.balance.gray_world_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gray_world_balance</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.balance.gray_world_balance" title="imgtools.balance.gray_world_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gray_world_balance</span></code></a></p></td>
 <td><p>White balance by the gray-world algorithm.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.balance.simplest_color_balance" title="imgtools.balance.simplest_color_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simplest_color_balance</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.balance.simplest_color_balance" title="imgtools.balance.simplest_color_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">simplest_color_balance</span></code></a></p></td>
 <td><p>Clip top-k1 and bottom-k2 percentage values and normalize to <cite>[0, 1]</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.balance.von_kries_transform" title="imgtools.balance.von_kries_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">von_kries_transform</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.balance.von_kries_transform" title="imgtools.balance.von_kries_transform"><code class="xref py py-obj docutils literal notranslate"><span class="pre">von_kries_transform</span></code></a></p></td>
 <td><p>Applies chromatic adaptation transformation to an image in CIE XYZ space with given source and target white points.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#imgtools.balance.white_patch_balance" title="imgtools.balance.white_patch_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">white_patch_balance</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#imgtools.balance.white_patch_balance" title="imgtools.balance.white_patch_balance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">white_patch_balance</span></code></a></p></td>
 <td><p>White balance by generalized white patch algorithm.</p></td>
 </tr>
 </tbody>
@@ -151,51 +148,12 @@
 <section id="module-imgtools.balance">
 <span id="documents"></span><h2>Documents<a class="headerlink" href="#module-imgtools.balance" title="Link to this heading"></a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="imgtools.balance.balance_by_scaling">
-<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">balance_by_scaling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaled_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_factors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.balance.balance_by_scaling" title="Link to this definition"></a></dt>
-<dd><p>Wrong von Kries transform. Multiplies an image by</p>
-<p><cite>coeff_channel = scaled_max / maximum_of_channel</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>img</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Image in RGB space with shape <cite>(*, C, H, W)</cite>.</p>
-</dd>
-<dt><strong>scaled_max</strong><span class="classifier">int | float | torch.Tensor</span></dt><dd><p>The maximum(s) after scaling.</p>
-<ul class="simple">
-<li><p>A single number: A coefficient for all channels.</p></li>
-<li><p>Tensor with shape <cite>(C,)</cite>: the coefficients of each channels.</p></li>
-</ul>
-</dd>
-<dt><strong>ret_factors</strong><span class="classifier">bool, default=False</span></dt><dd><p>If true, returns image and scaling factors.</p>
-</dd>
-</dl>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><dl class="simple">
-<dt><strong>balanced</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with the shape <cite>(*, C, H, W)</cite>.</p>
-</dd>
-<dt><strong>factors</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Scaling factors with shape <cite>(C,)</cite>.
-<cite>factors</cite> is returned only if <cite>ret_factors</cite> is true.</p>
-</dd>
-</dl>
-</dd>
-</dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">balance_by_scaling</span>
-<span class="gp">&gt;&gt;&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">maxi</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">((</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.95</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span><span class="p">,</span> <span class="n">factors</span> <span class="o">=</span> <span class="n">balance_by_scaling</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">maxi</span><span class="p">,</span> <span class="n">ret_factors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">factors</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># tensor([1.0000, 1.0000, 0.9500])</span>
-</pre></div>
-</div>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="imgtools.balance.cheng_pca_balance">
 <span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">cheng_pca_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_selected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adaptation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'von</span> <span class="pre">kries'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rgb_spec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'srgb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">white</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'D65'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.cheng_pca_balance" title="Link to this definition"></a></dt>
 <dd><p>White balance by Cheng’s PCA method [1]. Estimate the illuminant and
 applies chromatic adaptation transformation.</p>
+<p>If you want to estimate the illuminant, call
+<cite>balance.estimate_illuminant_cheng</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -288,7 +246,7 @@ converts colors from a illuminant to another illuminant.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="imgtools.balance.gray_edge_balance">
-<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">gray_edge_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_factors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.balance.gray_edge_balance" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">gray_edge_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_illum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.gray_edge_balance" title="Link to this definition"></a></dt>
 <dd><p>White balance by the gray-edge algorithm. Multiplies each channel by</p>
 <p><cite>coeff_channel = mean_of_gradient / mean_of_gradient_of_channel</cite>.</p>
 <dl class="field-list simple">
@@ -298,16 +256,18 @@ converts colors from a illuminant to another illuminant.</p>
 </dd>
 <dt><strong>edge</strong><span class="classifier">torch.Tensor</span></dt><dd><p>The edge of the image with shape <cite>(*, C, H, W)</cite>.</p>
 </dd>
-<dt><strong>ret_factors</strong><span class="classifier">bool, default=False</span></dt><dd><p>If true, returns image and scaling factors.</p>
+<dt><strong>ret_illum</strong><span class="classifier">bool, default=False</span></dt><dd><p>Return the estimated illuminant color instead of returning the
+balanced image.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>balanced</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with the shape <cite>(*, C, H, W)</cite>.</p>
+<dt><strong>balanced</strong><span class="classifier">torch.Tensor</span></dt><dd><p>A balanced image with the shape <cite>(*, C, H, W)</cite> when <cite>ret_factors</cite> is
+<cite>False</cite>.</p>
 </dd>
-<dt><strong>factors</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Scaling factors with shape <cite>(C,)</cite>.
-<cite>factors</cite> is returned only if <cite>ret_factors</cite> is true.</p>
+<dt><strong>illuminant</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Estimated illuminant color with shape <cite>(*, C, 1, 1)</cite> when
+<cite>ret_factors</cite> is <cite>True</cite>.</p>
 </dd>
 </dl>
 </dd>
@@ -318,15 +278,19 @@ converts colors from a illuminant to another illuminant.</p>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">edge</span> <span class="o">=</span> <span class="n">laplacian</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span><span class="p">,</span> <span class="n">factors</span> <span class="o">=</span> <span class="n">gray_edge_balance</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">ret_factors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">factors</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># tensor([1.0094, 0.9822, 1.0089])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span> <span class="o">=</span> <span class="n">gray_edge_balance</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">illum</span> <span class="o">=</span> <span class="n">gray_edge_balance</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">ret_factors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced2</span> <span class="o">=</span> <span class="n">rgb</span> <span class="o">*</span> <span class="p">(</span><span class="n">illum</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">/</span> <span class="n">illum</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># or</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># balanced2 = rgb * (illum[1] / illum)</span>
 </pre></div>
 </div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="imgtools.balance.gray_world_balance">
-<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">gray_world_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_factors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.balance.gray_world_balance" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">gray_world_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_illum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.gray_world_balance" title="Link to this definition"></a></dt>
 <dd><p>White balance by the gray-world algorithm. Multiplies each channel by</p>
 <p><cite>coeff_channel = mean / mean_of_channel</cite>.</p>
 <dl class="field-list simple">
@@ -334,16 +298,18 @@ converts colors from a illuminant to another illuminant.</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>rgb</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An Image in RGB space with shape <cite>(*, C, H, W)</cite>.</p>
 </dd>
-<dt><strong>ret_factors</strong><span class="classifier">bool, default=False</span></dt><dd><p>If true, returns image and scaling factors.</p>
+<dt><strong>ret_illum</strong><span class="classifier">bool, default=False</span></dt><dd><p>Return the estimated illuminant color instead of returning the
+balanced image.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>balanced</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with the shape <cite>(*, C, H, W)</cite>.</p>
+<dt><strong>balanced</strong><span class="classifier">torch.Tensor</span></dt><dd><p>A balanced image with the shape <cite>(*, C, H, W)</cite> when <cite>ret_factors</cite> is
+<cite>False</cite>.</p>
 </dd>
-<dt><strong>factors</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Scaling factors with shape <cite>(C,)</cite>.
-<cite>factors</cite> is returned only if <cite>ret_factors</cite> is true.</p>
+<dt><strong>illuminant</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Estimated illuminant color with shape <cite>(*, C, 1, 1)</cite> when
+<cite>ret_factors</cite> is <cite>True</cite>.</p>
 </dd>
 </dl>
 </dd>
@@ -352,8 +318,12 @@ converts colors from a illuminant to another illuminant.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">gray_world_balance</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span><span class="p">,</span> <span class="n">factors</span> <span class="o">=</span> <span class="n">gray_world_balance</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">ret_factors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">factors</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># tensor([1.0003, 1.0013, 0.9984])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span> <span class="o">=</span> <span class="n">gray_world_balance</span><span class="p">(</span><span class="n">rgb</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">illum</span> <span class="o">=</span> <span class="n">gray_world_balance</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">ret_factors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced2</span> <span class="o">=</span> <span class="n">rgb</span> <span class="o">*</span> <span class="p">(</span><span class="n">illum</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">/</span> <span class="n">illum</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># or</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># balanced2 = rgb * (illum[1] / illum)</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -363,6 +333,7 @@ converts colors from a illuminant to another illuminant.</p>
 <span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">simplest_color_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dark_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">light_percent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.balance.simplest_color_balance" title="Link to this definition"></a></dt>
 <dd><p>Clip top-k1 and bottom-k2 percentage values and normalize to <cite>[0, 1]</cite>.
 The algorithm is proposed by Limare et al [1].</p>
+<p>This function will not estimate the illuminant.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
@@ -442,7 +413,7 @@ If true, also returns the transformation matrix.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="imgtools.balance.white_patch_balance">
-<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">white_patch_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_factors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">Tensor</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#imgtools.balance.white_patch_balance" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">imgtools.balance.</span></span><span class="sig-name descname"><span class="pre">white_patch_balance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ret_illum</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#imgtools.balance.white_patch_balance" title="Link to this definition"></a></dt>
 <dd><p>White balance by generalized white patch algorithm. Multiplies each
 channel of an RGB image by</p>
 <p><cite>coeff_channel = q_quantile_of_image / q_quantile_of_channel</cite>.</p>
@@ -459,28 +430,32 @@ and images will be scaled by same factors.</p>
 - A single number: the quantile for all channels.
 - Tensor with shape <cite>(3,)</cite>: the quantiles of channels.</p>
 </dd>
-<dt><strong>ret_factors</strong><span class="classifier">bool, default=False</span></dt><dd><p>If false, only the image is returned.
-If true, also return the scaling factors.</p>
+<dt><strong>ret_illum</strong><span class="classifier">bool, default=False</span></dt><dd><p>Return the estimated illuminant color instead of returning the
+balanced image.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>balanced</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An image with the shape <cite>(*, C, H, W)</cite>.</p>
+<dt><strong>balanced</strong><span class="classifier">torch.Tensor</span></dt><dd><p>A balanced image with the shape <cite>(*, C, H, W)</cite> when <cite>ret_factors</cite> is
+<cite>False</cite>.</p>
 </dd>
-<dt><strong>factors</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Scaling factors with shape <cite>(C,)</cite>.
-<cite>factors</cite> is returned only if <cite>ret_factors</cite> is true.</p>
+<dt><strong>illuminant</strong><span class="classifier">torch.Tensor</span></dt><dd><p>Estimated illuminant color with shape <cite>(*, C, 1, 1)</cite> when
+<cite>ret_factors</cite> is <cite>True</cite>.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.balance</span><span class="w"> </span><span class="kn">import</span> <span class="n">white_patch_balance</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">imgtools.filter</span><span class="w"> </span><span class="kn">import</span> <span class="n">laplacian</span>
 <span class="gp">&gt;&gt;&gt;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">rgb</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="mi">512</span><span class="p">))</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span><span class="p">,</span> <span class="n">factors</span> <span class="o">=</span> <span class="n">white_patch_balance</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">ret_factors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">factors</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># tensor([1.0008, 0.9999, 1.0005])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced</span> <span class="o">=</span> <span class="n">white_patch_balance</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">illum</span> <span class="o">=</span> <span class="n">gray_edge_balance</span><span class="p">(</span><span class="n">rgb</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">ret_factors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balanced2</span> <span class="o">=</span> <span class="n">rgb</span> <span class="o">*</span> <span class="p">(</span><span class="n">illum</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">/</span> <span class="n">illum</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># or</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># balanced2 = rgb * (illum[1] / illum)</span>
 </pre></div>
 </div>
 </dd></dl>

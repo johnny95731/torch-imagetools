@@ -23,7 +23,6 @@ _balance
 .. autosummary::
    :nosignatures:
 
-   balance_by_scaling
    cheng_pca_balance
    get_von_kries_transform_matrix
    gray_edge_balance

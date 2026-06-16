@@ -453,7 +453,7 @@ value will be computed from ksize:
 <span class="sig-prename descclassname"><span class="pre">imgtools.enhance.</span></span><span class="sig-name descname"><span class="pre">auto_gamma_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.enhance.auto_gamma_correction" title="Link to this definition"></a></dt>
 <dd><p>Gamma-correction with the automatically estimated gamma.</p>
 <ol class="arabic simple">
-<li><p>Computes <cite>gray = rgb_to_gray(rgb)</cite></p></li>
+<li><p><cite>gray = rgb.mean(-3)</cite>.</p></li>
 <li><p>Computes mean value of <cite>gray</cite>: <cite>mean(gray)</cite></p></li>
 <li><p>Computes <cite>gamma = log(target) / log(mean(gray))</cite></p></li>
 <li><p>Applies gamma correction with the computed gamma in step 3.</p></li>
@@ -495,10 +495,12 @@ equalization (LIDE) [1].</p>
 <dt><strong>rgb</strong><span class="classifier">torch.Tensor</span></dt><dd><p>An RGB or grayscale image with shape <cite>(*, C, H, W)</cite>.</p>
 </dd>
 <dt><strong>std_min</strong><span class="classifier">float, default=0.005</span></dt><dd><p>The minimum value of local standard deviation. Must be float, None,
-or a tensor with shape <cite>(*, 1)</cite>.</p>
+or a tensor with shape <cite>(*, 1)</cite>. When <cite>std_max.ndim == 2</cite>, <cite>rgb.ndim</cite>
+must be 4.</p>
 </dd>
 <dt><strong>std_max</strong><span class="classifier">float, default=10.0</span></dt><dd><p>The minimum value of local standard deviation. Must be float, None,
-or a tensor with shape <cite>(*, 1)</cite>.</p>
+or a tensor with shape <cite>(*, 1)</cite>. When <cite>std_max.ndim == 2</cite>, <cite>rgb.ndim</cite>
+must be 4.</p>
 </dd>
 <dt><strong>sigma_blur</strong><span class="classifier">float, default=300</span></dt><dd><p>The sigma for Gaussian blurring. Higher value means the stronger
 blurrness.</p>
@@ -526,12 +528,11 @@ blurrness.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="imgtools.enhance.local_gamma_correction">
-<span class="sig-prename descclassname"><span class="pre">imgtools.enhance.</span></span><span class="sig-name descname"><span class="pre">local_gamma_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_blur</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basic_gamma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.enhance.local_gamma_correction" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">imgtools.enhance.</span></span><span class="sig-name descname"><span class="pre">local_gamma_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_blur</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gain</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tensor</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basic_gamma</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#imgtools.enhance.local_gamma_correction" title="Link to this definition"></a></dt>
 <dd><p>Adaptive Gamma-correction based on local brightness.</p>
 <ol class="arabic simple">
-<li><p><cite>gray = rgb_to_gray(rgb)</cite>.</p></li>
-<li><p>Computes local mean <cite>local_mean</cite>. We use Gaussian lowpass filter in the
-frequency domain to appoximate local mean.</p></li>
+<li><p><cite>gray = rgb.mean(-3)</cite>.</p></li>
+<li><p>Computes local mean <cite>local_mean = GaussianFilter(gray, sigma_blur)</cite>.</p></li>
 <li><p>Computes the gamma by <cite>gamma = (local_mean - 0.5) * gain + basic_gamma</cite>.</p></li>
 <li><p>Gamma correction <cite>res = rgb.pow(gamma)</cite></p></li>
 </ol>
@@ -543,9 +544,9 @@ frequency domain to appoximate local mean.</p></li>
 <dt><strong>sigma_blur</strong><span class="classifier">int, default=50</span></dt><dd><p>The sigma for Gaussian blurring. Higher value means the stronger
 blurrness.</p>
 </dd>
-<dt><strong>basic_gamma</strong><span class="classifier">float, default=1.0</span></dt><dd><p>The basic gamma value. Must be float or a tensor with shape <cite>(*, 1)</cite>.</p>
-</dd>
 <dt><strong>gain</strong><span class="classifier">int | float | torch.Tensor, default=1.3</span></dt><dd><p>The effect of local mean. Must be float or a tensor with shape <cite>(*, 1)</cite>.</p>
+</dd>
+<dt><strong>basic_gamma</strong><span class="classifier">float, default=1.0</span></dt><dd><p>The basic gamma value. Must be float or a tensor with shape <cite>(*, 1)</cite>.</p>
 </dd>
 </dl>
 </dd>
