@@ -6,7 +6,6 @@ __all__ = [
     'lide',
 ]
 
-from math import log
 from typing import Literal
 
 import torch
@@ -16,8 +15,8 @@ from ..filters.rfft import get_gaussian_lowpass
 from ..statistics.basic import mean
 from ..utils.helpers import (
     _to_channel_coeff,
-    align_device_type,
     check_valid_image_ndim,
+    __default_dtype,
 )
 
 
@@ -29,7 +28,7 @@ def auto_gamma_correction(
 ):
     """Gamma-correction with the automatically estimated gamma.
 
-    1. Computes `gray = rgb_to_gray(rgb)`
+    1. `gray = rgb.mean(-3)`.
     2. Computes mean value of `gray`: `mean(gray)`
     3. Computes `gamma = log(target) / log(mean(gray))`
     4. Applies gamma correction with the computed gamma in step 3.
@@ -55,11 +54,11 @@ def auto_gamma_correction(
         Vol. 4, Issue 6, No.18 , Nov. 2015.
     """
     check_valid_image_ndim(img)
+    dtype = __default_dtype(img)
     num_ch = img.size(-3)
-    target = _to_channel_coeff(target, num_ch)
-    target = align_device_type(target, img)
-    _mean = mean(img, weight=weight)
-    gamma = log(target) / _mean.log()
+    target = _to_channel_coeff(target, num_ch, dtype=dtype, device=img.device)
+    m = mean(img, weight=weight)
+    gamma = target.log_() / m.log()
     res = img.pow(gamma)
     return res
 
@@ -96,9 +95,12 @@ def local_gamma_correction(
         Enhanced image with the same shape as input.
     """
     check_valid_image_ndim(rgb)
+    dtype = __default_dtype(rgb)
+    device = rgb.device
     num_ch = rgb.size(-3)
-    gain = _to_channel_coeff(gain, 1)
-    basic_gamma = _to_channel_coeff(basic_gamma, 1)
+
+    gain = _to_channel_coeff(gain, 1, dtype, device)
+    basic_gamma = _to_channel_coeff(basic_gamma, 1, dtype, device)
     if num_ch == 3:
         gray = rgb.mean(-3, keepdim=True)
     elif num_ch == 1:
@@ -109,12 +111,14 @@ def local_gamma_correction(
     #
     gray_f = torch.fft.rfft2(gray)
     sigma_blur = 1 / (2 * torch.pi * sigma_blur)
-    lowpass = get_gaussian_lowpass(gray_f, sigma_blur, d=1.0)
-    lowpass = align_device_type(lowpass, gray)
+    lowpass = get_gaussian_lowpass(
+        gray_f, sigma_blur, d=1.0, dtype=dtype, device=device
+    )
     local_mean = gray_f.mul_(lowpass)
     local_mean = torch.fft.irfft2(local_mean, s=gray.shape[-2:])
-    # gamma = local_mean * gain + (basic_gamma - 0.5 * gain)
-    gamma = local_mean.mul_(gain).add_(basic_gamma.sub_(gain, alpha=0.5))
+    # gamma = gain * (local_mean - 0.5)  + basic_gamma
+    #       = local_mean * gain + (basic_gamma - 0.5 * gain)
+    gamma = local_mean.mul(gain).add(basic_gamma.sub(gain, alpha=0.5))
     gamma.relu_()
     res = rgb.pow(gamma)
     return res
@@ -136,10 +140,12 @@ def lide(
         An RGB or grayscale image with shape `(*, C, H, W)`.
     std_min : float, default=0.005
         The minimum value of local standard deviation. Must be float, None,
-        or a tensor with shape `(*, 1)`.
+        or a tensor with shape `(*, 1)`. When `std_max.ndim == 2`, `rgb.ndim`
+        must be 4.
     std_max : float, default=10.0
         The minimum value of local standard deviation. Must be float, None,
-        or a tensor with shape `(*, 1)`.
+        or a tensor with shape `(*, 1)`. When `std_max.ndim == 2`, `rgb.ndim`
+        must be 4.
     sigma_blur : float, default=300
         The sigma for Gaussian blurring. Higher value means the stronger
         blurrness.
@@ -160,6 +166,8 @@ def lide(
     assert model in ('gauss', 'laplace'), (
         f'`model` must be "gauss" or "laplace": {model}'
     )
+    dtype = __default_dtype(rgb)
+    device = rgb.device
     num_ch = rgb.size(-3)
     if num_ch == 3:
         yuv = rgb_to_yuv(rgb)
@@ -169,17 +177,20 @@ def lide(
     else:
         raise ValueError(f'`rgb` must be 1 or 3 channel: {num_ch}')
     if std_min is not None:
-        std_min = _to_channel_coeff(std_min, 1)
-        std_min = align_device_type(std_min, gray)
+        std_min = _to_channel_coeff(std_min, 1, dtype, device)
+        assert std_min.ndim <= rgb.ndim
+    else:
+        std_min = torch.zeros((1, 1, 1), dtype=dtype, device=device)
     if std_max is not None:
-        std_max = _to_channel_coeff(std_max, 1)
-        std_max = align_device_type(std_max, gray)
+        std_max = _to_channel_coeff(std_max, 1, dtype, device)
+        assert std_max.ndim <= rgb.ndim
     gray = gray.add(1e-8)
     #
     gray_f = torch.fft.rfft2(gray)
     sigma_blurf = 1 / (2 * torch.pi * sigma_blur)
-    lowpass = get_gaussian_lowpass(gray_f, sigma_blurf, d=1.0)
-    lowpass = align_device_type(lowpass, gray)
+    lowpass = get_gaussian_lowpass(
+        gray_f, sigma_blurf, d=1.0, dtype=dtype, device=device
+    )
     local_mean = gray_f.mul_(lowpass)
     local_mean = torch.fft.irfft2(local_mean, s=gray.shape[-2:])  # type: torch.Tensor
     #
@@ -190,7 +201,7 @@ def lide(
     local_std = local_std.clip(std_min, std_max)
     #
     if model == 'gauss':
-        z_score = (gray - local_mean).div_(local_std.mul_(2**0.5))
+        z_score = (gray - local_mean).div(local_std.mul_(2**0.5))
         res = torch.erf_(z_score).add_(1.0).mul_(0.5)
     elif model == 'laplace':
         diff = gray - local_mean
