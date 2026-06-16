@@ -13,19 +13,6 @@ CHANNEL = DEFAULT_CONST['channel']
 
 
 class Equalization(BasicTest):
-    def _assert_result(
-        self,
-        inps: list[torch.Tensor],
-        res: torch.Tensor,
-    ):
-        inp = inps[0]
-        if inp.ndim == res.ndim:
-            self.assertEqual(res.shape, inp.shape)
-        elif inp.ndim == res.ndim - 1:
-            self.assertEqual(res.shape[1:], inp.shape)
-            self.assertEqual(res.shape[0], BATCH)
-        self._basic_assertion(inps, res, check_shape=False)
-
     def test_hist_equalize(self):
         self.print_name()
 
@@ -33,7 +20,7 @@ class Equalization(BasicTest):
             equlization.hist_equalize,
         )
         for inps, res in cases:
-            self._assert_result(inps, res)
+            self._basic_assertion(inps, res)
 
     def test_hist_equalize(self):
         self.print_name()
@@ -48,7 +35,7 @@ class Equalization(BasicTest):
                 bins,
             )
             for inps, res in cases:
-                self._assert_result(inps, res)
+                self._basic_assertion(inps, res)
 
     def test_match_mean_std(self):
         self.print_name()
@@ -57,7 +44,7 @@ class Equalization(BasicTest):
             equlization.match_mean_std, num_imgs=2
         )
         for inps, res in cases:
-            self._assert_result(inps, res)
+            self._basic_assertion(inps, res)
 
 
 if __name__ == '__main__':

@@ -11,7 +11,7 @@ BATCH = DEFAULT_CONST['batch']
 CHANNEL = DEFAULT_CONST['channel']
 
 
-class Equalization(BasicTest):
+class HighDynamicRange(BasicTest):
     def test_hist_equalize(self):
         self.print_name()
         sigma_c = 0.5

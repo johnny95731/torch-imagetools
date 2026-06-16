@@ -1,9 +1,15 @@
 import unittest
 
 import torch
+
 from imgtools.balance import _balance
 from imgtools.color import get_chromatic_adaptation, get_rgb_to_xyz_matrix
-from tests.basic import BasicTest, iter_dtype_device, run_over_all_dtype_device
+from tests.basic import (
+    DEFAULT_CONST,
+    BasicTest,
+    iter_dtype_device,
+    run_over_all_dtype_device,
+)
 
 
 class VonKries(BasicTest):
@@ -56,24 +62,7 @@ class VonKries(BasicTest):
                     self._basic_assertion(inp, res)
 
 
-class ScalingBase(BasicTest):
-    def test_scaling(self):
-        self.print_name()
-
-        scaled_max = [
-            1,
-            1.0,
-            *sum(iter_dtype_device([torch.tensor((1.0))]), []),
-            *sum(iter_dtype_device([torch.tensor((1.0, 1.0, 1.0))]), []),
-        ]
-        for maxi in scaled_max:
-            cases = run_over_all_dtype_device(
-                _balance.balance_by_scaling,
-                scaled_max=maxi,
-            )
-            for inp, res in cases:
-                self._basic_assertion(inp, res)
-
+class BaseBalance(BasicTest):
     def test_gray_world(self):
         self.print_name()
 
@@ -87,7 +76,8 @@ class ScalingBase(BasicTest):
         self.print_name()
 
         cases = run_over_all_dtype_device(
-            _balance.gray_edge_balance, num_imgs=2
+            _balance.gray_edge_balance,
+            num_imgs=2,
         )
         for inp, res in cases:
             self._basic_assertion(inp, res)
@@ -95,13 +85,15 @@ class ScalingBase(BasicTest):
     def test_white_patch(self):
         self.print_name()
 
-        q_coeffs = [
+        qs = (
             1,
-            1.0,
-            *sum(iter_dtype_device([torch.rand(1)]), []),
-            *sum(iter_dtype_device([torch.rand(3)]), []),
-        ]
-        for q in q_coeffs:
+            0.5,
+            2,
+            -1,
+            torch.rand((DEFAULT_CONST['channel'])),
+        )
+
+        for q in qs:
             cases = run_over_all_dtype_device(
                 _balance.white_patch_balance,
                 q=q,

@@ -25,19 +25,6 @@ class ScalingBase(BasicTest):
         )
         return args
 
-    def _assert_result(
-        self,
-        inps: list[torch.Tensor],
-        res: torch.Tensor,
-    ):
-        inp = inps[0]
-        if inp.ndim == res.ndim:
-            self.assertEqual(res.shape, inp.shape)
-        elif inp.ndim == res.ndim - 1:
-            self.assertEqual(res.shape[1:], inp.shape)
-            self.assertEqual(res.shape[0], BATCH)
-        self._basic_assertion(inps, res, check_shape=False)
-
     def test_adjust_linear(self):
         self.print_name()
 
@@ -50,7 +37,7 @@ class ScalingBase(BasicTest):
                     center=center,
                 )
                 for inps, res in cases:
-                    self._assert_result(inps, res)
+                    self._basic_assertion(inps, res)
 
     def test_adjust_gamma(self):
         self.print_name()
@@ -64,7 +51,7 @@ class ScalingBase(BasicTest):
                     scale=scale,
                 )
                 for inps, res in cases:
-                    self._assert_result(inps, res)
+                    self._basic_assertion(inps, res)
 
     def test_adjust_log(self):
         self.print_name()
@@ -76,7 +63,7 @@ class ScalingBase(BasicTest):
                 scale=scale,
             )
             for inps, res in cases:
-                self._assert_result(inps, res)
+                self._basic_assertion(inps, res)
 
     def test_adjust_sigmoid(self):
         self.print_name()
@@ -90,7 +77,7 @@ class ScalingBase(BasicTest):
                     gain=gain,
                 )
                 for inps, res in cases:
-                    self._assert_result(inps, res)
+                    self._basic_assertion(inps, res)
 
     def test_adjust_inverse(self):
         self.print_name()
@@ -102,7 +89,7 @@ class ScalingBase(BasicTest):
                 maxi=maxi,
             )
             for inps, res in cases:
-                self._assert_result(inps, res)
+                self._basic_assertion(inps, res)
 
 
 if __name__ == '__main__':

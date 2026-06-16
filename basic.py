@@ -148,29 +148,23 @@ def run_over_all_dtype_device(
         for j in range(num_imgs):
             ndim = 3 if (idx >> j) & 1 == 0 else 4
             inps.append(get_img(None, ndim))
+        all_args = [*inps, *args, *kwargs.values()]
         for imgs in iter_dtype_device(inps, dtypes, devices):
             res = fn(*imgs, *args, **kwargs)
-            yield imgs, res
+            all_args[:num_imgs] = imgs
+            yield all_args, res
 
 
-def get_batch(
-    t: int | float | torch.Tensor,
-    ttype: Literal['img', 'coeff'] = 'img',
-):
-    if isinstance(t, torch.Tensor) and (
-        (ttype == 'img' and t.ndim == 4) or (ttype == 'coeff')
-    ):
+def get_batch(t: int | float | torch.Tensor):
+    if isinstance(t, torch.Tensor) and (t.ndim in (2, 4)):
         batch = t.size(0)
     else:
         batch = 0
     return batch
 
 
-def get_max_batch(
-    tensors: list[int | float | torch.Tensor],
-    ttype: Literal['img', 'coeff'] = 'img',
-):
-    batch = max(map(lambda t: get_batch(t, ttype), tensors))
+def get_max_batch(tensors: list[int | float | torch.Tensor]):
+    batch = max(map(lambda t: get_batch(t), tensors)) if len(tensors) else 0
     return batch
 
 
@@ -203,8 +197,8 @@ class BasicTest(unittest.TestCase):
             self.assertIn(inp.ndim, (3, 4))
             if inp.ndim == res.ndim:
                 self.assertEqual(res.shape, inp.shape)
-            elif inp.ndim == res.ndim - 1:
-                batch = get_max_batch(inps[1:])
+            elif inp.ndim == (res.ndim - 1):
+                batch = get_max_batch(inps)
                 self.assertEqual(res.shape[1:], inp.shape)
                 self.assertEqual(res.shape[0], batch)
         self.assertEqual(res.dtype, inp.dtype)

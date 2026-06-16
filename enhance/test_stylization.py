@@ -4,7 +4,6 @@ import torch
 from tests.basic import (
     DEFAULT_CONST,
     BasicTest,
-    iter_dtype_device,
     run_over_all_dtype_device,
 )
 
@@ -15,17 +14,6 @@ CHANNEL = DEFAULT_CONST['channel']
 
 
 class Transfer(BasicTest):
-    def get_args(self):
-        args = (
-            1,
-            1.0,
-            *sum(iter_dtype_device([torch.randn(1)]), []),
-            *sum(iter_dtype_device([torch.randn(CHANNEL)]), []),
-            *sum(iter_dtype_device([torch.randn(BATCH, 1)]), []),
-            *sum(iter_dtype_device([torch.randn(BATCH, CHANNEL)]), []),
-        )
-        return args
-
     def _assert_result(
         self,
         inps: list[torch.Tensor],
