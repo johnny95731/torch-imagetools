@@ -60,12 +60,12 @@ def hsi_to_rgb(hsi: torch.Tensor) -> torch.Tensor:
 
     h_prime = (h * (1 / 60)).remainder(6.0)
     z = 1.0 - h_prime.remainder(2.0).sub(1.0).abs()
-    m = (1.0 - s).mul(i)
-    c = i.mul(3.0).mul(s).divide(1.0 + z)
-    x = z.mul(c).add(m)
-    c.add(m)
+    m = (1.0 - s).mul_(i)
+    c = i.mul(3.0).mul_(s).divide_(1.0 + z)
+    x = z.mul(c).add_(m)
+    c.add_(m)
 
-    h_idx = h_prime.long().unsqueeze(-3)
+    h_idx = h_prime.long().unsqueeze_(-3)
     r = torch.gather(torch.stack((c, x, m, m, x, c), dim=-3), -3, h_idx)
     g = torch.gather(torch.stack((x, c, c, x, m, m), dim=-3), -3, h_idx)
     b = torch.gather(torch.stack((m, m, x, c, c, x), dim=-3), -3, h_idx)
