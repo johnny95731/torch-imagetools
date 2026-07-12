@@ -9,7 +9,7 @@ from ..color._lms import get_xyz_to_lms_matrix
 from ..color._rgb import gammaize_rgb, linearize_rgb
 from ..core.math import matrix_transform
 from ..utils.helpers import align_device_type
-from .equlization import match_mean_std
+from .equalization import match_mean_std
 
 _MAT_FROM_LMS = torch.tensor(
     (

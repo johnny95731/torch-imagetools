@@ -13,7 +13,7 @@ __all__ = [
     'covar_matrix',
 ]
 
-from typing import Literal
+from typing import Literal, overload
 
 import torch
 
@@ -92,11 +92,26 @@ def combine_mean_std(
     return mean_z, std_z, num_z
 
 
+@overload
 def histogram(
     img: torch.Tensor,
     bins: int = 256,
     density: bool = False,
-) -> torch.Tensor:
+    ret_index: Literal[False] = False,
+) -> torch.Tensor: ...
+@overload
+def histogram(
+    img: torch.Tensor,
+    bins: int = 256,
+    density: bool = False,
+    ret_index: Literal[True] = True,
+) -> tuple[torch.Tensor, torch.Tensor]: ...
+def histogram(
+    img: torch.Tensor,
+    bins: int = 256,
+    density: bool = False,
+    ret_index: bool = False,
+) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """Compute the histogram of an image.
 
     Parameters
@@ -107,11 +122,16 @@ def histogram(
         The number of groups in data range.
     density : bool, default=False
         If true, return the pdf of each channel.
+    ret_index : bool, default=False
+        If true, returns both histogram and indices.
 
     Returns
     -------
-    torch.Tensor
+    hist : torch.Tensor
         The histogram or density.
+    img_idx : torch.Tensor
+        The index of histogram for each pixel. The `img_idx` is returned only
+        if `ret_index` is true.
 
     Examples
     --------
@@ -127,20 +147,22 @@ def histogram(
     if not isinstance(bins, int):
         raise TypeError(f'`bins` must be an integer: {type(bins)}.')
     check_valid_image_ndim(img, 2)
-    img = (img * (bins - 1)).type(torch.uint8)
+    idx = (img * (bins - 1)).add_(0.1).clip_(0, bins - 1).long()
 
-    flat_image = img.flatten(start_dim=-2).long()
+    flatted_idx = idx.flatten(start_dim=-2)
     hist = torch.zeros(
         img.shape[:-2] + (bins,),
         dtype=torch.int32,
         device=img.device,
     )
     hist.scatter_add_(
-        dim=-1, index=flat_image, src=hist.new_ones(1).expand_as(flat_image)
+        dim=-1, index=flatted_idx, src=hist.new_ones(1).expand_as(flatted_idx)
     )
     if density:
-        num_el = flat_image.size(-1)
+        num_el = flatted_idx.size(-1)
         hist = hist.float() / num_el
+    if ret_index:
+        return hist, idx
     return hist
 
 

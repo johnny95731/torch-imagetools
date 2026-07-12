@@ -27,20 +27,12 @@ def hist_equalize(img: torch.Tensor, bins: int = 256) -> torch.Tensor:
     """
     if not isinstance(bins, int):
         raise TypeError(f'`bins` must be an integer: {type(bins)}.')
+    check_valid_image_ndim(img, 2)
     res_dtype = img.dtype
     bins_m1_f = float(bins - 1)
-    check_valid_image_ndim(img, 2)
-    img = (img * bins_m1_f).type(torch.uint8)
-    # Compute histogram
-    flat_image = img.flatten(start_dim=-2).long()
-    hist = torch.zeros(
-        img.shape[:-2] + (bins,),
-        dtype=torch.int32,
-        device=img.device,
-    )
-    hist.scatter_add_(
-        dim=-1, index=flat_image, src=hist.new_ones(1).expand_as(flat_image)
-    )
+
+    hist, img_indices = histogram(img, bins, ret_index=True)
+    flatted_idx = img_indices.flatten(-2)
     cdf = hist.cumsum(dim=-1)
     # Compute table
     maxi = cdf[..., bins - 1].unsqueeze_(-1).float()
@@ -60,7 +52,7 @@ def hist_equalize(img: torch.Tensor, bins: int = 256) -> torch.Tensor:
     )
     table = table.type(res_dtype)
 
-    res = torch.gather(table, -1, index=flat_image).reshape(img.shape)
+    res = torch.gather(table, -1, index=flatted_idx).reshape(img.shape)
     res = res.contiguous()
     return res
 
@@ -84,7 +76,7 @@ def match_historgram(
     torch.Tensor
         Transferred image in RGB space.
     """
-    hist = histogram(img, bins)
+    hist, img_indices = histogram(img, bins, ret_index=True)
     cdf = torch.cumsum(hist, -1)
     cdf = cdf.div(cdf[..., -1].unsqueeze(-1))
     tar_cdf = torch.cumsum(tar_hist, -1)
@@ -93,7 +85,6 @@ def match_historgram(
     table = torch.searchsorted(tar_cdf, cdf).float() / tar_cdf.shape[-1]
     table = align_device_type(table, img)
 
-    img_indices = (img * (bins - 1)).clip_(0, bins - 1).long()
     img_indices = img_indices.flatten(start_dim=-2)
     res = table.gather(-1, img_indices)
     res = res.reshape(img.shape).contiguous()

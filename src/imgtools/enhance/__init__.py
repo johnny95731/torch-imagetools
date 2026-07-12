@@ -62,7 +62,7 @@ from .contrast import (
     lide,
     local_gamma_correction,
 )
-from .equlization import (
+from .equalization import (
     hist_equalize,
     match_historgram,
     match_mean_std,
