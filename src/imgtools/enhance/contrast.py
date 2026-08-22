@@ -10,7 +10,7 @@ from typing import Literal
 
 import torch
 
-from imgtools.color import rgb_to_gray, rgb_to_yuv, yuv_to_rgb
+from imgtools.color import rgb_to_yuv, yuv_to_rgb
 from imgtools.filters.rfft import get_gaussian_lowpass
 from imgtools.statistics.basic import histogram, mean, mean_std, moving_mean
 from imgtools.utils.helpers import (
@@ -285,7 +285,7 @@ def lide(
     return res
 
 
-def agcwd(rgb: torch.Tensor, alpha: float = 0.5, bins: int = 256):
+def agcwd(rgb: torch.Tensor, alpha: float = 1.5, bins: int = 256):
     """An implementation of the adaptive gamma correction with weighting
     distribution (AGCWD).
 
@@ -293,7 +293,7 @@ def agcwd(rgb: torch.Tensor, alpha: float = 0.5, bins: int = 256):
     ----------
     img : torch.Tensor
         An RGB or grayscale image with shape `(*, C, H, W)`.
-    alpha : float, default=0.5
+    alpha : float, default=1.5
         A parameter for correcting the weights.
     bins : int, default=256
         The number of groups in data range.
@@ -306,12 +306,13 @@ def agcwd(rgb: torch.Tensor, alpha: float = 0.5, bins: int = 256):
     device = rgb.device
     num_ch = rgb.size(-3)
     if num_ch == 3:
-        gray = rgb_to_gray(rgb)
+        yuv = rgb_to_yuv(rgb)
+        gray = yuv[..., :1, :, :]
     elif num_ch == 1:
         gray = rgb
     else:
         raise ValueError(f'`rgb` must be 1 or 3 channel: {num_ch}')
-    pdf, idx = histogram(gray, bins, ret_index=True)
+    pdf, idx = histogram(gray, bins, density=True, ret_index=True)
     mini_pdf = pdf.amin(-1, keepdim=True)
     maxi_pdf = pdf.amax(-1, keepdim=True)
     pdf_w = (
@@ -321,11 +322,19 @@ def agcwd(rgb: torch.Tensor, alpha: float = 0.5, bins: int = 256):
         .mul_(maxi_pdf)
     )
     cdf_w = torch.cumsum(pdf_w, -1, dtype=dtype)
-    cdf_w /= cdf_w[..., -1:]
+    cdf_w /= cdf_w[..., -1:].clone()
     #
     gamma = 1 - cdf_w
-    table = torch.linspace(0, 1, bins, dtype=dtype, device=device).pow_(gamma)
+    table = (
+        torch
+        .linspace(0, 1, bins, dtype=dtype, device=device)
+        .expand_as(gamma)
+        .pow_(gamma)
+    )
 
     flatted_idx = idx.flatten(-2)
-    res = torch.gather(table, -1, index=flatted_idx).reshape(rgb.shape)
+    res = torch.gather(table, -1, index=flatted_idx).reshape(gray.shape)
+    if num_ch == 3:
+        yuv[..., :1, :, :] = res
+        res = yuv_to_rgb(yuv)
     return res
