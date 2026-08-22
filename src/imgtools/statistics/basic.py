@@ -1,6 +1,7 @@
 __all__ = [
     'combine_mean_std',
     'histogram',
+    'kernel_density_estimation',
     'mean',
     'moving_mean',
     'var',
@@ -13,6 +14,7 @@ __all__ = [
     'covar_matrix',
 ]
 
+from collections.abc import Callable
 from typing import Literal, overload
 
 import torch
@@ -117,7 +119,7 @@ def histogram(
     Parameters
     ----------
     img : torch.Tensor
-        An image in the range of [0, 1] with 2 <= img.ndim <= 4.
+        An image in the range of [0, 1] with shape `(*, H, W)`
     bins : int, default=256
         The number of groups in data range.
     density : bool, default=False
@@ -128,7 +130,7 @@ def histogram(
     Returns
     -------
     hist : torch.Tensor
-        The histogram or density.
+        The histogram or density. Shape `(*, bins)`.
     img_idx : torch.Tensor
         The index of histogram for each pixel. The `img_idx` is returned only
         if `ret_index` is true.
@@ -164,6 +166,66 @@ def histogram(
     if ret_index:
         return hist, idx
     return hist
+
+
+def kernel_density_estimation(
+    img: torch.Tensor,
+    bandwidth: float = 1 / 255,
+    bins: int = 256,
+    kernel: Callable[[torch.Tensor, torch.Tensor, float], torch.Tensor]
+    | None = None,
+) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+    """Compute the kernel density of an image with a given kernel.
+    Roughly speeking, the kernel
+
+    Parameters
+    ----------
+    img : torch.Tensor
+        An image in the range of [0, 1] with shape `(*, H, W)`.
+    bandwidth : float, default=1/255
+        The smoothing parameter. A larger value means more smoothing.
+    bins : int, default=256
+        The number of groups in data range.
+    kernel : Callable[[torch.Tensor, torch.Tensor, float], torch.Tensor]
+    | None, default=None
+        The custom kernel function. It receives 3 arguments, img (data),
+        points (`bins` points that distributes on [0, 1] uniformly.),
+        and `bandwidth`, and output the density with shape `(*, bins)`.
+        If `None` is given, the triangular kernel is applied.
+
+    Returns
+    -------
+    density : torch.Tensor
+        The kernel density. Shape `(*, bins)`. The summation over
+        bins (`sum(density, dim=-1)`) will be 1.
+
+    Examples
+    --------
+
+    >>> import cv2
+    >>> from imgtools.utils import tensorize
+    >>> from imgtools.statistics import kernel_density_estimation
+    >>>
+    >>> img = cv2.imread(path, cv2.IMREAD_COLOR_RGB)  # (H, W, 3)
+    >>> img = tensorize(img)  # (3, H, W)
+    >>> density = kernel_density_estimation(img)  # torch.Size([3, 256])
+    """
+    if not isinstance(bins, int):
+        raise TypeError(f'`bins` must be an integer: {type(bins)}.')
+    check_valid_image_ndim(img, 2)
+    dtype = __default_dtype(img)
+    linsp = torch.linspace(0, 1, steps=bins, dtype=dtype, device=img.device)
+    ndim = img.ndim
+    linsp = linsp.view(*[1 for _ in range(ndim - 2)], bins, 1, 1)
+    if kernel is None:
+        # Triangle kernel
+        density = (linsp - img.unsqueeze(-3)).abs_()
+        torch.sub(bandwidth, density, out=density).relu_()
+        density = density.div_(bandwidth**2).mean((-1, -2))
+    else:
+        density = kernel(img.unsqueeze(-3), linsp, bandwidth)
+    density = density.div_(density.sum(-1, keepdim=True))
+    return density
 
 
 def mean(
@@ -221,9 +283,8 @@ def mean(
 
 def moving_mean(
     img: torch.Tensor,
-    ksize: int | tuple[int, int] = 3,
+    ksize: int | float | tuple[int, int] | tuple[float, float] = 3,
     fft_approx: bool = False,
-    sigma: float | tuple[float, float] = 1,
     mode: str = 'reflect',
 ) -> torch.Tensor:
     """The 2D moving average of an image. Equals mean blur.
@@ -233,12 +294,11 @@ def moving_mean(
     img : torch.Tensor
         An image with shape `(*, C, H, W)`.
     ksize : int | tuple[int, int], default=3
-        The size of window.
+        The size of window. When `fft_approx` is enabled, `ksize` will
+        be treated as the sigma of the Gaussian filter.
     fft_approx : bool, default=False
         Uses the frequency domain Gaussian filter to approach mean blur.
         Recommend to use when window size is large.
-    sigma : float | tuple[float, float], default 1
-        The strength of blurrness.
     mode : {'constant', 'reflect', 'replicate', 'circular'}, default='reflect'
         Padding mode. Same as the argument `mode` in `torch.nn.functional.pad`.
 
@@ -263,7 +323,7 @@ def moving_mean(
         dtype = __default_dtype(img)
         kernel = get_gaussian_lowpass(
             img_f,
-            sigma,
+            ksize,
             d=1,
             spatial_sigma=True,
             dtype=dtype,

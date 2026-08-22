@@ -14,7 +14,7 @@ __all__ = [
 from typing import Literal
 import torch
 
-from ..core.math import _check_ksize
+from imgtools.core.math import _check_ksize
 
 
 def get_gaussian_lowpass(
@@ -69,14 +69,15 @@ def get_gaussian_lowpass(
         _ksize = _check_ksize(img_size, True)
     _ksize = _ksize[0], 2 * _ksize[1] - 2
     if isinstance(sigma, (int, float)):
+        sigma = float(sigma)
         _sigma = (sigma, sigma)
     elif isinstance(sigma, (tuple, list)):
         if len(sigma) == 0:
             raise ValueError('len(gamma) can not be 0.')
         elif len(sigma) == 1:
-            _sigma = (sigma[0], sigma[0])
+            _sigma = (float(sigma[0]),) * 2
         else:
-            _sigma = (sigma[0], sigma[1])
+            _sigma = (float(sigma[0]), float(sigma[1]))
     else:
         raise TypeError(f'Invalid type of `gamma`: {type(sigma)}')
     if spatial_sigma:

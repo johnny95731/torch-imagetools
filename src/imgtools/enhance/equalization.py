@@ -42,7 +42,7 @@ def hist_equalize(img: torch.Tensor, bins: int = 256) -> torch.Tensor:
     mini = torch.gather(cdf, -1, index=mini_idx).float()
     # Normalize cdf to [0, 255]
     # table(x) = floor((x - min) / (max - min) * 255) / 255
-    coeff = torch.div(256.0, maxi.sub_(mini))
+    coeff = torch.div(bins, maxi.sub_(mini))
     coeff.nan_to_num_(0.0, 0.0, 0.0)
     table = (
         ((cdf - mini).mul_(coeff))
