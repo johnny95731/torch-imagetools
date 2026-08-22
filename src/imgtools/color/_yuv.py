@@ -63,7 +63,7 @@ def rgb_to_yuv(
         )
     elif standard == 'yiq':
         matrix = torch.tensor(
-            [[0.299,  0.587,   0.114],
+            [[0.30,  0.59,   0.11],
             [ 0.5000, -0.2315, -0.2685],
             [ 0.2028, -0.5000, 0.2972]],
             dtype=dtype,
